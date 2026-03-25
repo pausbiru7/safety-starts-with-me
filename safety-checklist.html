@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Safety Starts With Me</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;background:#f0f4f8;min-height:100vh;padding:12px}
+.container{max-width:600px;margin:0 auto;background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.1);overflow:hidden}
+.header{background:linear-gradient(135deg,#1a5276,#2e86c1);color:#fff;padding:24px;text-align:center}
+.header h1{font-size:1.4rem;font-weight:800;letter-spacing:1px}
+.header p{font-size:.82rem;opacity:.85;margin-top:4px}
+.badge{display:inline-block;background:#e74c3c;color:#fff;font-size:.7rem;padding:3px 10px;border-radius:20px;margin-top:8px;font-weight:700}
+.section{padding:20px;border-bottom:1px solid #eee}
+.section-title{font-size:1rem;font-weight:700;color:#1a5276;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem}
+.icon-blue{background:#dbeafe;color:#2563eb}.icon-red{background:#fee2e2;color:#dc2626}
+.icon-green{background:#d1fae5;color:#059669}.icon-orange{background:#ffedd5;color:#ea580c}
+.icon-purple{background:#ede9fe;color:#7c3aed}
+label{display:block;font-size:.85rem;color:#555;margin-bottom:4px;font-weight:600}
+input[type="text"],input[type="tel"],input[type="date"],input[type="time"],textarea{width:100%;padding:10px 12px;border:1.5px solid #ddd;border-radius:10px;font-size:.9rem;margin-bottom:12px;transition:border .2s;font-family:inherit}
+input:focus,textarea:focus{outline:none;border-color:#2e86c1;box-shadow:0 0 0 3px rgba(46,134,193,.15)}
+.row{display:flex;gap:10px}.row>div{flex:1}
+.check-group{margin-bottom:10px}
+.check-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid #eee;border-radius:10px;margin-bottom:6px;cursor:pointer;transition:all .2s}
+.check-item:hover{border-color:#2e86c1;background:#f0f7ff}
+.check-item.sel-g{border-color:#059669;background:#ecfdf5}
+.check-item.sel-b{border-color:#dc2626;background:#fef2f2}
+.check-item input[type="radio"]{accent-color:#2e86c1;width:16px;height:16px}
+.check-item label{margin:0;cursor:pointer;font-weight:500;color:#333}
+.hazard-card{background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;padding:14px;margin-bottom:10px}
+.hazard-card .hazard-title{font-weight:700;color:#1a5276;margin-bottom:8px;font-size:.9rem}
+.hazard-check{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.85rem;color:#444}
+.hazard-check input{accent-color:#e74c3c;width:16px;height:16px}
+.btn{width:100%;padding:14px;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:linear-gradient(135deg,#1a5276,#2e86c1);color:#fff}
+.btn-wa{background:#25d366;color:#fff}
+.btn-approve{background:linear-gradient(135deg,#059669,#10b981);color:#fff}
+.btn-reject{background:#ef4444;color:#fff}
+.btn-back{background:#eee;color:#555}
+.step{display:none}.step.active{display:block}
+.dots{display:flex;justify-content:center;gap:6px;padding:14px}
+.dot{width:10px;height:10px;border-radius:50%;background:#ddd;transition:all .3s}
+.dot.active{background:#2e86c1;width:24px;border-radius:5px}
+.sbox{background:#f8fafc;border-radius:12px;padding:14px;font-size:.83rem;line-height:1.8}
+.sbox strong{color:#1a5276}
+.sv-banner{text-align:center;padding:20px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;margin:-20px -20px 16px;border-radius:0 0 16px 16px}
+.result-card{text-align:center;padding:40px 20px}
+.result-card .big{font-size:4rem;margin-bottom:12px}
+.sent-info{background:#dbeafe;border-radius:10px;padding:12px;margin-top:16px;font-size:.82rem;color:#1e40af;text-align:left}
+.footer{padding:16px;text-align:center;font-size:.75rem;color:#999}
+</style>
+</head>
+<body>
+<div class="container" id="app">
+<div class="header">
+<h1>⛑️ SAFETY STARTS WITH ME</h1>
+<p>Daily Pre-Work Safety Checklist</p>
+<div class="badge" id="dateDisplay"></div>
+</div>
+<!-- WORKER -->
+<div id="WM">
+<div class="dots" id="dots"></div>
+<!-- Step 1-6 placeholders -->
+<div class="section step active" id="step1"></div>
+<div class="section step" id="step2"></div>
+<div class="section step" id="step3"></div>
+<div class="section step" id="step4"></div>
+<div class="section step" id="step5"></div>
+<div class="section step" id="step6"></div>
+</div>
+<!-- SUPERVISOR -->
+<div id="SM" style="display:none"></div>
+<div id="SD" style="display:none"></div>
+<div class="footer">Safety Starts With Me © 2026 | v2.1</div>
+</div>
+<script>
+/* ============================================
+   🔧 PENTING: GANTI URL DI BAWAH INI
+   Setelah Anda upload file ini ke GitHub Pages,
+   ganti URL berikut dengan URL publik Anda.
+   Contoh: https://username.github.io/repo/safety-checklist.html
+   ============================================ */
+const BASE = "https://example.github.io/safety/safety-checklist.html";
+
+/* === LZ Compress/Decompress === */
+const LZ={
+  compress(s){return btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')},
+  decompress(s){try{let b=s.replace(/-/g,'+').replace(/_/g,'/');while(b.length%4)b+='=';return decodeURIComponent(escape(atob(b)))}catch(e){return null}}
+};
+
+/* Data containers */
+const S={n:'',p:'',pt:'',l:'',tgl:'',jam:''},HC={},HZ={},CT={};
+let cur=1;
+const STEPS=6;
+const HZDATA=[
+  {id:'mek',n:'Bahaya Mekanik',items:['Terjepit mesin','Terpotong benda tajam','Tertimpa material','Terbentur benda keras','Terjatuh dari ketinggian']},
+  {id:'lis',n:'Bahaya Listrik',items:['Tersengat listrik','Korsleting','Kabel terkelupas','Panel rusak']},
+  {id:'kim',n:'Bahaya Kimia',items:['Terhirup gas/uap','Terkena cairan kimia','Iritasi kulit','Keracunan']},
+  {id:'erg',n:'Bahaya Ergonomi',items:['Posisi kerja tidak nyaman','Angkat beban berlebihan','Gerakan berulang','Pencahayaan buruk']},
+  {id:'fis',n:'Bahaya Fisik',items:['Kebisingan tinggi','Suhu ekstrem','Getaran','Radiasi']},
+  {id:'bio',n:'Bahaya Biologis',items:['Bakteri/virus','Serangga/hewan','Jamur/lumut']},
+  {id:'psi',n:'Bahaya Psikososial',items:['Tekanan kerja tinggi','Konflik rekan kerja','Kelelahan mental']}
+];
+const CTDATA=['Helm (Safety Helmet)','Kacamata (Safety Glasses)','Sarung Tangan (Gloves)','Sepatu Safety','Masker/Respirator','Ear Plug/Muff','Body Harness','Rompi Safety','Face Shield','APD Kimia'];
+
+function init(){
+  const p=new URLSearchParams(location.search);
+  if(p.get('v')){showSupervisor(p.get('v'));return;}
+  if(p.get('d')){showDone(p.get('d'));return;}
+  renderWorker();
+}
+function showSupervisor(d){
+  document.getElementById('WM').style.display='none';
+  document.getElementById('SM').style.display='block';
+  const data=JSON.parse(LZ.decompress(d));
+  if(!data){document.getElementById('SM').innerHTML='<div class="section"><p>Data tidak valid.</p></div>';return;}
+  document.getElementById('SM').innerHTML=`
+    <div class="section">
+      <div class="sv-banner"><div style="font-size:2.4rem">🔍</div><h2 style="margin:8px 0">Verifikasi Supervisor</h2><p style="opacity:.9;font-size:.85rem">Periksa dan setujui checklist berikut</p></div>
+      <div class="sbox">${summaryHTML(data)}</div>
+      <div style="margin-top:20px">
+        <label>Nama Supervisor</label><input type="text" id="svNama" placeholder="Masukkan nama Anda">
+        <label>Catatan (opsional)</label><textarea id="svNote" rows="2" placeholder="Tambahkan catatan jika perlu..."></textarea>
+        <button class="btn btn-approve" onclick="approve()">✅ APPROVE</button>
+        <button class="btn btn-reject" onclick="reject()">❌ REJECT</button>
+      </div>
+    </div>`;
+  window._vdata=data;
+}
+function approve(){
+  const d=window._vdata,sn=document.getElementById('svNama').value.trim(),sv=document.getElementById('svNote').value.trim();
+  if(!sn){alert('Masukkan nama supervisor');return;}
+  d.sv={nama:sn,status:'APPROVED',note:sv,time:new Date().toLocaleString('id-ID')};
+  sendDone(d);
+}
+function reject(){
+  const d=window._vdata,sn=document.getElementById('svNama').value.trim(),sv=document.getElementById('svNote').value.trim();
+  if(!sn){alert('Masukkan nama supervisor');return;}
+  if(!sv){alert('Berikan alasan penolakan');return;}
+  d.sv={nama:sn,status:'REJECTED',note:sv,time:new Date().toLocaleString('id-ID')};
+  sendDone(d);
+}
+function sendDone(d){
+  const enc=LZ.compress(JSON.stringify(d));
+  const url=`${BASE}?d=${enc}`;
+  const isApproved=d.sv.status==='APPROVED';
+  const msg=isApproved?
+    `✅ *CHECKLIST APPROVED*\n\n👷 Pekerja: ${d.n}\n📞 Telp: ${d.p}\n📅 Tanggal: ${d.tgl}\n⏰ Jam: ${d.jam}\n\n👨‍💼 Supervisor: ${d.sv.nama}\n🕐 Waktu: ${d.sv.time}\n${d.sv.note?'📝 Catatan: '+d.sv.note:''}\n\n🔗 Detail:\n${url}`:
+    `❌ *CHECKLIST REJECTED*\n\n👷 Pekerja: ${d.n}\n📞 Telp: ${d.p}\n📅 Tanggal: ${d.tgl}\n\n👨‍💼 Supervisor: ${d.sv.nama}\n📝 Alasan: ${d.sv.note}\n\n🔗 Detail:\n${url}`;
+  window.open('https://wa.me/'+d.p.replace(/^0/,'62')+'?text='+encodeURIComponent(msg),'_blank');
+  showDone(LZ.compress(JSON.stringify(d)));
+}
+function showDone(d){
+  document.getElementById('WM').style.display='none';
+  document.getElementById('SM').style.display='none';
+  document.getElementById('SD').style.display='block';
+  const data=JSON.parse(LZ.decompress(d));
+  if(!data){document.getElementById('SD').innerHTML='<div class="section"><p>Data tidak valid.</p></div>';return;}
+  const isA=data.sv&&data.sv.status==='APPROVED';
+  document.getElementById('SD').innerHTML=`
+    <div class="section">
+      <div class="result-card">
+        <div class="big">${isA?'✅':'❌'}</div>
+        <h2 style="color:${isA?'#059669':'#dc2626'}">${isA?'APPROVED':'REJECTED'}</h2>
+        <p style="color:#666;margin-top:8px">${data.sv?data.sv.time:''}</p>
+      </div>
+      <div class="sbox">${summaryHTML(data)}</div>
+      ${data.sv?`<div class="sent-info"><strong>Supervisor:</strong> ${data.sv.nama}<br>${data.sv.note?'<strong>Catatan:</strong> '+data.sv.note:''}</div>`:''}
+    </div>`;
+}
+function renderWorker(){
+  const d=new Date();
+  document.getElementById('dateDisplay').textContent=d.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  S.tgl=d.toLocaleDateString('id-ID');S.jam=d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('step1').innerHTML=`
+    <div class="section-title"><span class="icon icon-blue">👤</span>Data Pekerja</div>
+    <label>Nama Lengkap *</label><input type="text" id="nama" placeholder="Masukkan nama lengkap">
+    <label>No. Telepon (WhatsApp) *</label><input type="tel" id="telp" placeholder="08xxxxxxxxxx">
+    <label>Posisi/Jabatan *</label><input type="text" id="posisi" placeholder="Contoh: Operator, Teknisi">
+    <label>Lokasi Kerja *</label><input type="text" id="lokasi" placeholder="Area/Site kerja hari ini">
+    <button class="btn btn-primary" onclick="next1()">Lanjut →</button>`;
+  document.getElementById('step2').innerHTML=`
+    <div class="section-title"><span class="icon icon-red">❤️</span>Kondisi Kesehatan</div>
+    <p style="font-size:.85rem;color:#666;margin-bottom:14px">Jawab dengan jujur untuk keselamatan Anda</p>
+    ${hcHTML('hc1','Apakah Anda merasa sehat hari ini?')}
+    ${hcHTML('hc2','Apakah Anda cukup tidur (min. 6 jam)?')}
+    ${hcHTML('hc3','Apakah Anda bebas dari pengaruh obat/alkohol?')}
+    ${hcHTML('hc4','Apakah Anda memahami pekerjaan hari ini?')}
+    <div class="row" style="margin-top:16px">
+      <button class="btn btn-back" onclick="go(1)">← Kembali</button>
+      <button class="btn btn-primary" onclick="next2()">Lanjut →</button>
+    </div>`;
+  document.getElementById('step3').innerHTML=`
+    <div class="section-title"><span class="icon icon-orange">⚠️</span>Identifikasi Bahaya</div>
+    <label>Deskripsi pekerjaan hari ini *</label>
+    <textarea id="jobDesc" rows="3" placeholder="Jelaskan pekerjaan yang akan dilakukan..."></textarea>
+    <p style="font-size:.85rem;color:#666;margin:12px 0 8px">Pilih potensi bahaya yang mungkin terjadi:</p>
+    <div id="hzList"></div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn btn-back" onclick="go(2)">← Kembali</button>
+      <button class="btn btn-primary" onclick="next3()">Lanjut →</button>
+    </div>`;
+  document.getElementById('step4').innerHTML=`
+    <div class="section-title"><span class="icon icon-green">🛡️</span>Kontrol Risiko</div>
+    <label>Tindakan pengendalian yang akan dilakukan *</label>
+    <textarea id="ctAct" rows="3" placeholder="Jelaskan langkah-langkah keselamatan..."></textarea>
+    <p style="font-size:.85rem;color:#666;margin:12px 0 8px">APD yang akan digunakan:</p>
+    <div id="ctList"></div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn btn-back" onclick="go(3)">← Kembali</button>
+      <button class="btn btn-primary" onclick="next4()">Lanjut →</button>
+    </div>`;
+  document.getElementById('step5').innerHTML=`
+    <div class="section-title"><span class="icon icon-purple">📋</span>Review & Kirim</div>
+    <div class="sbox" id="rvBox"></div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn btn-back" onclick="go(4)">← Kembali</button>
+      <button class="btn btn-wa" onclick="sendWA()">📤 Kirim via WhatsApp</button>
+    </div>`;
+  document.getElementById('step6').innerHTML=`
+    <div class="result-card">
+      <div class="big">📨</div>
+      <h2 style="color:#059669">Checklist Terkirim!</h2>
+      <p style="color:#666;margin-top:8px">Menunggu verifikasi supervisor</p>
+      <div class="sent-info" id="sentInfo"></div>
+      <button class="btn btn-primary" style="margin-top:20px" onclick="location.reload()">🔄 Buat Checklist Baru</button>
+    </div>`;
+  renderHazards();renderCt();renderDots();
+}
+function hcHTML(id,q){return `<div class="check-group"><p style="font-size:.88rem;font-weight:600;margin-bottom:6px">${q}</p><div class="check-item" onclick="selHC('${id}','ya',this)"><input type="radio" name="${id}" id="${id}y"><label for="${id}y">✅ Ya</label></div><div class="check-item" onclick="selHC('${id}','tidak',this)"><input type="radio" name="${id}" id="${id}n"><label for="${id}n">❌ Tidak</label></div></div>`}
+function selHC(id,v,el){HC[id]=v;el.parentElement.querySelectorAll('.check-item').forEach(c=>c.classList.remove('sel-g','sel-b'));el.classList.add(v==='ya'?'sel-g':'sel-b');el.querySelector('input').checked=true}
+function renderHazards(){let h='';HZDATA.forEach(cat=>{h+=`<div class="hazard-card"><div class="hazard-title">${cat.n}</div>`;cat.items.forEach((it,i)=>{const k=cat.id+'_'+i;h+=`<div class="hazard-check"><input type="checkbox" id="${k}" onchange="HZ['${k}']=this.checked"><label for="${k}">${it}</label></div>`});h+=`</div>`});document.getElementById('hzList').innerHTML=h}
+function renderCt(){let h='';CTDATA.forEach((it,i)=>{h+=`<div class="hazard-check"><input type="checkbox" id="ct${i}" onchange="CT['ct${i}']=this.checked"><label for="ct${i}">${it}</label></div>`});document.getElementById('ctList').innerHTML=h}
+function renderDots(){let h='';for(let i=1;i<=STEPS;i++)h+=`<div class="dot${i===cur?' active':''}"></div>`;document.getElementById('dots').innerHTML=h}
+function next1(){
+  S.n=document.getElementById('nama').value.trim();
+  S.p=document.getElementById('telp').value.trim();
+  S.pt=document.getElementById('posisi').value.trim();
+  S.l=document.getElementById('lokasi').value.trim();
+  if(!S.n||!S.p||!S.pt||!S.l){alert('Lengkapi semua data');return;}
+  if(!/^08\d{8,12}$/.test(S.p)){alert('Format nomor telepon tidak valid');return;}
+  go(2);
+}
+function next2(){if(Object.keys(HC).length<4){alert('Jawab semua pertanyaan kesehatan');return;}go(3)}
+function next3(){
+  S.job=document.getElementById('jobDesc').value.trim();
+  if(!S.job){alert('Isi deskripsi pekerjaan');return;}
+  const sel=Object.keys(HZ).filter(k=>HZ[k]);
+  if(sel.length===0){alert('Pilih minimal satu potensi bahaya');return;}
+  go(4);
+}
+function next4(){
+  S.act=document.getElementById('ctAct').value.trim();
+  if(!S.act){alert('Isi tindakan pengendalian');return;}
+  go(5);
+}
+function buildData(){
+  const hz=[],ct=[];
+  Object.keys(HZ).filter(k=>HZ[k]).forEach(k=>{const[cid,idx]=k.split('_');const cat=HZDATA.find(c=>c.id===cid);if(cat)hz.push(cat.items[parseInt(idx)])});
+  Object.keys(CT).filter(k=>CT[k]).forEach(k=>{const i=parseInt(k.replace('ct',''));ct.push(CTDATA[i])});
+  return{n:S.n,p:S.p,pt:S.pt,l:S.l,tgl:S.tgl,jam:S.jam,hc:HC,job:S.job,hz,act:S.act,ct};
+}
+function summaryHTML(d){
+  return `<strong>👤 Nama:</strong> ${d.n}<br><strong>📞 Telp:</strong> ${d.p}<br><strong>💼 Posisi:</strong> ${d.pt}<br><strong>📍 Lokasi:</strong> ${d.l}<br><strong>📅 Tanggal:</strong> ${d.tgl}<br><strong>⏰ Jam:</strong> ${d.jam}<br><hr style="border:none;border-top:1px dashed #ddd;margin:10px 0"><strong>❤️ Kondisi Kesehatan:</strong><br>• Sehat: ${d.hc.hc1||'-'}<br>• Cukup tidur: ${d.hc.hc2||'-'}<br>• Bebas obat/alkohol: ${d.hc.hc3||'-'}<br>• Paham pekerjaan: ${d.hc.hc4||'-'}<br><hr style="border:none;border-top:1px dashed #ddd;margin:10px 0"><strong>📝 Pekerjaan:</strong> ${d.job||'-'}<br><strong>⚠️ Bahaya:</strong> ${d.hz?.join(', ')||'-'}<br><strong>🛡️ Pengendalian:</strong> ${d.act||'-'}<br><strong>🦺 APD:</strong> ${d.ct?.join(', ')||'-'}`;
+}
+function sendWA(){
+  const d=buildData();
+  const enc=LZ.compress(JSON.stringify(d));
+  const vUrl=`${BASE}?v=${enc}`;
+  const msg=`🔔 *SAFETY CHECKLIST - VERIFIKASI*\n\n👷 Pekerja: ${d.n}\n📞 HP: ${d.p}\n💼 Posisi: ${d.pt}\n📍 Lokasi: ${d.l}\n📅 Tanggal: ${d.tgl}\n⏰ Jam: ${d.jam}\n\n📝 Pekerjaan:\n${d.job}\n\n⚠️ Potensi Bahaya:\n${d.hz.map(h=>'• '+h).join('\n')}\n\n🛡️ Pengendalian:\n${d.act}\n\n🦺 APD:\n${d.ct.map(c=>'• '+c).join('\n')}\n\n✅ *Klik link untuk verifikasi:*\n${vUrl}`;
+  window.open('https://wa.me/6282141150007?text='+encodeURIComponent(msg),'_blank');
+  document.getElementById('sentInfo').innerHTML=`<strong>Terkirim ke:</strong><br>1. Pekerja — ${d.n} (${d.p})<br>2. HSE Personnel — 082141150007</div></div>`;
+  go(6);
+}
+function go(n){
+  if(n===4)renderCt();
+  if(n===5){renderCt();document.getElementById('rvBox').innerHTML=summaryHTML(buildData())}
+  cur=n;
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('step'+n).classList.add('active');
+  renderDots();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+init();
+</script>
+</body>
+</html>
