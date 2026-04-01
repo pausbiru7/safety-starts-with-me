@@ -4,25 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Safety Starts With Me</title>
-<!-- PWA Manifest -->
-<link rel="manifest" href="data:application/manifest+json,{
-  \"name\": \"Safety Starts With Me\",
-  \"short_name\": \"Safety Checklist\",
-  \"start_url\": \".\",
-  \"display\": \"standalone\",
-  \"background_color\": \"#f0f4f8\",
-  \"theme_color\": \"#1a5276\",
-  \"icons\": [{
-    \"src\": \"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9IiMxYTUyNzYiLz4KPHRleHQgeD0iOTYiIHk9IjExMiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjYwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+87tFPC90ZXh0Pgo8L3N2Zz4=\",
-    \"sizes\": \"192x192\",
-    \"type\": \"image/svg+xml\"
-  }]
-}">
-<meta name="theme-color" content="#1a5276">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',sans-serif;background:#f0f4f8;min-height:100vh;padding:12px}
-.container{max-width:600px;margin:0 auto;background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.1);overflow:hidden;position:relative}
+.container{max-width:600px;margin:0 auto;background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.1);overflow:hidden}
 .header{background:linear-gradient(135deg,#1a5276,#2e86c1);color:#fff;padding:24px;text-align:center}
 .header h1{font-size:1.4rem;font-weight:800;letter-spacing:1px}
 .header p{font-size:.82rem;opacity:.85;margin-top:4px}
@@ -86,18 +71,6 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:#2e86c1;box-sh
 .spv-info{flex:1}.spv-info strong{display:block;font-size:.9rem;color:#1a5276}
 .spv-info span{font-size:.78rem;color:#666}
 .tag-badge{display:inline-block;background:#dbeafe;color:#1e40af;font-size:.7rem;padding:2px 8px;border-radius:10px;margin-top:2px;font-weight:600}
-
-/* Progress Indicator */
-#progressIndicator {
-  position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5276;color:white;
-  padding:12px 20px;border-radius:25px;box-shadow:0 4px 20px rgba(0,0,0,0.3);z-index:9999;
-  font-weight:600;min-width:280px;text-align:center;font-size:0.9rem;display:none;
-  animation: slideDown 0.3s ease-out;
-}
-@keyframes slideDown{from{opacity:0;transform:translateX(-50%) translateY(-20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-
-/* PWA Install Prompt */
-#installPrompt{display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#059669;color:white;padding:16px 24px;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.3);z-index:10000;max-width:90vw;text-align:center;font-weight:600}
 </style>
 </head>
 <body>
@@ -125,30 +98,19 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:#2e86c1;box-sh
 <!-- DONE MODE -->
 <div id="SD" style="display:none"></div>
 
-<div class="footer">Safety Starts With Me © 2026 | v3.1 (Fixed & Enhanced)</div>
-
-<!-- Progress Indicator -->
-<div id="progressIndicator"></div>
-
-<!-- PWA Install Prompt -->
-<div id="installPrompt">
-  <div>📱 Install Safety Checklist untuk akses offline!</div>
-  <button class="btn btn-primary" onclick="deferredPrompt && deferredPrompt.prompt()" style="margin-top:12px;font-size:0.85rem;padding:8px;width:auto">Install</button>
-  <button onclick="hideInstallPrompt()" style="background:none;color:white;border:1px solid white;padding:8px 12px;border-radius:6px;font-size:0.8rem;margin-left:8px">Nanti</button>
-</div>
+<div class="footer">Safety Starts With Me © 2026 | v3.0</div>
 </div>
 
 <script>
 /* ============================================================
-   🔧 KONFIGURASI — Ganti URL dan daftar supervisor di sini
+   KONFIGURASI — Ganti URL dan daftar supervisor di sini
    ============================================================ */
-// ✅ FIXED: Environment-aware config
-window.ENV = window.ENV || {};
-const CONFIG = {
-  BASE: window.ENV.BASE_URL || "https://pausbiru7.github.io/safety-starts-with-me/safety-checklist.html",
-  GAS_URL: window.ENV.GAS_URL || "https://script.google.com/macros/s/AKfycbxK-73RZaNNILlvC2ntjqSo6TZbilkS86ue0g2lyG4cGarY9KyOzWl90G2b-wfpMnkjsA/exec",
-  HSE_NUMBER: window.ENV.HSE_NUMBER || "6282141150007"
-};
+const BASE = "https://pausbiru7.github.io/safety-starts-with-me/safety-checklist.html";
+
+// ⬇ Ganti dengan URL deployment Google Apps Script Anda
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxK-73RZaNNILlvC2ntjqSo6TZbilkS86ue0g2lyG4cGarY9KyOzWl90G2b-wfpMnkjsA/exec";
+
+const HSE_NUMBER = "6282141150007"; // Nomor HSE Personil (tanpa +)
 
 const SUPERVISORS = [
   { name: "Muharza",    title: "Project Manager",    wa: "628116923792", dept: "Project"   },
@@ -157,6 +119,7 @@ const SUPERVISORS = [
   { name: "Muh Yusuf",   title: "Project Controller",    wa: "6285399450821", dept: "Project"},
   { name: "Rengga Wahyu",     title: "QA/QC Officer",    wa: "6285783789408", dept: "Project"   }
 ];
+/* ============================================================ */
 
 /* LZ Compress/Decompress (URL-safe Base64) */
 const LZ = {
@@ -164,22 +127,14 @@ const LZ = {
   decompress(s){ try{ let b=s.replace(/-/g,'+').replace(/_/g,'/'); while(b.length%4)b+='='; return decodeURIComponent(escape(atob(b))) }catch(e){ return null } }
 };
 
-/* ✅ NEW: Input Sanitization */
-function sanitizeInput(str) {
-  if (!str) return '';
-  return str.replace(/[<>&"']/g, '').replace(/\s+/g, ' ').trim();
-}
-
 /* App State */
 const S  = { n:'', nid:'', p:'', pt:'', l:'', tgl:'', jam:'', spvIdx:null };
 const HC = {};
-const HZ = {};
+const HZ = {};  // { key: { checked: bool, control: '' } }
 const CT = {};
-let customHazards = [];
+let customHazards = []; // [{text:'', control:''}]
 let cur = 1;
 const STEPS = 6;
-let isProcessing = false; // ✅ FIXED: Queue race condition
-let deferredPrompt = null; // PWA
 
 const HZDATA = [
   {id:'mek', n:'⚙️ Bahaya Mekanik',    items:['Terjepit mesin','Terpotong benda tajam','Tertimpa material','Terbentur benda keras','Terjatuh dari ketinggian']},
@@ -195,38 +150,9 @@ const CTDATA = ['Helm (Safety Helmet)','Kacamata (Safety Glasses)','Sarung Tanga
   'Sepatu Safety','Masker/Respirator','Ear Plug/Muff','Body Harness','Rompi Safety','Face Shield','APD Kimia'];
 
 /* ============================================================
-   PWA SERVICE WORKER
-   ============================================================ */
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('data:application/javascript;base64,' + btoa(`
-    const CACHE_NAME = 'safety-checklist-v3.1';
-    const urlsToCache = ['${CONFIG.BASE}'];
-    
-    self.addEventListener('install', event => {
-      self.skipWaiting();
-    });
-    
-    self.addEventListener('fetch', event => {
-      if (event.request.url.includes('safety-checklist')) {
-        event.respondWith(
-          caches.match(event.request).then(response => response || fetch(event.request))
-        );
-      }
-    });
-  `)).catch(console.error);
-}
-
-/* ============================================================
-   INIT & PWA
+   INIT
    ============================================================ */
 function init(){
-  // PWA Install Handler
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    setTimeout(() => document.getElementById('installPrompt').style.display = 'block', 3000);
-  });
-  
   const p = new URLSearchParams(location.search);
   if(p.get('v')){ showSupervisor(p.get('v')); return; }
   if(p.get('d')){ showDone(p.get('d')); return; }
@@ -234,14 +160,610 @@ function init(){
 }
 
 /* ============================================================
-   SUPERVISOR VIEW — ✅ FIXED Critical Encoding Bug
+   SUPERVISOR VIEW
    ============================================================ */
 function showSupervisor(enc){
+  // Sembunyikan tampilan Worker Mode dan tampilkan Supervisor Mode
   document.getElementById('WM').style.display = 'none';
   document.getElementById('SM').style.display = 'block';
 
+  console.log("Encoded data parameter (enc):", enc);
+
   const data = JSON.parse(LZ.decompress(enc));
+  console.log("Decoded data object:", data);
+
   if(!data){
+    // Jika data tidak dapat didekompresi/parsing, tampilkan pesan error
     document.getElementById('SM').innerHTML = `
       <div class="section">
-        <p style="color:red; font-weight:bold;
+        <p style="color:red; font-weight:bold; text-align:center;">Data tidak valid atau rusak. Silakan ulangi pengiriman checklist.</p>
+      </div>`;
+    return;
+  }
+
+  // Jika data valid, tampilkan form verifikasi supervisor
+  document.getElementById('SM').innerHTML = `
+    <div class="section">
+      <div class="sv-banner">
+        <div style="font-size:2.4rem">🔍</div>
+        <h2 style="margin:8px 0">Verifikasi Supervisor</h2>
+        <p style="opacity:.9;font-size:.85rem">Periksa dan setujui checklist berikut</p>
+      </div>
+      <div class="sbox">${summaryHTML(data)}</div>
+      <div style="margin-top:20px">
+        <label>Nama Supervisor</label>
+        <input type="text" id="svNama" placeholder="Masukkan nama Anda" value="${data.spv_name||''}">
+        <label>Catatan (opsional)</label>
+        <textarea id="svNote" rows="2" placeholder="Tambahkan catatan jika perlu..."></textarea>
+        <button class="btn btn-approve" onclick="approve('${encodeURIComponent(enc)}')">✅ APPROVE</button>
+        <button class="btn btn-reject" onclick="reject('${encodeURIComponent(enc)}')">❌ REJECT</button>
+      </div>
+    </div>`;
+
+  // Simpan data global sementara untuk manipulasi lanjut
+  window._vdata = data;
+}
+
+function approve(enc){
+  // Decode parameter enc yang di-encodeURIComponent sebelumnya
+  const decodedEnc = decodeURIComponent(enc);
+  const d = window._vdata;
+  const sn = document.getElementById('svNama').value.trim();
+  const sv = document.getElementById('svNote').value.trim();
+
+  if(!sn){
+    alert('Masukkan nama supervisor');
+    return;
+  }
+
+  d.sv = { nama: sn, status: 'APPROVED', note: sv, time: new Date().toLocaleString('id-ID') };
+
+  sendDone(d);
+}
+
+function reject(enc){
+  // Decode parameter enc yang di-encodeURIComponent sebelumnya
+  const decodedEnc = decodeURIComponent(enc);
+  const d = window._vdata;
+  const sn = document.getElementById('svNama').value.trim();
+  const sv = document.getElementById('svNote').value.trim();
+
+  if(!sn){
+    alert('Masukkan nama supervisor');
+    return;
+  }
+  if(!sv){
+    alert('Berikan alasan penolakan');
+    return;
+  }
+
+  d.sv = { nama: sn, status: 'REJECTED', note: sv, time: new Date().toLocaleString('id-ID') };
+
+  sendDone(d);
+}
+
+async function sendDone(d){
+  // Update status di Google Sheets via Google Apps Script
+  try {
+    await postToSheet({
+      action: "respond",
+      rowId: d.rowId || null,
+      status: d.sv.status,
+      sv_name: d.sv.nama,
+      sv_note: d.sv.note
+    });
+  } catch(err){
+    console.error("Gagal update Google Sheets:", err);
+  }
+
+  // Kompres data terbaru untuk link detail yang dikirimkan
+  const enc  = LZ.compress(JSON.stringify(d));
+  const url  = `${BASE}?d=${enc}`;
+  const isApproved = d.sv.status === 'APPROVED';
+
+  // Pesan ke pekerja
+  const workerMsg = isApproved
+    ? `✅ *CHECKLIST DISETUJUI*\n\nHalo ${d.n}, checklist safety Anda telah disetujui.\n\n👨‍💼 Supervisor: ${d.sv.nama}\n🕐 Waktu: ${d.sv.time}\n${d.sv.note ? '📝 Catatan: ' + d.sv.note : ''}\n\n🔗 Lihat Detail:\n${url}`
+    : `❌ *CHECKLIST DITOLAK*\n\nHalo ${d.n}, checklist safety Anda ditolak.\n\n👨‍💼 Supervisor: ${d.sv.nama}\n📝 Alasan: ${d.sv.note}\n🕐 Waktu: ${d.sv.time}\n\n🔗 Lihat Detail:\n${url}`;
+
+  // Pesan ke HSE
+  const hseMsg = `📋 *LAPORAN SAFETY CHECKLIST*\n\n📌 Status: ${isApproved ? '✅ APPROVED' : '❌ REJECTED'}\n👷 Pekerja: ${d.n}\n🪪 ID: ${d.nid || '-'}\n📞 HP: ${d.p}\n💼 Posisi: ${d.pt}\n📍 Lokasi: ${d.l}\n📅 Tanggal: ${d.tgl} | ⏰ ${d.jam}\n\n👨‍💼 Supervisor: ${d.sv.nama}\n🕐 Waktu: ${d.sv.time}\n${d.sv.note ? '📝 Catatan: ' + d.sv.note : ''}\n\n📝 Pekerjaan:\n${d.job}\n\n⚠️ Bahaya & Kontrol:\n${(d.hz || []).map(h => `• ${h.name} → ${h.control || '-'}`).join('\n')}\n\n🦺 APD: ${(d.ct || []).join(', ') || '-'}\n\n🔗 Detail:\n${url}`;
+
+  // Kirim WA ke pekerja
+  window.open(`https://wa.me/${d.p.replace(/^0/, '62')}?text=${encodeURIComponent(workerMsg)}`, '_blank');
+
+  // Kirim WA ke personil HSE setelah delay 1.5 detik agar tidak tab terbuka bersamaan
+  setTimeout(()=>{
+    window.open(`https://wa.me/${HSE_NUMBER}?text=${encodeURIComponent(hseMsg)}`, '_blank');
+  }, 1500);
+
+  // Tampilkan halaman selesai dengan detail
+  showDone(enc);
+}
+
+/* ============================================================
+   DONE VIEW
+   ============================================================ */
+function showDone(enc){
+  document.getElementById('WM').style.display = 'none';
+  document.getElementById('SM').style.display = 'none';
+  document.getElementById('SD').style.display  = 'block';
+  const data = JSON.parse(LZ.decompress(enc));
+  if(!data){ document.getElementById('SD').innerHTML='<div class="section"><p>Data tidak valid.</p></div>'; return; }
+  const isA = data.sv && data.sv.status === 'APPROVED';
+  document.getElementById('SD').innerHTML = `
+    <div class="section">
+      <div class="result-card">
+        <div class="big">${isA ? '✅' : '❌'}</div>
+        <h2 style="color:${isA?'#059669':'#dc2626'}">${isA ? 'APPROVED' : 'REJECTED'}</h2>
+        <p style="color:#666;margin-top:8px">${data.sv ? data.sv.time : ''}</p>
+      </div>
+      <div class="sbox">${summaryHTML(data)}</div>
+      ${data.sv ? `<div class="sent-info ${isA?'approved':'rejected'}">
+        <strong>👨‍💼 Supervisor:</strong> ${data.sv.nama}<br>
+        ${data.sv.note ? `<strong>📝 Catatan:</strong> ${data.sv.note}` : ''}
+      </div>` : ''}
+    </div>`;
+}
+
+/* ============================================================
+   WORKER RENDER
+   ============================================================ */
+function renderWorker(){
+  const d = new Date();
+  document.getElementById('dateDisplay').textContent = d.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  S.tgl = d.toLocaleDateString('id-ID');
+  S.jam = d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+  renderStep1(); renderStep2(); renderStep3(); renderStep4(); renderStep5(); renderStep6();
+  renderHazards(); renderCt(); renderDots();
+}
+
+function renderStep1(){
+  document.getElementById('step1').innerHTML = `
+    <div class="section-title"><span class="icon icon-blue">👤</span>Data Pekerja</div>
+    <label>Nama Lengkap *</label>
+    <input type="text" id="nama" placeholder="Masukkan nama lengkap">
+    <label>No. ID Pekerja *</label>
+    <input type="text" id="nid" placeholder="Contoh: EMP-2024-001">
+    <label>No. Telepon (WhatsApp) *</label>
+    <input type="tel" id="telp" placeholder="08xxxxxxxxxx">
+    <label>Posisi / Jabatan *</label>
+    <input type="text" id="posisi" placeholder="Contoh: Operator, Teknisi">
+    <label>Lokasi Kerja *</label>
+    <input type="text" id="lokasi" placeholder="Area/Site kerja hari ini">
+    <label style="margin-top:4px">Pilih Supervisor *</label>
+    <select id="spvSelect" onchange="selectSPV(this.value)">
+      <option value="">-- Pilih Supervisor --</option>
+      ${SUPERVISORS.map((s,i) => `<option value="${i}">${s.name} — ${s.title} (${s.dept})</option>`).join('')}
+    </select>
+    <div id="spvDetail" style="display:none;background:#dbeafe;border-radius:10px;padding:10px 14px;font-size:.83rem;color:#1e40af;margin-top:-6px;margin-bottom:12px"></div>
+    <button class="btn btn-primary" style="margin-top:16px" onclick="next1()">Lanjut →</button>`;
+}
+
+function renderStep2(){
+  document.getElementById('step2').innerHTML = `
+    <div class="section-title"><span class="icon icon-red">❤️</span>Kondisi Kesehatan</div>
+    <p style="font-size:.85rem;color:#666;margin-bottom:14px">Jawab dengan jujur untuk keselamatan Anda</p>
+    ${hcHTML('hc1','Apakah Anda merasa sehat hari ini?')}
+    ${hcHTML('hc2','Apakah Anda cukup tidur (min. 6 jam)?')}
+    ${hcHTML('hc3','Apakah Anda bebas dari pengaruh obat/alkohol?')}
+    ${hcHTML('hc4','Apakah Anda memahami pekerjaan hari ini?')}
+    <div class="row" style="margin-top:16px">
+      <button class="btn btn-back" onclick="go(1)">← Kembali</button>
+      <button class="btn btn-primary" onclick="next2()">Lanjut →</button>
+    </div>`;
+}
+
+function renderStep3(){
+  document.getElementById('step3').innerHTML = `
+    <div class="section-title"><span class="icon icon-orange">⚠️</span>Identifikasi Bahaya</div>
+    <label>Deskripsi pekerjaan hari ini *</label>
+    <textarea id="jobDesc" rows="3" placeholder="Jelaskan pekerjaan yang akan dilakukan..."></textarea>
+    <p style="font-size:.85rem;color:#666;margin:12px 0 8px">Pilih potensi bahaya — setiap bahaya yang dipilih wajib diisi tindakan kontrolnya:</p>
+    <div id="hzList"></div>
+    <div class="hazard-card" style="border-color:#7c3aed;background:#f5f3ff">
+      <div class="hazard-title" style="color:#7c3aed">➕ Bahaya Lainnya</div>
+      <p style="font-size:.78rem;color:#666;margin-bottom:8px">Tambahkan bahaya yang tidak ada dalam daftar di atas</p>
+      <div id="customHazardList"></div>
+      <div class="custom-hazard-row">
+        <input type="text" id="customHazardInput" placeholder="Tulis bahaya lainnya...">
+        <button class="add-btn" onclick="addCustomHazard()">+ Tambah</button>
+      </div>
+    </div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn btn-back" onclick="go(2)">← Kembali</button>
+      <button class="btn btn-primary" onclick="next3()">Lanjut →</button>
+    </div>`;
+  renderHazards();
+  renderCustomHazards();
+}
+
+function renderStep4(){
+  document.getElementById('step4').innerHTML = `
+    <div class="section-title"><span class="icon icon-green">🛡️</span>APD yang Digunakan</div>
+    <p style="font-size:.85rem;color:#666;margin-bottom:12px">Pilih APD yang akan digunakan selama bekerja:</p>
+    <div id="ctList"></div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn btn-back" onclick="go(3)">← Kembali</button>
+      <button class="btn btn-primary" onclick="next4()">Lanjut →</button>
+    </div>`;
+  renderCt();
+}
+
+function renderStep5(){
+  document.getElementById('step5').innerHTML = `
+    <div class="section-title"><span class="icon icon-purple">📋</span>Review & Kirim ke Supervisor</div>
+    <div class="sbox" id="rvBox"></div>
+    <div style="margin-top:16px;background:#dbeafe;border-radius:10px;padding:12px;font-size:.82rem;color:#1e40af">
+      <strong>📤 Akan dikirim ke Supervisor:</strong><br>
+      <span id="spvSendInfo">—</span>
+    </div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn btn-back" onclick="go(4)">← Kembali</button>
+      <button class="btn btn-wa" onclick="sendWA()">📤 Kirim ke Supervisor via WA</button>
+    </div>`;
+}
+
+function renderStep6(){
+  document.getElementById('step6').innerHTML = `
+    <div class="result-card">
+      <div class="big">📨</div>
+      <h2 style="color:#059669">Checklist Terkirim!</h2>
+      <p style="color:#666;margin-top:8px">Menunggu verifikasi supervisor...</p>
+      <div class="sent-info" id="sentInfo" style="text-align:left"></div>
+      <button class="btn btn-primary" style="margin-top:20px" onclick="location.reload()">🔄 Buat Checklist Baru</button>
+    </div>`;
+}
+
+/* ============================================================
+   GOOGLE SHEETS INTEGRATION
+   ============================================================ */
+async function postToSheet(payload) {
+  if (!GAS_URL || GAS_URL === "GANTI_DENGAN_URL_APPS_SCRIPT") return null;
+  try {
+    const res = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify(payload)
+    });
+    return await res.json();
+  } catch(e) {
+    console.warn("Gagal kirim ke Sheets:", e);
+    return null;
+  }
+}
+
+
+function selectSPV(val){
+  if(val === '') { S.spvIdx = null; document.getElementById('spvDetail').style.display='none'; return; }
+  S.spvIdx = parseInt(val);
+  const spv = SUPERVISORS[S.spvIdx];
+  const det = document.getElementById('spvDetail');
+  det.style.display = 'block';
+  det.innerHTML = `👷 <strong>${spv.name}</strong> — ${spv.title}<br>🏢 Departemen: ${spv.dept}<br>📞 WhatsApp: +${spv.wa}`;
+}
+
+/* ============================================================
+   HEALTH CHECK
+   ============================================================ */
+function hcHTML(id,q){
+  return `<div class="check-group">
+    <p style="font-size:.88rem;font-weight:600;margin-bottom:6px">${q}</p>
+    <div class="check-item" onclick="selHC('${id}','ya',this)"><input type="radio" name="${id}" id="${id}y"><label for="${id}y">✅ Ya</label></div>
+    <div class="check-item" onclick="selHC('${id}','tidak',this)"><input type="radio" name="${id}" id="${id}n"><label for="${id}n">❌ Tidak</label></div>
+  </div>`;
+}
+function selHC(id,v,el){
+  HC[id]=v;
+  el.parentElement.querySelectorAll('.check-item').forEach(c=>c.classList.remove('sel-g','sel-b'));
+  el.classList.add(v==='ya'?'sel-g':'sel-b');
+  el.querySelector('input').checked=true;
+}
+
+/* ============================================================
+   HAZARD RENDER — per-hazard control box
+   ============================================================ */
+function renderHazards(){
+  const el = document.getElementById('hzList');
+  if(!el) return;
+  let h = '';
+  HZDATA.forEach(cat => {
+    h += `<div class="hazard-card"><div class="hazard-title">${cat.n}</div>`;
+    cat.items.forEach((it,i) => {
+      const k = cat.id+'_'+i;
+      if(!HZ[k]) HZ[k] = {checked:false, control:''};
+      const checked = HZ[k].checked;
+      h += `<div class="hazard-check">
+        <input type="checkbox" id="${k}" ${checked?'checked':''} onchange="toggleHZ('${k}',this.checked)">
+        <label for="${k}">${it}</label>
+      </div>
+      <div class="control-box" id="ctrl_${k}" style="display:${checked?'block':'none'}">
+        <label>🛡️ Tindakan kontrol untuk bahaya ini:</label>
+        <textarea rows="2" placeholder="Tuliskan tindakan pengendalian risiko..." onchange="HZ['${k}'].control=this.value">${HZ[k].control}</textarea>
+      </div>`;
+    });
+    h += `</div>`;
+  });
+  el.innerHTML = h;
+}
+
+function toggleHZ(k, checked){
+  HZ[k].checked = checked;
+  const box = document.getElementById('ctrl_'+k);
+  if(box) box.style.display = checked ? 'block' : 'none';
+}
+
+/* ============================================================
+   CUSTOM HAZARDS
+   ============================================================ */
+function renderCustomHazards(){
+  const el = document.getElementById('customHazardList');
+  if(!el) return;
+  if(customHazards.length===0){ el.innerHTML=''; return; }
+  let h = '';
+  customHazards.forEach((hz,i) => {
+    h += `<div style="margin-bottom:6px">
+      <div class="hazard-check">
+        <span style="width:16px;flex-shrink:0">🔸</span>
+        <label style="flex:1;font-weight:600;color:#7c3aed">${hz.text}</label>
+        <button class="remove-btn" onclick="removeCustomHazard(${i})">✕</button>
+      </div>
+      <div class="control-box" style="border-color:#7c3aed;background:#f5f3ff">
+        <label style="color:#5b21b6">🛡️ Tindakan kontrol untuk bahaya ini:</label>
+        <textarea rows="2" placeholder="Tuliskan tindakan pengendalian risiko..." onchange="customHazards[${i}].control=this.value">${hz.control}</textarea>
+      </div>
+    </div>`;
+  });
+  el.innerHTML = h;
+}
+
+function addCustomHazard(){
+  const inp = document.getElementById('customHazardInput');
+  const val = inp.value.trim();
+  if(!val){ alert('Tulis nama bahaya terlebih dahulu'); return; }
+  customHazards.push({text:val, control:''});
+  inp.value = '';
+  renderCustomHazards();
+}
+
+function removeCustomHazard(i){
+  customHazards.splice(i,1);
+  renderCustomHazards();
+}
+
+/* ============================================================
+   APD / CONTROL RENDER
+   ============================================================ */
+function renderCt(){
+  const el = document.getElementById('ctList');
+  if(!el) return;
+  let h = '';
+  CTDATA.forEach((it,i) => {
+    h += `<div class="hazard-check">
+      <input type="checkbox" id="ct${i}" ${CT['ct'+i]?'checked':''} onchange="CT['ct${i}']=this.checked">
+      <label for="ct${i}">${it}</label>
+    </div>`;
+  });
+  el.innerHTML = h;
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function next1(){
+  S.n   = document.getElementById('nama').value.trim();
+  S.nid = document.getElementById('nid').value.trim();
+  S.p   = document.getElementById('telp').value.trim();
+  S.pt  = document.getElementById('posisi').value.trim();
+  S.l   = document.getElementById('lokasi').value.trim();
+  if(!S.n||!S.nid||!S.p||!S.pt||!S.l){ alert('Lengkapi semua data pekerja'); return; }
+  if(!/^08\d{8,12}$/.test(S.p)){ alert('Format nomor telepon tidak valid (contoh: 08123456789)'); return; }
+  if(S.spvIdx===null){ alert('Pilih supervisor terlebih dahulu'); return; }
+  go(2);
+}
+function next2(){ if(Object.keys(HC).length<4){ alert('Jawab semua pertanyaan kesehatan'); return; } go(3); }
+function next3(){
+  S.job = document.getElementById('jobDesc').value.trim();
+  if(!S.job){ alert('Isi deskripsi pekerjaan'); return; }
+  const sel = Object.keys(HZ).filter(k=>HZ[k].checked);
+  if(sel.length===0 && customHazards.length===0){ alert('Pilih minimal satu potensi bahaya'); return; }
+  const missing = sel.filter(k=>!HZ[k].control.trim());
+  const missingCustom = customHazards.filter(h=>!h.control.trim());
+  if(missing.length>0||missingCustom.length>0){ alert('Isi tindakan kontrol untuk setiap bahaya yang dipilih'); return; }
+  go(4);
+}
+function next4(){ go(5); }
+
+function go(n){
+  if(n===3) renderStep3();
+  if(n===4) renderStep4();
+  if(n===5){
+    renderStep5();
+    const spv = SUPERVISORS[S.spvIdx];
+    document.getElementById('spvSendInfo').textContent = `${spv.name} (${spv.title}) — +${spv.wa}`;
+    document.getElementById('rvBox').innerHTML = summaryHTML(buildData());
+  }
+  cur = n;
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('step'+n).classList.add('active');
+  renderDots();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderDots(){
+  let h='';
+  for(let i=1;i<=STEPS;i++) h+=`<div class="dot${i===cur?' active':''}"></div>`;
+  document.getElementById('dots').innerHTML=h;
+}
+
+/* ============================================================
+   BUILD DATA
+   ============================================================ */
+function buildData(){
+  const hz = [];
+  Object.keys(HZ).filter(k=>HZ[k].checked).forEach(k=>{
+    const [cid,idx] = k.split('_');
+    const cat = HZDATA.find(c=>c.id===cid);
+    if(cat) hz.push({name: cat.items[parseInt(idx)], control: HZ[k].control});
+  });
+  customHazards.forEach(c => hz.push({name: c.text, control: c.control}));
+  const ct = [];
+  Object.keys(CT).filter(k=>CT[k]).forEach(k=>{ const i=parseInt(k.replace('ct','')); ct.push(CTDATA[i]); });
+  const spv = SUPERVISORS[S.spvIdx];
+  return { n:S.n, nid:S.nid, p:S.p, pt:S.pt, l:S.l, tgl:S.tgl, jam:S.jam, hc:HC, job:S.job, hz, ct,
+           spv_name:spv.name, spv_title:spv.title, spv_wa:spv.wa };
+}
+
+/* ============================================================
+   SUMMARY HTML
+   ============================================================ */
+function summaryHTML(d){
+  const hzLines = (d.hz||[]).map(h=>`<div style="margin:4px 0 2px"><span style="font-weight:700;color:#dc2626">• ${h.name}</span><br><span style="padding-left:12px;color:#555">🛡️ ${h.control||'-'}</span></div>`).join('');
+  return `
+    <strong>👤 Nama:</strong> ${d.n}<br>
+    <strong>🪪 ID Pekerja:</strong> ${d.nid||'-'}<br>
+    <strong>📞 Telp:</strong> ${d.p}<br>
+    <strong>💼 Posisi:</strong> ${d.pt}<br>
+    <strong>📍 Lokasi:</strong> ${d.l}<br>
+    <strong>📅 Tanggal:</strong> ${d.tgl} &nbsp; <strong>⏰ Jam:</strong> ${d.jam}<br>
+    <strong>👨‍💼 Supervisor:</strong> ${d.spv_name||'-'}<br>
+    <hr>
+    <strong>❤️ Kondisi Kesehatan:</strong><br>
+    • Sehat: ${d.hc&&d.hc.hc1||'-'}<br>
+    • Cukup tidur: ${d.hc&&d.hc.hc2||'-'}<br>
+    • Bebas obat/alkohol: ${d.hc&&d.hc.hc3||'-'}<br>
+    • Paham pekerjaan: ${d.hc&&d.hc.hc4||'-'}<br>
+    <hr>
+    <strong>📝 Pekerjaan:</strong> ${d.job||'-'}<br>
+    <strong>⚠️ Bahaya & Kontrol:</strong><br>${hzLines||'-'}<br>
+    <strong>🦺 APD:</strong> ${(d.ct||[]).join(', ')||'-'}`;
+}
+
+/* ============================================================
+   SEND WA TO SUPERVISOR
+   ============================================================ */
+/* ============================================================
+   SEND WA TO SUPERVISOR — VERSI ANTI SINYAL BURUK + HSE FINAL ONLY
+   ============================================================ */
+// ✅ PERBAIKAN 1: Config retry untuk sinyal buruk
+const RETRY_CONFIG = {
+  maxRetries: 5,
+  retryDelay: 3000,
+  timeout: 15000
+};
+
+// ✅ PERBAIKAN 2: Offline queue
+let offlineQueue = JSON.parse(localStorage.getItem('safetyQueue') || '[]');
+
+function saveToQueue(data) {
+  offlineQueue.unshift(data);
+  localStorage.setItem('safetyQueue', JSON.stringify(offlineQueue.slice(0, 10)));
+}
+
+function processQueue() {
+  if (offlineQueue.length === 0) return;
+  const item = offlineQueue[0];
+  sendWAQueued(item).then(success => {
+    if (success) offlineQueue.shift();
+    localStorage.setItem('safetyQueue', JSON.stringify(offlineQueue));
+  });
+}
+
+window.addEventListener('online', processQueue);
+setInterval(processQueue, 10000);
+
+// ✅ PERBAIKAN 3: Google Sheets dengan retry
+async function postToSheet(payload, retries = 0) {
+  if (!GAS_URL || GAS_URL === "GANTI_DENGAN_URL_APPS_SCRIPT") return null;
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), RETRY_CONFIG.timeout);
+    
+    const res = await fetch(GAS_URL, {
+      method: "POST",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+    
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch(e) {
+    if (retries < RETRY_CONFIG.maxRetries) {
+      await new Promise(r => setTimeout(r, RETRY_CONFIG.retryDelay * (retries + 1)));
+      return postToSheet(payload, retries + 1);
+    }
+    return null;
+  }
+}
+
+// ✅ PERBAIKAN 4: Progress indicator
+function showProgressIndicator(message) {
+  let indicator = document.getElementById('progressIndicator');
+  if (!indicator) {
+    document.querySelector('.container').insertAdjacentHTML('beforeend', 
+      '<div id="progressIndicator" style="position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5276;color:white;padding:12px 20px;border-radius:25px;box-shadow:0 4px 20px rgba(0,0,0,0.3);z-index:9999;font-weight:600;min-width:280px;text-align:center;font-size:0.9rem;display:none"></div>'
+    );
+    indicator = document.getElementById('progressIndicator');
+  }
+  indicator.textContent = message;
+  indicator.style.display = 'block';
+}
+
+function hideProgressIndicator() {
+  const indicator = document.getElementById('progressIndicator');
+  if (indicator) indicator.style.display = 'none';
+}
+
+// ✅ FUNGSI UTAMA - GANTI INI SAJA
+async function sendWA(){
+  const d = buildData();
+  
+  showProgressIndicator('📝 Menyimpan data...');
+  
+  // Backup lokal
+  localStorage.setItem('lastDraft', LZ.compress(JSON.stringify(d)));
+  
+  // Kirim dengan sistem anti-gagal
+  const success = await sendWAQueued(d);
+  
+  if (success) {
+    document.getElementById('sentInfo').innerHTML = `
+      <strong>✅ Terkirim ke Supervisor!</strong><br>
+      ${d.spv_name} — ${d.spv_title}<br>
+      <small style="color:#065f46">HSE akan diberitahu setelah supervisor approve/reject...</small>`;
+  } else {
+    document.getElementById('sentInfo').innerHTML = `
+      <strong>⚠️ Tersimpan lokal</strong><br>
+      Data akan terkirim otomatis saat sinyal kembali<br>
+      <button class="btn btn-primary" onclick="processQueue()" style="margin-top:10px;font-size:0.8rem;padding:8px;width:auto">🔄 Kirim Sekarang</button>`;
+  }
+  go(6);
+}
+
+async function sendWAQueued(data) {
+  showProgressIndicator('📡 Menghubungkan internet...');
+  
+  try {
+    // Sheets dulu
+    const sheetRes = await postToSheet({ action: "submit", ...data });
+    if (sheetRes && sheetRes.ok) data.rowId = sheetRes.rowId;
+    
+    // WA **HANYA ke Supervisor** (HSE skip di sini)
+    const enc = LZ.compress(JSON.stringify(data));
+    const vUrl = `${BASE}?v=${enc}`;
+    const hzText = (data.hz||[]).map(h=>`• ${h.name}\n  🛡️ Kontrol: ${h.control||'-'}`).join('\n');
+    const msg = `🔔 *SAFETY CHECKLIST — MOHON VERIFIKASI*\n\n👷 Pekerja: ${data.n}\n🪪 ID: ${data.nid}\n📞 HP: ${data.p}\n💼 Posisi: ${data.pt}\n📍 Lokasi: ${data.l}\n📅 ${data.tgl} | ⏰ ${data.jam}\n\n📝 Pekerjaan:\n${data.job}\n\n⚠️ Potensi Bahaya & Kontrol:\n${hzText}\n\n🦺 APD:\n${(data.ct||[]).map(c=>'• '+c).join('\n')||'-'}\n\n✅ *Klik untuk verifikasi:*\n${vUrl}`;
+
+    window.open(`https://wa.me/${data.spv_wa.replace(/^0/, '62')}?text=${encodeURIComponent(msg)}`, '_blank');
+    
+    hideProgressIndicator();
+    return true;
+  } catch(e) {
+    console.error('Send failed:', e);
+    saveToQueue(data);
+    showProgressIndicator('⚠️ Sinyal lemah\nData tersimpan & akan terkirim otomatis');
+    setTimeout(hideProgressIndicator, 4000);
+    return false;
+  }
+}
