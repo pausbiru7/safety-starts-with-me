@@ -163,10 +163,25 @@ function init(){
    SUPERVISOR VIEW
    ============================================================ */
 function showSupervisor(enc){
+  // Sembunyikan tampilan Worker Mode dan tampilkan Supervisor Mode
   document.getElementById('WM').style.display = 'none';
   document.getElementById('SM').style.display = 'block';
+
+  console.log("Encoded data parameter (enc):", enc);
+
   const data = JSON.parse(LZ.decompress(enc));
-  if(!data){ document.getElementById('SM').innerHTML='<div class="section"><p>Data tidak valid.</p></div>'; return; }
+  console.log("Decoded data object:", data);
+
+  if(!data){
+    // Jika data tidak dapat didekompresi/parsing, tampilkan pesan error
+    document.getElementById('SM').innerHTML = `
+      <div class="section">
+        <p style="color:red; font-weight:bold; text-align:center;">Data tidak valid atau rusak. Silakan ulangi pengiriman checklist.</p>
+      </div>`;
+    return;
+  }
+
+  // Jika data valid, tampilkan form verifikasi supervisor
   document.getElementById('SM').innerHTML = `
     <div class="section">
       <div class="sv-banner">
@@ -180,61 +195,90 @@ function showSupervisor(enc){
         <input type="text" id="svNama" placeholder="Masukkan nama Anda" value="${data.spv_name||''}">
         <label>Catatan (opsional)</label>
         <textarea id="svNote" rows="2" placeholder="Tambahkan catatan jika perlu..."></textarea>
-        <button class="btn btn-approve" onclick="approve('${enc}')">✅ APPROVE</button>
-        <button class="btn btn-reject" onclick="reject('${enc}')">❌ REJECT</button>
+        <button class="btn btn-approve" onclick="approve('${encodeURIComponent(enc)}')">✅ APPROVE</button>
+        <button class="btn btn-reject" onclick="reject('${encodeURIComponent(enc)}')">❌ REJECT</button>
       </div>
     </div>`;
+
+  // Simpan data global sementara untuk manipulasi lanjut
   window._vdata = data;
 }
 
 function approve(enc){
+  // Decode parameter enc yang di-encodeURIComponent sebelumnya
+  const decodedEnc = decodeURIComponent(enc);
   const d = window._vdata;
   const sn = document.getElementById('svNama').value.trim();
   const sv = document.getElementById('svNote').value.trim();
-  if(!sn){ alert('Masukkan nama supervisor'); return; }
-  d.sv = { nama:sn, status:'APPROVED', note:sv, time:new Date().toLocaleString('id-ID') };
+
+  if(!sn){
+    alert('Masukkan nama supervisor');
+    return;
+  }
+
+  d.sv = { nama: sn, status: 'APPROVED', note: sv, time: new Date().toLocaleString('id-ID') };
+
   sendDone(d);
 }
 
 function reject(enc){
+  // Decode parameter enc yang di-encodeURIComponent sebelumnya
+  const decodedEnc = decodeURIComponent(enc);
   const d = window._vdata;
   const sn = document.getElementById('svNama').value.trim();
   const sv = document.getElementById('svNote').value.trim();
-  if(!sn){ alert('Masukkan nama supervisor'); return; }
-  if(!sv){ alert('Berikan alasan penolakan'); return; }
-  d.sv = { nama:sn, status:'REJECTED', note:sv, time:new Date().toLocaleString('id-ID') };
+
+  if(!sn){
+    alert('Masukkan nama supervisor');
+    return;
+  }
+  if(!sv){
+    alert('Berikan alasan penolakan');
+    return;
+  }
+
+  d.sv = { nama: sn, status: 'REJECTED', note: sv, time: new Date().toLocaleString('id-ID') };
+
   sendDone(d);
 }
 
 async function sendDone(d){
-  // Update status di Google Sheets
-  await postToSheet({
-    action:   "respond",
-    rowId:    d.rowId || null,
-    status:   d.sv.status,
-    sv_name:  d.sv.nama,
-    sv_note:  d.sv.note
-  });
+  // Update status di Google Sheets via Google Apps Script
+  try {
+    await postToSheet({
+      action: "respond",
+      rowId: d.rowId || null,
+      status: d.sv.status,
+      sv_name: d.sv.nama,
+      sv_note: d.sv.note
+    });
+  } catch(err){
+    console.error("Gagal update Google Sheets:", err);
+  }
 
+  // Kompres data terbaru untuk link detail yang dikirimkan
   const enc  = LZ.compress(JSON.stringify(d));
   const url  = `${BASE}?d=${enc}`;
-  const isOK = d.sv.status === 'APPROVED';
+  const isApproved = d.sv.status === 'APPROVED';
 
-  const workerMsg = isOK
-    ? `✅ *CHECKLIST DISETUJUI*\n\nHalo ${d.n}, checklist safety Anda telah disetujui.\n\n👨‍💼 Supervisor: ${d.sv.nama}\n🕐 Waktu: ${d.sv.time}\n${d.sv.note?'📝 Catatan: '+d.sv.note:''}\n\n🔗 Lihat Detail:\n${url}`
+  // Pesan ke pekerja
+  const workerMsg = isApproved
+    ? `✅ *CHECKLIST DISETUJUI*\n\nHalo ${d.n}, checklist safety Anda telah disetujui.\n\n👨‍💼 Supervisor: ${d.sv.nama}\n🕐 Waktu: ${d.sv.time}\n${d.sv.note ? '📝 Catatan: ' + d.sv.note : ''}\n\n🔗 Lihat Detail:\n${url}`
     : `❌ *CHECKLIST DITOLAK*\n\nHalo ${d.n}, checklist safety Anda ditolak.\n\n👨‍💼 Supervisor: ${d.sv.nama}\n📝 Alasan: ${d.sv.note}\n🕐 Waktu: ${d.sv.time}\n\n🔗 Lihat Detail:\n${url}`;
 
-  const hseMsg = `📋 *LAPORAN SAFETY CHECKLIST*\n\n📌 Status: ${isOK?'✅ APPROVED':'❌ REJECTED'}\n👷 Pekerja: ${d.n}\n🪪 ID: ${d.nid||'-'}\n📞 HP: ${d.p}\n💼 Posisi: ${d.pt}\n📍 Lokasi: ${d.l}\n📅 Tanggal: ${d.tgl} | ⏰ ${d.jam}\n\n👨‍💼 Supervisor: ${d.sv.nama}\n🕐 Waktu: ${d.sv.time}\n${d.sv.note?'📝 Catatan: '+d.sv.note:''}\n\n📝 Pekerjaan:\n${d.job}\n\n⚠️ Bahaya & Kontrol:\n${(d.hz||[]).map(h=>`• ${h.name} → ${h.control||'-'}`).join('\n')}\n\n🦺 APD: ${(d.ct||[]).join(', ')||'-'}\n\n🔗 Detail:\n${url}`;
+  // Pesan ke HSE
+  const hseMsg = `📋 *LAPORAN SAFETY CHECKLIST*\n\n📌 Status: ${isApproved ? '✅ APPROVED' : '❌ REJECTED'}\n👷 Pekerja: ${d.n}\n🪪 ID: ${d.nid || '-'}\n📞 HP: ${d.p}\n💼 Posisi: ${d.pt}\n📍 Lokasi: ${d.l}\n📅 Tanggal: ${d.tgl} | ⏰ ${d.jam}\n\n👨‍💼 Supervisor: ${d.sv.nama}\n🕐 Waktu: ${d.sv.time}\n${d.sv.note ? '📝 Catatan: ' + d.sv.note : ''}\n\n📝 Pekerjaan:\n${d.job}\n\n⚠️ Bahaya & Kontrol:\n${(d.hz || []).map(h => `• ${h.name} → ${h.control || '-'}`).join('\n')}\n\n🦺 APD: ${(d.ct || []).join(', ') || '-'}\n\n🔗 Detail:\n${url}`;
 
-  // Send to worker
-  window.open(`https://wa.me/${d.p.replace(/^0/,'62')}?text=${encodeURIComponent(workerMsg)}`, '_blank');
+  // Kirim WA ke pekerja
+  window.open(`https://wa.me/${d.p.replace(/^0/, '62')}?text=${encodeURIComponent(workerMsg)}`, '_blank');
 
+  // Kirim WA ke personil HSE setelah delay 1.5 detik agar tidak tab terbuka bersamaan
   setTimeout(()=>{
-    // Send to HSE
     window.open(`https://wa.me/${HSE_NUMBER}?text=${encodeURIComponent(hseMsg)}`, '_blank');
   }, 1500);
 
-  showDone(LZ.compress(JSON.stringify(d)));
+  // Tampilkan halaman selesai dengan detail
+  showDone(enc);
 }
 
 /* ============================================================
