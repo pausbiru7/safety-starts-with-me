@@ -597,25 +597,132 @@ function summaryHTML(d){
 /* ============================================================
    SEND WA TO SUPERVISOR
    ============================================================ */
+/* ============================================================
+   SEND WA TO SUPERVISOR — VERSI ANTI SINYAL BURUK + HSE FINAL ONLY
+   ============================================================ */
+// ✅ PERBAIKAN 1: Config retry untuk sinyal buruk
+const RETRY_CONFIG = {
+  maxRetries: 5,
+  retryDelay: 3000,
+  timeout: 15000
+};
+
+// ✅ PERBAIKAN 2: Offline queue
+let offlineQueue = JSON.parse(localStorage.getItem('safetyQueue') || '[]');
+
+function saveToQueue(data) {
+  offlineQueue.unshift(data);
+  localStorage.setItem('safetyQueue', JSON.stringify(offlineQueue.slice(0, 10)));
+}
+
+function processQueue() {
+  if (offlineQueue.length === 0) return;
+  const item = offlineQueue[0];
+  sendWAQueued(item).then(success => {
+    if (success) offlineQueue.shift();
+    localStorage.setItem('safetyQueue', JSON.stringify(offlineQueue));
+  });
+}
+
+window.addEventListener('online', processQueue);
+setInterval(processQueue, 10000);
+
+// ✅ PERBAIKAN 3: Google Sheets dengan retry
+async function postToSheet(payload, retries = 0) {
+  if (!GAS_URL || GAS_URL === "GANTI_DENGAN_URL_APPS_SCRIPT") return null;
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), RETRY_CONFIG.timeout);
+    
+    const res = await fetch(GAS_URL, {
+      method: "POST",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+    
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch(e) {
+    if (retries < RETRY_CONFIG.maxRetries) {
+      await new Promise(r => setTimeout(r, RETRY_CONFIG.retryDelay * (retries + 1)));
+      return postToSheet(payload, retries + 1);
+    }
+    return null;
+  }
+}
+
+// ✅ PERBAIKAN 4: Progress indicator
+function showProgressIndicator(message) {
+  let indicator = document.getElementById('progressIndicator');
+  if (!indicator) {
+    document.querySelector('.container').insertAdjacentHTML('beforeend', 
+      '<div id="progressIndicator" style="position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5276;color:white;padding:12px 20px;border-radius:25px;box-shadow:0 4px 20px rgba(0,0,0,0.3);z-index:9999;font-weight:600;min-width:280px;text-align:center;font-size:0.9rem;display:none"></div>'
+    );
+    indicator = document.getElementById('progressIndicator');
+  }
+  indicator.textContent = message;
+  indicator.style.display = 'block';
+}
+
+function hideProgressIndicator() {
+  const indicator = document.getElementById('progressIndicator');
+  if (indicator) indicator.style.display = 'none';
+}
+
+// ✅ FUNGSI UTAMA - GANTI INI SAJA
 async function sendWA(){
   const d = buildData();
-
-  // Kirim ke Google Sheets → dapat rowId
-  const sheetRes = await postToSheet({ action: "submit", ...d });
-  if (sheetRes && sheetRes.ok) d.rowId = sheetRes.rowId;
-
-  const enc  = LZ.compress(JSON.stringify(d));
-  const vUrl = `${BASE}?v=${enc}`;
-  const hzText = (d.hz||[]).map(h=>`• ${h.name}\n  🛡️ Kontrol: ${h.control||'-'}`).join('\n');
-  const msg = `🔔 *SAFETY CHECKLIST — MOHON VERIFIKASI*\n\n👷 Pekerja: ${d.n}\n🪪 ID: ${d.nid}\n📞 HP: ${d.p}\n💼 Posisi: ${d.pt}\n📍 Lokasi: ${d.l}\n📅 Tanggal: ${d.tgl} | ⏰ ${d.jam}\n\n📝 Pekerjaan:\n${d.job}\n\n⚠️ Potensi Bahaya & Kontrol:\n${hzText}\n\n🦺 APD yang digunakan:\n${(d.ct||[]).map(c=>'• '+c).join('\n')||'-'}\n\n✅ *Klik link di bawah untuk verifikasi (Approve/Reject):*\n${vUrl}`;
-  window.open(`https://wa.me/${d.spv_wa}?text=${encodeURIComponent(msg)}`, '_blank');
-  document.getElementById('sentInfo').innerHTML = `
-    <strong>📤 Terkirim ke Supervisor:</strong><br>
-    ${d.spv_name} — ${d.spv_title}<br>
-    <small style="color:#065f46">Menunggu persetujuan supervisor...</small>`;
+  
+  showProgressIndicator('📝 Menyimpan data...');
+  
+  // Backup lokal
+  localStorage.setItem('lastDraft', LZ.compress(JSON.stringify(d)));
+  
+  // Kirim dengan sistem anti-gagal
+  const success = await sendWAQueued(d);
+  
+  if (success) {
+    document.getElementById('sentInfo').innerHTML = `
+      <strong>✅ Terkirim ke Supervisor!</strong><br>
+      ${d.spv_name} — ${d.spv_title}<br>
+      <small style="color:#065f46">HSE akan diberitahu setelah supervisor approve/reject...</small>`;
+  } else {
+    document.getElementById('sentInfo').innerHTML = `
+      <strong>⚠️ Tersimpan lokal</strong><br>
+      Data akan terkirim otomatis saat sinyal kembali<br>
+      <button class="btn btn-primary" onclick="processQueue()" style="margin-top:10px;font-size:0.8rem;padding:8px;width:auto">🔄 Kirim Sekarang</button>`;
+  }
   go(6);
 }
 
+async function sendWAQueued(data) {
+  showProgressIndicator('📡 Menghubungkan internet...');
+  
+  try {
+    // Sheets dulu
+    const sheetRes = await postToSheet({ action: "submit", ...data });
+    if (sheetRes && sheetRes.ok) data.rowId = sheetRes.rowId;
+    
+    // WA **HANYA ke Supervisor** (HSE skip di sini)
+    const enc = LZ.compress(JSON.stringify(data));
+    const vUrl = `${BASE}?v=${enc}`;
+    const hzText = (data.hz||[]).map(h=>`• ${h.name}\n  🛡️ Kontrol: ${h.control||'-'}`).join('\n');
+    const msg = `🔔 *SAFETY CHECKLIST — MOHON VERIFIKASI*\n\n👷 Pekerja: ${data.n}\n🪪 ID: ${data.nid}\n📞 HP: ${data.p}\n💼 Posisi: ${data.pt}\n📍 Lokasi: ${data.l}\n📅 ${data.tgl} | ⏰ ${data.jam}\n\n📝 Pekerjaan:\n${data.job}\n\n⚠️ Potensi Bahaya & Kontrol:\n${hzText}\n\n🦺 APD:\n${(data.ct||[]).map(c=>'• '+c).join('\n')||'-'}\n\n✅ *Klik untuk verifikasi:*\n${vUrl}`;
+    
+    window.open(`https://wa.me/${data.spv_wa.replace(/^0/, '62')}?text=${encodeURIComponent(msg)}`, '_blank');
+    hideProgressIndicator();
+    return true;
+    
+  } catch(e) {
+    console.error('Send failed:', e);
+    saveToQueue(data);
+    showProgressIndicator(`⚠️ Sinyal lemah\nData tersimpan & akan terkirim otomatis`);
+    setTimeout(hideProgressIndicator, 4000);
+    return false;
+  }
+}
 init();
 </script>
 </body>
