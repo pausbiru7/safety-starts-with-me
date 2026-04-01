@@ -710,20 +710,16 @@ async function sendWAQueued(data) {
     const vUrl = `${BASE}?v=${enc}`;
     const hzText = (data.hz||[]).map(h=>`• ${h.name}\n  🛡️ Kontrol: ${h.control||'-'}`).join('\n');
     const msg = `🔔 *SAFETY CHECKLIST — MOHON VERIFIKASI*\n\n👷 Pekerja: ${data.n}\n🪪 ID: ${data.nid}\n📞 HP: ${data.p}\n💼 Posisi: ${data.pt}\n📍 Lokasi: ${data.l}\n📅 ${data.tgl} | ⏰ ${data.jam}\n\n📝 Pekerjaan:\n${data.job}\n\n⚠️ Potensi Bahaya & Kontrol:\n${hzText}\n\n🦺 APD:\n${(data.ct||[]).map(c=>'• '+c).join('\n')||'-'}\n\n✅ *Klik untuk verifikasi:*\n${vUrl}`;
-    
+
     window.open(`https://wa.me/${data.spv_wa.replace(/^0/, '62')}?text=${encodeURIComponent(msg)}`, '_blank');
+    
     hideProgressIndicator();
     return true;
-    
   } catch(e) {
     console.error('Send failed:', e);
     saveToQueue(data);
-    showProgressIndicator(`⚠️ Sinyal lemah\nData tersimpan & akan terkirim otomatis`);
+    showProgressIndicator('⚠️ Sinyal lemah\nData tersimpan & akan terkirim otomatis');
     setTimeout(hideProgressIndicator, 4000);
     return false;
   }
 }
-init();
-</script>
-</body>
-</html>
