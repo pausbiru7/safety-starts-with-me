@@ -4,81 +4,110 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Safety Starts With Me</title>
+<!-- PWA -->
+<link rel="manifest" href="data:application/manifest+json,{
+  \"name\":\"Safety Starts With Me\",\"short_name\":\"Safety Checklist\",\"start_url\":\".\",
+  \"display\":\"standalone\",\"background_color\":\"#1a5276\",\"theme_color\":\"#2e86c1\",
+  \"icons\":[{\"src\":\"data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxjaXJjbGUgY3g9Ijk2IiBjeT0iOTYiIHI9Ijk2IiBmaWxsPSIjMWExMjc2Ii8+Cjx0ZXh0IHg9Ijk2IiB5PSIxMjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIzMCIgZm9udC13ZWlnaHQ9IjgwMCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlM8L3RleHQ+Cjwvc3ZnPg==\",\"sizes\":\"192x192\"}]}">
+<meta name="theme-color" content="#1a5276">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',sans-serif;background:#f0f4f8;min-height:100vh;padding:12px}
-.container{max-width:600px;margin:0 auto;background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.1);overflow:hidden}
-.header{background:linear-gradient(135deg,#1a5276,#2e86c1);color:#fff;padding:24px;text-align:center}
-.header h1{font-size:1.4rem;font-weight:800;letter-spacing:1px}
-.header p{font-size:.82rem;opacity:.85;margin-top:4px}
-.badge{display:inline-block;background:#e74c3c;color:#fff;font-size:.7rem;padding:3px 10px;border-radius:20px;margin-top:8px;font-weight:700}
-.section{padding:20px;border-bottom:1px solid #eee}
-.section-title{font-size:1rem;font-weight:700;color:#1a5276;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem}
-.icon-blue{background:#dbeafe;color:#2563eb}.icon-red{background:#fee2e2;color:#dc2626}
-.icon-green{background:#d1fae5;color:#059669}.icon-orange{background:#ffedd5;color:#ea580c}
+body{font-family:'Segoe UI',Tahoma,sans-serif;background:#f0f4f8;min-height:100vh;padding:12px;line-height:1.5}
+.container{max-width:600px;margin:0 auto;background:#fff;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,.12);overflow:hidden}
+.header{background:linear-gradient(135deg,#1a5276 0%,#2e86c1 100%);color:#fff;padding:28px 24px;text-align:center;position:relative;overflow:hidden}
+.header::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#f59e0b,#10b981,#ef4444,#8b5cf6)}
+.header h1{font-size:1.5rem;font-weight:900;letter-spacing:.5px;text-shadow:0 2px 4px rgba(0,0,0,.3)}
+.header p{font-size:.85rem;opacity:.9;margin-top:6px}
+.badge{display:inline-block;background:#f59e0b;color:#fff;font-size:.7rem;padding:4px 12px;border-radius:20px;margin-top:10px;font-weight:700;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+
+.section{padding:24px;border-bottom:1px solid #f1f5f9}
+.section:last-child{border-bottom:none}
+.section-title{font-size:1.1rem;font-weight:800;color:#1a5276;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.icon{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:bold;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+
+.icon-blue{background:#dbeafe;color:#2563eb}
+.icon-red{background:#fee2e2;color:#dc2626}
+.icon-green{background:#d1fae5;color:#059669}
+.icon-orange{background:#ffedd5;color:#ea580c}
 .icon-purple{background:#ede9fe;color:#7c3aed}
-label{display:block;font-size:.85rem;color:#555;margin-bottom:4px;font-weight:600}
-input[type="text"],input[type="tel"],input[type="date"],input[type="time"],textarea,select{width:100%;padding:10px 12px;border:1.5px solid #ddd;border-radius:10px;font-size:.9rem;margin-bottom:12px;transition:border .2s;font-family:inherit;background:#fff}
-input:focus,textarea:focus,select:focus{outline:none;border-color:#2e86c1;box-shadow:0 0 0 3px rgba(46,134,193,.15)}
-.row{display:flex;gap:10px}.row>div{flex:1}
-.check-group{margin-bottom:10px}
-.check-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid #eee;border-radius:10px;margin-bottom:6px;cursor:pointer;transition:all .2s}
-.check-item:hover{border-color:#2e86c1;background:#f0f7ff}
-.check-item.sel-g{border-color:#059669;background:#ecfdf5}
-.check-item.sel-b{border-color:#dc2626;background:#fef2f2}
-.check-item input[type="radio"]{accent-color:#2e86c1;width:16px;height:16px}
-.check-item label{margin:0;cursor:pointer;font-weight:500;color:#333}
-.hazard-card{background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;padding:14px;margin-bottom:10px}
-.hazard-card .hazard-title{font-weight:700;color:#1a5276;margin-bottom:8px;font-size:.9rem}
-.hazard-check{display:flex;align-items:flex-start;gap:8px;padding:6px 0;font-size:.85rem;color:#444}
-.hazard-check input[type="checkbox"]{accent-color:#e74c3c;width:16px;height:16px;margin-top:2px;flex-shrink:0}
-.control-box{background:#fffbeb;border:1.5px solid #f59e0b;border-radius:8px;padding:10px 12px;margin:4px 0 8px 24px;animation:fadeIn .3s}
-.control-box label{color:#92400e;font-size:.8rem;font-weight:700;margin-bottom:4px}
-.control-box textarea{margin-bottom:0;font-size:.82rem;border-color:#f59e0b;background:#fff}
-.control-box textarea:focus{border-color:#d97706}
-.custom-hazard-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+
+label{display:block;font-size:.88rem;color:#374151;margin-bottom:6px;font-weight:600}
+input,textarea,select{width:100%;padding:12px 16px;border:2px solid #e5e7eb;border-radius:12px;font-size:.92rem;margin-bottom:16px;transition:all .2s;font-family:inherit;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+input:focus,textarea:focus,select:focus{outline:none;border-color:#2e86c1;box-shadow:0 0 0 4px rgba(46,134,193,.15),0 1px 3px rgba(0,0,0,.1)}
+textarea{resize:vertical;min-height:80px}
+
+.row{display:flex;gap:12px}.row>div{flex:1}
+.check-group{margin-bottom:16px}
+.check-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border:2px solid #f3f4f6;border-radius:12px;margin-bottom:8px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.check-item::before{content:'';position:absolute;left:0;top:0;height:100%;width:4px;transform:scaleY(0);transition:transform .2s}
+.check-item:hover{border-color:#2e86c1;background:#f0f7ff;transform:translateX(2px)}
+.check-item.sel-g::before{transform:scaleY(1);background:#059669}
+.check-item.sel-b::before{transform:scaleY(1);background:#dc2626}
+.check-item input[type="radio"],.check-item input[type="checkbox"]{accent-color:#2e86c1;width:18px;height:18px;margin:0;flex-shrink:0}
+.check-item label{margin:0;cursor:pointer;font-weight:600;color:#1f2937;flex:1}
+
+.hazard-card{background:#f8fafc;border:2px solid #e2e8f0;border-radius:14px;padding:18px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.hazard-card .hazard-title{font-weight:800;color:#1a5276;margin-bottom:10px;font-size:1rem}
+.hazard-check{display:flex;align-items:flex-start;gap:10px;padding:10px 0;font-size:.88rem;color:#374151;cursor:pointer}
+.hazard-check:hover{background:#f1f5f9;padding-left:8px;border-radius:8px}
+.hazard-check input[type="checkbox"]{accent-color:#e74c3c;width:18px;height:18px;margin-top:2px;flex-shrink:0}
+
+.control-box{background:#fffbeb !important;border:2px solid #f59e0b !important;border-radius:10px !important;padding:14px !important;margin:6px 0 12px 40px !important;animation:slideIn .3s ease-out}
+.control-box label{color:#92400e;font-size:.85rem;font-weight:800;margin-bottom:6px}
+.control-box textarea{font-size:.85rem !important;border-color:#f59e0b !important}
+.control-box textarea:focus{border-color:#d97706 !important;box-shadow:0 0 0 3px rgba(245,158,11,.2)}
+
+@keyframes slideIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+
+.custom-hazard-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .custom-hazard-row input[type="text"]{margin-bottom:0;flex:1}
-.add-btn{background:#2e86c1;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:.82rem;font-weight:700;cursor:pointer;white-space:nowrap}
-.add-btn:hover{background:#1a5276}
-.remove-btn{background:#ef4444;color:#fff;border:none;border-radius:6px;padding:4px 8px;font-size:.75rem;cursor:pointer}
-@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-.btn{width:100%;padding:14px;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px}
+.add-btn{background:linear-gradient(135deg,#7c3aed,#8b5cf6);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;box-shadow:0 2px 8px rgba(124,58,237,.3)}
+.add-btn:hover{background:linear-gradient(135deg,#6d28d9,#7c3aed);transform:translateY(-1px)}
+.remove-btn{background:#ef4444;color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:.8rem;cursor:pointer;transition:all .2s;font-weight:600}
+.remove-btn:hover{background:#dc2626}
+
+.btn{width:100%;padding:16px;border:none;border-radius:14px;font-size:1rem;font-weight:800;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px;position:relative;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,transparent,rgba(255,255,255,.3),transparent,transparent);transition:left .5s}
+.btn:hover::before{left:100%}
 .btn:active{transform:scale(.98)}
 .btn-primary{background:linear-gradient(135deg,#1a5276,#2e86c1);color:#fff}
-.btn-wa{background:#25d366;color:#fff}
+.btn-wa{background:linear-gradient(135deg,#25d366,#128c7e);color:#fff}
 .btn-approve{background:linear-gradient(135deg,#059669,#10b981);color:#fff}
-.btn-reject{background:#ef4444;color:#fff}
-.btn-back{background:#eee;color:#555}
-.step{display:none}.step.active{display:block}
-.dots{display:flex;justify-content:center;gap:6px;padding:14px}
-.dot{width:10px;height:10px;border-radius:50%;background:#ddd;transition:all .3s}
-.dot.active{background:#2e86c1;width:24px;border-radius:5px}
-.sbox{background:#f8fafc;border-radius:12px;padding:14px;font-size:.83rem;line-height:1.9}
-.sbox strong{color:#1a5276}
-.sbox hr{border:none;border-top:1px dashed #ddd;margin:10px 0}
-.sv-banner{text-align:center;padding:20px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;margin:-20px -20px 16px;border-radius:0 0 16px 16px}
-.result-card{text-align:center;padding:40px 20px}
-.result-card .big{font-size:4rem;margin-bottom:12px}
-.sent-info{background:#dbeafe;border-radius:10px;padding:12px;margin-top:16px;font-size:.82rem;color:#1e40af;text-align:left}
-.sent-info.approved{background:#d1fae5;color:#065f46}
-.sent-info.rejected{background:#fee2e2;color:#991b1b}
-.footer{padding:16px;text-align:center;font-size:.75rem;color:#999}
-.spv-card{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all .2s}
-.spv-card:hover{border-color:#2e86c1;background:#f0f7ff}
-.spv-card.selected{border-color:#2e86c1;background:#dbeafe}
-.spv-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#1a5276,#2e86c1);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
-.spv-info{flex:1}.spv-info strong{display:block;font-size:.9rem;color:#1a5276}
-.spv-info span{font-size:.78rem;color:#666}
-.tag-badge{display:inline-block;background:#dbeafe;color:#1e40af;font-size:.7rem;padding:2px 8px;border-radius:10px;margin-top:2px;font-weight:600}
+.btn-reject{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff}
+.btn-back{background:#f3f4f6;color:#6b7280;border:2px solid #e5e7eb}
+
+.step{display:none}.step.active{display:block;animation:fadeInUp .4s ease-out}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+.dots{display:flex;justify-content:center;gap:8px;padding:20px;background:#f8fafc}
+.dot{width:12px;height:12px;border-radius:50%;background:#d1d5db;transition:all .3s ease}
+.dot.active{background:#2e86c1;width:32px;border-radius:16px;transform:scale(1.1);box-shadow:0 0 0 4px rgba(46,134,193,.3)}
+
+.sbox{background:#f8fafc;border-radius:14px;padding:20px;font-size:.86rem;line-height:1.7;border-left:4px solid #2e86c1;margin:16px 0}
+.sbox strong{color:#1a5276;display:block;margin-bottom:4px}
+.sbox hr{border:none;border-top:1px dashed #d1d5db;margin:16px 0;opacity:.5}
+
+.sv-banner{text-align:center;padding:28px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;margin:-24px -24px 20px;border-radius:0 0 16px 16px;box-shadow:0 4px 20px rgba(245,158,11,.3)}
+.sv-banner h2{margin:12px 0 8px;font-size:1.4rem;font-weight:900}
+.result-card{text-align:center;padding:50px 24px}
+.result-card .big{font-size:5rem;margin-bottom:16px;line-height:1}
+.sent-info{background:#dbeafe;border-radius:12px;padding:16px;margin-top:20px;font-size:.85rem;color:#1e40af;text-align:left;border-left:4px solid #2563eb;box-shadow:0 2px 8px rgba(37,99,235,.1)}
+.sent-info.approved{background:#d1fae5;color:#065f46;border-left-color:#059669}
+.sent-info.rejected{background:#fee2e2;color:#991b1b;border-left-color:#dc2626}
+
+.footer{padding:20px;text-align:center;font-size:.78rem;color:#9ca3af;border-top:1px solid #f1f5f9}
+#progressIndicator{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:rgba(26,82,118,.95);color:white;padding:14px 24px;border-radius:25px;box-shadow:0 8px 32px rgba(0,0,0,.3);z-index:9999;font-weight:700;min-width:300px;text-align:center;font-size:.95rem;display:none;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2)}
+
+@media (max-width:480px){.container{margin:0 8px;border-radius:16px}.header{padding:24px 20px}.section{padding:20px}}
 </style>
 </head>
 <body>
 <div class="container" id="app">
 <div class="header">
   <h1>⛑️ SAFETY STARTS WITH ME</h1>
-  <p>Daily Pre-Work Safety Checklist</p>
-  <div class="badge" id="dateDisplay"></div>
+  <p>Daily Pre-Work Safety Checklist v3.1</p>
+  <div class="badge" id="dateDisplay">Loading...</div>
 </div>
 
 <!-- WORKER MODE -->
@@ -98,187 +127,161 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:#2e86c1;box-sh
 <!-- DONE MODE -->
 <div id="SD" style="display:none"></div>
 
-<div class="footer">Safety Starts With Me © 2026 | v3.0</div>
+<div class="footer">
+  Safety Starts With Me © 2024 | Production Ready<br>
+  <small>Powered by Google Apps Script + WhatsApp</small>
+</div>
 </div>
 
 <script>
 /* ============================================================
-   KONFIGURASI — Ganti URL dan daftar supervisor di sini
+   KONFIGURASI — UPDATE INI SAJA!
    ============================================================ */
-const BASE = "https://pausbiru7.github.io/safety-starts-with-me/safety-checklist.html";
-
-// ⬇ Ganti dengan URL deployment Google Apps Script Anda
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxK-73RZaNNILlvC2ntjqSo6TZbilkS86ue0g2lyG4cGarY9KyOzWl90G2b-wfpMnkjsA/exec";
-
-const HSE_NUMBER = "6282141150007"; // Nomor HSE Personil (tanpa +)
+const BASE_URL = "https://pausbiru7.github.io/safety-starts-with-me/"; // Ganti dengan domain kamu
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxK-73RZaNNILlvC2ntjqSo6TZbilkS86ue0g2lyG4cGarY9KyOzWl90G2b-wfpMnkjsA/exec"; // UPDATE DENGAN URL DEPLOYMENT BARU!
+const HSE_NUMBER = "6282141150007"; // Nomor HSE
 
 const SUPERVISORS = [
-  { name: "Muharza",    title: "Project Manager",    wa: "628116923792", dept: "Project"   },
-  { name: "Mudji Agus",   title: "Electrical Supervisor",  wa: "6281254346552", dept: "Project"        },
-  { name: "Safarudin",     title: "Mechanical Supervisor",   wa: "6281315693779", dept: "Project"},
-  { name: "Muh Yusuf",   title: "Project Controller",    wa: "6285399450821", dept: "Project"},
-  { name: "Rengga Wahyu",     title: "QA/QC Officer",    wa: "6285783789408", dept: "Project"   }
+  { name: "Muharza", title: "Project Manager", wa: "628116923792", dept: "Project" },
+  { name: "Mudji Agus", title: "Electrical Supervisor", wa: "6281254346552", dept: "Electrical" },
+  { name: "Safarudin", title: "Mechanical Supervisor", wa: "6281315693779", dept: "Mechanical" },
+  { name: "Muh Yusuf", title: "Project Controller", wa: "6285399450821", dept: "Project" },
+  { name: "Rengga Wahyu", title: "QA/QC Officer", wa: "6285783789408", dept: "Quality" }
 ];
-/* ============================================================ */
 
-/* LZ Compress/Decompress (URL-safe Base64) */
+/* LZString Compression untuk URL sharing */
 const LZ = {
   compress(s){ return btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'') },
   decompress(s){ try{ let b=s.replace(/-/g,'+').replace(/_/g,'/'); while(b.length%4)b+='='; return decodeURIComponent(escape(atob(b))) }catch(e){ return null } }
 };
 
 /* App State */
-const S  = { n:'', nid:'', p:'', pt:'', l:'', tgl:'', jam:'', spvIdx:null };
-const HC = {};
-const HZ = {};  // { key: { checked: bool, control: '' } }
-const CT = {};
-let customHazards = []; // [{text:'', control:''}]
-let cur = 1;
-const STEPS = 6;
+const S = { n:'', nid:'', p:'', pt:'', l:'', tgl:'', jam:'', spvIdx:null };
+const HC = {}; const HZ = {}; const CT = {}; let customHazards = [];
+let cur = 1; const STEPS = 6;
 
 const HZDATA = [
-  {id:'mek', n:'⚙️ Bahaya Mekanik',    items:['Terjepit mesin','Terpotong benda tajam','Tertimpa material','Terbentur benda keras','Terjatuh dari ketinggian']},
-  {id:'lis', n:'⚡ Bahaya Listrik',     items:['Tersengat listrik','Korsleting','Kabel terkelupas','Panel listrik rusak']},
-  {id:'kim', n:'🧪 Bahaya Kimia',       items:['Terhirup gas/uap berbahaya','Terkena cipratan cairan kimia','Iritasi kulit','Keracunan']},
-  {id:'erg', n:'🪑 Bahaya Ergonomi',    items:['Posisi kerja tidak ergonomis','Angkat beban berlebihan','Gerakan berulang','Pencahayaan buruk']},
-  {id:'fis', n:'🌡️ Bahaya Fisik',      items:['Kebisingan tinggi','Suhu/cuaca ekstrem','Getaran berlebih','Paparan radiasi']},
-  {id:'bio', n:'🦠 Bahaya Biologis',    items:['Paparan bakteri/virus','Gigitan serangga/hewan','Paparan jamur/lumut']},
-  {id:'psi', n:'🧠 Bahaya Psikososial', items:['Tekanan kerja tinggi','Konflik antar rekan kerja','Kelelahan mental']}
+  {id:'mek',n:'⚙️ Bahaya Mekanik',items:['Terjepit mesin','Terpotong benda tajam','Tertimpa material','Terbentur benda keras','Terjatuh dari ketinggian']},
+  {id:'lis',n:'⚡ Bahaya Listrik',items:['Tersengat listrik','Korsleting','Kabel terkelupas','Panel listrik rusak']},
+  {id:'kim',n:'🧪 Bahaya Kimia',items:['Terhirup gas/uap berbahaya','Terkena cipratan cairan kimia','Iritasi kulit','Keracunan']},
+  {id:'erg',n:'🪑 Bahaya Ergonomi',items:['Posisi kerja tidak ergonomis','Angkat beban berlebihan','Gerakan berulang','Pencahayaan buruk']},
+    {id:'fis',n:'🌡️ Bahaya Fisik',items:['Kebisingan tinggi','Suhu/cuaca ekstrem','Getaran berlebih','Paparan radiasi']},
+  {id:'bio',n:'🦠 Bahaya Biologis',items:['Paparan bakteri/virus','Gigitan serangga/hewan','Paparan jamur/lumut']},
+  {id:'psi',n:'🧠 Bahaya Psikososial',items:['Tekanan kerja tinggi','Konflik antar rekan kerja','Kelelahan mental']}
 ];
 
-const CTDATA = ['Helm (Safety Helmet)','Kacamata (Safety Glasses)','Sarung Tangan (Gloves)',
-  'Sepatu Safety','Masker/Respirator','Ear Plug/Muff','Body Harness','Rompi Safety','Face Shield','APD Kimia'];
+const CTDATA = ['Helm Safety','Kacamata Safety','Sarung Tangan','Sepatu Safety','Masker/Respirator','Ear Plug/Muff','Body Harness','Rompi Safety','Face Shield','APD Kimia'];
 
 /* ============================================================
-   INIT
+   INIT & ROUTING
    ============================================================ */
 function init(){
   const p = new URLSearchParams(location.search);
   if(p.get('v')){ showSupervisor(p.get('v')); return; }
   if(p.get('d')){ showDone(p.get('d')); return; }
+  
+  loadDraft();
+  const d = new Date();
+  document.getElementById('dateDisplay').textContent = d.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  S.tgl = d.toLocaleDateString('id-ID');
+  S.jam = d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+  
   renderWorker();
+  registerServiceWorker();
+}
+
+function registerServiceWorker(){
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('data:text/javascript;base64,'+btoa(`
+      self.addEventListener('fetch',e=>{
+        e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));
+      });
+      self.addEventListener('install',e=>e.waitUntil(self.skipWaiting()));
+    `));
+  }
 }
 
 /* ============================================================
-   SUPERVISOR VIEW
+   SUPERVISOR MODE
    ============================================================ */
 function showSupervisor(enc){
-  // Sembunyikan tampilan Worker Mode dan tampilkan Supervisor Mode
   document.getElementById('WM').style.display = 'none';
   document.getElementById('SM').style.display = 'block';
-
-  console.log("Encoded data parameter (enc):", enc);
-
+  
   const data = JSON.parse(LZ.decompress(enc));
-  console.log("Decoded data object:", data);
-
   if(!data){
-    // Jika data tidak dapat didekompresi/parsing, tampilkan pesan error
-    document.getElementById('SM').innerHTML = `
-      <div class="section">
-        <p style="color:red; font-weight:bold; text-align:center;">Data tidak valid atau rusak. Silakan ulangi pengiriman checklist.</p>
-      </div>`;
+    document.getElementById('SM').innerHTML = '<div class="section"><p style="color:#dc2626;font-weight:800;text-align:center;padding:40px">❌ Data tidak valid. Silakan ulangi checklist.</p></div>';
     return;
   }
-
-  // Jika data valid, tampilkan form verifikasi supervisor
+  
   document.getElementById('SM').innerHTML = `
-    <div class="section">
-      <div class="sv-banner">
-        <div style="font-size:2.4rem">🔍</div>
-        <h2 style="margin:8px 0">Verifikasi Supervisor</h2>
-        <p style="opacity:.9;font-size:.85rem">Periksa dan setujui checklist berikut</p>
-      </div>
-      <div class="sbox">${summaryHTML(data)}</div>
-      <div style="margin-top:20px">
-        <label>Nama Supervisor</label>
-        <input type="text" id="svNama" placeholder="Masukkan nama Anda" value="${data.spv_name||''}">
-        <label>Catatan (opsional)</label>
-        <textarea id="svNote" rows="2" placeholder="Tambahkan catatan jika perlu..."></textarea>
-        <button class="btn btn-approve" onclick="approve('${encodeURIComponent(enc)}')">✅ APPROVE</button>
-        <button class="btn btn-reject" onclick="reject('${encodeURIComponent(enc)}')">❌ REJECT</button>
-      </div>
-    </div>`;
-
-  // Simpan data global sementara untuk manipulasi lanjut
+    <div class="sv-banner">
+      <div style="font-size:2.8rem">🔍</div>
+      <h2>Verifikasi Supervisor</h2>
+      <p style="opacity:.9;font-size:.88rem">Periksa & setujui checklist safety</p>
+    </div>
+    <div class="sbox">${summaryHTML(data)}</div>
+    <label>Nama Supervisor *</label>
+    <input type="text" id="svNama" placeholder="Masukkan nama lengkap" value="${data.spv_name||''}">
+    <label>Catatan (opsional)</label>
+    <textarea id="svNote" rows="3" placeholder="Catatan persetujuan / alasan penolakan..."></textarea>
+    <div class="row">
+      <button class="btn btn-approve" onclick="approve('${encodeURIComponent(enc)}')">✅ SETUJUI</button>
+      <button class="btn btn-reject" onclick="reject('${encodeURIComponent(enc)}')">❌ TOLAK</button>
+    </div>
+  `;
   window._vdata = data;
 }
 
-function approve(enc){
-  // Decode parameter enc yang di-encodeURIComponent sebelumnya
+async function approve(enc){
   const decodedEnc = decodeURIComponent(enc);
   const d = window._vdata;
   const sn = document.getElementById('svNama').value.trim();
   const sv = document.getElementById('svNote').value.trim();
-
-  if(!sn){
-    alert('Masukkan nama supervisor');
-    return;
-  }
-
+  
+  if(!sn){ alert('Masukkan nama supervisor'); return; }
+  
   d.sv = { nama: sn, status: 'APPROVED', note: sv, time: new Date().toLocaleString('id-ID') };
-
-  sendDone(d);
+  
+  showProgress('📤 Mengupdate Google Sheets...');
+  await postToSheet({ action: "respond", rowId: d.rowId, status: 'APPROVED', sv_name: sn, sv_note: sv });
+  hideProgress();
+  
+  sendNotifications(d, true);
+  showDone(LZ.compress(JSON.stringify(d)));
 }
 
-function reject(enc){
-  // Decode parameter enc yang di-encodeURIComponent sebelumnya
+async function reject(enc){
   const decodedEnc = decodeURIComponent(enc);
   const d = window._vdata;
   const sn = document.getElementById('svNama').value.trim();
   const sv = document.getElementById('svNote').value.trim();
-
-  if(!sn){
-    alert('Masukkan nama supervisor');
-    return;
-  }
-  if(!sv){
-    alert('Berikan alasan penolakan');
-    return;
-  }
-
+  
+  if(!sn){ alert('Masukkan nama supervisor'); return; }
+  if(!sv){ alert('Berikan alasan penolakan'); return; }
+  
   d.sv = { nama: sn, status: 'REJECTED', note: sv, time: new Date().toLocaleString('id-ID') };
-
-  sendDone(d);
+  
+  showProgress('📤 Mengupdate Google Sheets...');
+  await postToSheet({ action: "respond", rowId: d.rowId, status: 'REJECTED', sv_name: sn, sv_note: sv });
+  hideProgress();
+  
+  sendNotifications(d, false);
+  showDone(LZ.compress(JSON.stringify(d)));
 }
 
-async function sendDone(d){
-  // Update status di Google Sheets via Google Apps Script
-  try {
-    await postToSheet({
-      action: "respond",
-      rowId: d.rowId || null,
-      status: d.sv.status,
-      sv_name: d.sv.nama,
-      sv_note: d.sv.note
-    });
-  } catch(err){
-    console.error("Gagal update Google Sheets:", err);
-  }
-
-  // Kompres data terbaru untuk link detail yang dikirimkan
-  const enc  = LZ.compress(JSON.stringify(d));
-  const url  = `${BASE}?d=${enc}`;
-  const isApproved = d.sv.status === 'APPROVED';
-
-  // Pesan ke pekerja
+function sendNotifications(d, isApproved){
+  const enc = LZ.compress(JSON.stringify(d));
+  const url = `${BASE_URL}?d=${enc}`;
+  
   const workerMsg = isApproved
-    ? `✅ *CHECKLIST DISETUJUI*\n\nHalo ${d.n}, checklist safety Anda telah disetujui.\n\n👨‍💼 Supervisor: ${d.sv.nama}\n🕐 Waktu: ${d.sv.time}\n${d.sv.note ? '📝 Catatan: ' + d.sv.note : ''}\n\n🔗 Lihat Detail:\n${url}`
-    : `❌ *CHECKLIST DITOLAK*\n\nHalo ${d.n}, checklist safety Anda ditolak.\n\n👨‍💼 Supervisor: ${d.sv.nama}\n📝 Alasan: ${d.sv.note}\n🕐 Waktu: ${d.sv.time}\n\n🔗 Lihat Detail:\n${url}`;
-
-  // Pesan ke HSE
-  const hseMsg = `📋 *LAPORAN SAFETY CHECKLIST*\n\n📌 Status: ${isApproved ? '✅ APPROVED' : '❌ REJECTED'}\n👷 Pekerja: ${d.n}\n🪪 ID: ${d.nid || '-'}\n📞 HP: ${d.p}\n💼 Posisi: ${d.pt}\n📍 Lokasi: ${d.l}\n📅 Tanggal: ${d.tgl} | ⏰ ${d.jam}\n\n👨‍💼 Supervisor: ${d.sv.nama}\n🕐 Waktu: ${d.sv.time}\n${d.sv.note ? '📝 Catatan: ' + d.sv.note : ''}\n\n📝 Pekerjaan:\n${d.job}\n\n⚠️ Bahaya & Kontrol:\n${(d.hz || []).map(h => `• ${h.name} → ${h.control || '-'}`).join('\n')}\n\n🦺 APD: ${(d.ct || []).join(', ') || '-'}\n\n🔗 Detail:\n${url}`;
-
-  // Kirim WA ke pekerja
-  window.open(`https://wa.me/${d.p.replace(/^0/, '62')}?text=${encodeURIComponent(workerMsg)}`, '_blank');
-
-  // Kirim WA ke personil HSE setelah delay 1.5 detik agar tidak tab terbuka bersamaan
-  setTimeout(()=>{
-    window.open(`https://wa.me/${HSE_NUMBER}?text=${encodeURIComponent(hseMsg)}`, '_blank');
-  }, 1500);
-
-  // Tampilkan halaman selesai dengan detail
-  showDone(enc);
+    ? `✅ *CHECKLIST DISETUJUI*\n\nHalo ${d.n}!\n\n👨‍💼 Supervisor: ${d.sv.nama}\n🕐 ${d.sv.time}\n${d.sv.note ? '📝 ' + d.sv.note : ''}\n\n🔗 Detail: ${url}`
+    : `❌ *CHECKLIST DITOLAK*\n\nHalo ${d.n}!\n\n👨‍💼 Supervisor: ${d.sv.nama}\n📝 ${d.sv.note}\n🕐 ${d.sv.time}\n\n🔗 Detail: ${url}`;
+  
+  const hseMsg = `📋 *SAFETY CHECKLIST ${isApproved ? '✅ APPROVED' : '❌ REJECTED'}*\n\n👷 ${d.n}\n🪪 ${d.nid}\n📞 ${d.p}\n💼 ${d.pt}\n📍 ${d.l}\n📅 ${d.tgl} ${d.jam}\n\n👨‍💼 ${d.sv.nama}\n${d.sv.note ? '📝 ' + d.sv.note : ''}\n\n🔗 ${url}`;
+  
+  window.open(`https://wa.me/${d.p.replace(/^0/,'62')}?text=${encodeURIComponent(workerMsg)}`, '_blank');
+  setTimeout(()=>window.open(`https://wa.me/${HSE_NUMBER}?text=${encodeURIComponent(hseMsg)}`, '_blank'), 1500);
 }
 
 /* ============================================================
@@ -287,70 +290,68 @@ async function sendDone(d){
 function showDone(enc){
   document.getElementById('WM').style.display = 'none';
   document.getElementById('SM').style.display = 'none';
-  document.getElementById('SD').style.display  = 'block';
+  document.getElementById('SD').style.display = 'block';
+  
   const data = JSON.parse(LZ.decompress(enc));
-  if(!data){ document.getElementById('SD').innerHTML='<div class="section"><p>Data tidak valid.</p></div>'; return; }
-  const isA = data.sv && data.sv.status === 'APPROVED';
+  if(!data){
+    document.getElementById('SD').innerHTML = '<div class="section"><p style="color:#dc2626;text-align:center;padding:40px">❌ Data tidak valid</p></div>';
+    return;
+  }
+  
+  const isApproved = data.sv?.status === 'APPROVED';
   document.getElementById('SD').innerHTML = `
-    <div class="section">
-      <div class="result-card">
-        <div class="big">${isA ? '✅' : '❌'}</div>
-        <h2 style="color:${isA?'#059669':'#dc2626'}">${isA ? 'APPROVED' : 'REJECTED'}</h2>
-        <p style="color:#666;margin-top:8px">${data.sv ? data.sv.time : ''}</p>
-      </div>
-      <div class="sbox">${summaryHTML(data)}</div>
-      ${data.sv ? `<div class="sent-info ${isA?'approved':'rejected'}">
-        <strong>👨‍💼 Supervisor:</strong> ${data.sv.nama}<br>
-        ${data.sv.note ? `<strong>📝 Catatan:</strong> ${data.sv.note}` : ''}
-      </div>` : ''}
-    </div>`;
+    <div class="result-card">
+      <div class="big">${isApproved ? '✅' : '❌'}</div>
+      <h2 style="color:${isApproved ? '#059669' : '#dc2626'};font-size:1.6rem;font-weight:900;margin-bottom:12px">${isApproved ? 'DISETUJUI' : 'DITOLAK'}</h2>
+      <p style="color:#6b7280;font-size:1.1rem">${data.sv?.time || 'Menunggu verifikasi...'}</p>
+    </div>
+    <div class="sbox">${summaryHTML(data)}</div>
+    ${data.sv ? `<div class="sent-info ${isApproved ? 'approved' : 'rejected'}">
+      <strong>👨‍💼 Supervisor:</strong> ${data.sv.nama}<br>
+      ${data.sv.note ? `<strong>${isApproved ? '📝 Catatan:' : '📝 Alasan:'}</strong> ${data.sv.note}` : ''}
+    </div>` : ''}
+    <button class="btn btn-primary" onclick="location.href='.'">🔄 Checklist Baru</button>
+  `;
 }
 
 /* ============================================================
-   WORKER RENDER
+   WORKER MODE - RENDER STEPS
    ============================================================ */
 function renderWorker(){
-  const d = new Date();
-  document.getElementById('dateDisplay').textContent = d.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  S.tgl = d.toLocaleDateString('id-ID');
-  S.jam = d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
   renderStep1(); renderStep2(); renderStep3(); renderStep4(); renderStep5(); renderStep6();
-  renderHazards(); renderCt(); renderDots();
+  renderHazards(); renderCt(); renderDots(); renderCustomHazards();
 }
 
 function renderStep1(){
   document.getElementById('step1').innerHTML = `
-    <div class="section-title"><span class="icon icon-blue">👤</span>Data Pekerja</div>
-    <label>Nama Lengkap *</label>
-    <input type="text" id="nama" placeholder="Masukkan nama lengkap">
-    <label>No. ID Pekerja *</label>
-    <input type="text" id="nid" placeholder="Contoh: EMP-2024-001">
-    <label>No. Telepon (WhatsApp) *</label>
-    <input type="tel" id="telp" placeholder="08xxxxxxxxxx">
-    <label>Posisi / Jabatan *</label>
-    <input type="text" id="posisi" placeholder="Contoh: Operator, Teknisi">
-    <label>Lokasi Kerja *</label>
-    <input type="text" id="lokasi" placeholder="Area/Site kerja hari ini">
-    <label style="margin-top:4px">Pilih Supervisor *</label>
+    <div class="section-title"><span class="icon icon-blue">👤</span>Data Diri Pekerja</div>
+    <label>Nama Lengkap *</label><input type="text" id="nama" placeholder="Masukkan nama lengkap" value="${S.n}" onchange="autoSaveDraft()">
+    <label>No. ID Pekerja *</label><input type="text" id="nid" placeholder="EMP-2024-001" value="${S.nid}" onchange="autoSaveDraft()">
+    <label>No. WhatsApp *</label><input type="tel" id="telp" placeholder="08123456789" value="${S.p}" onchange="autoSaveDraft()">
+    <label>Posisi / Jabatan *</label><input type="text" id="posisi" placeholder="Operator, Teknisi, dll" value="${S.pt}" onchange="autoSaveDraft()">
+    <label>Lokasi Kerja Hari Ini *</label><input type="text" id="lokasi" placeholder="Area/Site kerja" value="${S.l}" onchange="autoSaveDraft()">
+    <label>Pilih Supervisor *</label>
     <select id="spvSelect" onchange="selectSPV(this.value)">
       <option value="">-- Pilih Supervisor --</option>
-      ${SUPERVISORS.map((s,i) => `<option value="${i}">${s.name} — ${s.title} (${s.dept})</option>`).join('')}
+      ${SUPERVISORS.map((s,i)=>`<option value="${i}" ${S.spvIdx==i?'selected':''}>${s.name} — ${s.title}</option>`).join('')}
     </select>
-    <div id="spvDetail" style="display:none;background:#dbeafe;border-radius:10px;padding:10px 14px;font-size:.83rem;color:#1e40af;margin-top:-6px;margin-bottom:12px"></div>
-    <button class="btn btn-primary" style="margin-top:16px" onclick="next1()">Lanjut →</button>`;
+    <div id="spvDetail" style="display:${S.spvIdx!==null?'block':'none'};background:#dbeafe;border-radius:12px;padding:14px;font-size:.85rem;color:#1e40af;margin-top:4px"></div>
+    <button class="btn btn-primary" onclick="next1()">Lanjut ke Kesehatan →</button>`;
+  
+  if(S.spvIdx!==null) selectSPV(S.spvIdx);
 }
 
 function renderStep2(){
   document.getElementById('step2').innerHTML = `
     <div class="section-title"><span class="icon icon-red">❤️</span>Kondisi Kesehatan</div>
-    <p style="font-size:.85rem;color:#666;margin-bottom:14px">Jawab dengan jujur untuk keselamatan Anda</p>
+    <p style="font-size:.88rem;color:#6b7280;margin-bottom:20px;padding:12px;background:#fef2f2;border-radius:10px;border-left:4px solid #ef4444">Jawab JUJUR untuk keselamatan Anda dan rekan kerja!</p>
     ${hcHTML('hc1','Apakah Anda merasa sehat hari ini?')}
-    ${hcHTML('hc2','Apakah Anda cukup tidur (min. 6 jam)?')}
-    ${hcHTML('hc3','Apakah Anda bebas dari pengaruh obat/alkohol?')}
-    ${hcHTML('hc4','Apakah Anda memahami pekerjaan hari ini?')}
-    <div class="row" style="margin-top:16px">
+    ${hcHTML('hc2','Apakah Anda tidur cukup minimal 6 jam semalam?')}
+    ${hcHTML('hc3','Apakah Anda bebas dari pengaruh obat-obatan/alkohol?')}
+    ${hcHTML('hc4','Apakah Anda memahami pekerjaan dan risiko hari ini?')}
+    <div class="row">
       <button class="btn btn-back" onclick="go(1)">← Kembali</button>
-      <button class="btn btn-primary" onclick="next2()">Lanjut →</button>
+      <button class="btn btn-primary" onclick="next2()">Lanjut ke Bahaya →</button>
     </div>`;
 }
 
@@ -358,49 +359,45 @@ function renderStep3(){
   document.getElementById('step3').innerHTML = `
     <div class="section-title"><span class="icon icon-orange">⚠️</span>Identifikasi Bahaya</div>
     <label>Deskripsi pekerjaan hari ini *</label>
-    <textarea id="jobDesc" rows="3" placeholder="Jelaskan pekerjaan yang akan dilakukan..."></textarea>
-    <p style="font-size:.85rem;color:#666;margin:12px 0 8px">Pilih potensi bahaya — setiap bahaya yang dipilih wajib diisi tindakan kontrolnya:</p>
+    <textarea id="jobDesc" rows="3" placeholder="Jelaskan secara detail pekerjaan yang akan dilakukan..." onchange="autoSaveDraft()">${S.job||''}</textarea>
+    <p style="font-size:.86rem;color:#6b7280;margin:14px 0 10px">Pilih potensi bahaya. <strong>WAJIB</strong> isi tindakan kontrol untuk setiap bahaya yang dipilih:</p>
     <div id="hzList"></div>
     <div class="hazard-card" style="border-color:#7c3aed;background:#f5f3ff">
-      <div class="hazard-title" style="color:#7c3aed">➕ Bahaya Lainnya</div>
-      <p style="font-size:.78rem;color:#666;margin-bottom:8px">Tambahkan bahaya yang tidak ada dalam daftar di atas</p>
+      <div class="hazard-title" style="color:#7c3aed">➕ Bahaya Lainnya (Custom)</div>
       <div id="customHazardList"></div>
       <div class="custom-hazard-row">
-        <input type="text" id="customHazardInput" placeholder="Tulis bahaya lainnya...">
+        <input type="text" id="customHazardInput" placeholder="Bahaya khusus pekerjaan ini...">
         <button class="add-btn" onclick="addCustomHazard()">+ Tambah</button>
       </div>
     </div>
-    <div class="row" style="margin-top:16px">
+    <div class="row" style="margin-top:20px">
       <button class="btn btn-back" onclick="go(2)">← Kembali</button>
-      <button class="btn btn-primary" onclick="next3()">Lanjut →</button>
+      <button class="btn btn-primary" onclick="next3()">Lanjut ke APD →</button>
     </div>`;
-  renderHazards();
-  renderCustomHazards();
 }
 
 function renderStep4(){
   document.getElementById('step4').innerHTML = `
-    <div class="section-title"><span class="icon icon-green">🛡️</span>APD yang Digunakan</div>
-    <p style="font-size:.85rem;color:#666;margin-bottom:12px">Pilih APD yang akan digunakan selama bekerja:</p>
+        <div class="section-title"><span class="icon icon-green">🛡️</span>Alat Pelindung Diri (APD)</div>
+    <p style="font-size:.88rem;color:#6b7280;margin-bottom:16px">Pilih APD yang akan digunakan selama bekerja hari ini:</p>
     <div id="ctList"></div>
-    <div class="row" style="margin-top:16px">
+    <div class="row" style="margin-top:20px">
       <button class="btn btn-back" onclick="go(3)">← Kembali</button>
-      <button class="btn btn-primary" onclick="next4()">Lanjut →</button>
+      <button class="btn btn-primary" onclick="next4()">Review & Kirim →</button>
     </div>`;
-  renderCt();
 }
 
 function renderStep5(){
   document.getElementById('step5').innerHTML = `
-    <div class="section-title"><span class="icon icon-purple">📋</span>Review & Kirim ke Supervisor</div>
-    <div class="sbox" id="rvBox"></div>
-    <div style="margin-top:16px;background:#dbeafe;border-radius:10px;padding:12px;font-size:.82rem;color:#1e40af">
-      <strong>📤 Akan dikirim ke Supervisor:</strong><br>
+    <div class="section-title"><span class="icon icon-purple">📋</span>Review & Konfirmasi</div>
+    <div class="sbox" id="rvBox">Loading...</div>
+    <div style="background:#dbeafe;border-radius:12px;padding:16px;margin:20px 0;font-size:.86rem;color:#1e40af;border-left:4px solid #2563eb">
+      <strong>📤 Akan dikirim otomatis ke:</strong><br>
       <span id="spvSendInfo">—</span>
     </div>
-    <div class="row" style="margin-top:16px">
-      <button class="btn btn-back" onclick="go(4)">← Kembali</button>
-      <button class="btn btn-wa" onclick="sendWA()">📤 Kirim ke Supervisor via WA</button>
+    <div class="row">
+      <button class="btn btn-back" onclick="go(4)">← Edit</button>
+      <button class="btn btn-wa" onclick="sendWA()">📱 Kirim via WhatsApp</button>
     </div>`;
 }
 
@@ -409,361 +406,392 @@ function renderStep6(){
     <div class="result-card">
       <div class="big">📨</div>
       <h2 style="color:#059669">Checklist Terkirim!</h2>
-      <p style="color:#666;margin-top:8px">Menunggu verifikasi supervisor...</p>
-      <div class="sent-info" id="sentInfo" style="text-align:left"></div>
-      <button class="btn btn-primary" style="margin-top:20px" onclick="location.reload()">🔄 Buat Checklist Baru</button>
+      <p style="color:#6b7280;margin:20px 0;font-size:1.1rem">Menunggu verifikasi supervisor...</p>
+      <div class="sent-info" id="sentInfo">
+        <strong>✅ Data tersimpan di Google Sheets</strong><br>
+        Supervisor akan menerima link verifikasi via WhatsApp
+      </div>
+      <button class="btn btn-primary" onclick="location.reload()">🔄 Checklist Baru</button>
     </div>`;
 }
 
 /* ============================================================
-   GOOGLE SHEETS INTEGRATION
+   GOOGLE SHEETS API + OFFLINE QUEUE
    ============================================================ */
-async function postToSheet(payload) {
-  if (!GAS_URL || GAS_URL === "GANTI_DENGAN_URL_APPS_SCRIPT") return null;
-  try {
-    const res = await fetch(GAS_URL, {
-      method: "POST",
-      body: JSON.stringify(payload)
-    });
-    return await res.json();
-  } catch(e) {
-    console.warn("Gagal kirim ke Sheets:", e);
-    return null;
-  }
-}
-
-
-function selectSPV(val){
-  if(val === '') { S.spvIdx = null; document.getElementById('spvDetail').style.display='none'; return; }
-  S.spvIdx = parseInt(val);
-  const spv = SUPERVISORS[S.spvIdx];
-  const det = document.getElementById('spvDetail');
-  det.style.display = 'block';
-  det.innerHTML = `👷 <strong>${spv.name}</strong> — ${spv.title}<br>🏢 Departemen: ${spv.dept}<br>📞 WhatsApp: +${spv.wa}`;
-}
-
-/* ============================================================
-   HEALTH CHECK
-   ============================================================ */
-function hcHTML(id,q){
-  return `<div class="check-group">
-    <p style="font-size:.88rem;font-weight:600;margin-bottom:6px">${q}</p>
-    <div class="check-item" onclick="selHC('${id}','ya',this)"><input type="radio" name="${id}" id="${id}y"><label for="${id}y">✅ Ya</label></div>
-    <div class="check-item" onclick="selHC('${id}','tidak',this)"><input type="radio" name="${id}" id="${id}n"><label for="${id}n">❌ Tidak</label></div>
-  </div>`;
-}
-function selHC(id,v,el){
-  HC[id]=v;
-  el.parentElement.querySelectorAll('.check-item').forEach(c=>c.classList.remove('sel-g','sel-b'));
-  el.classList.add(v==='ya'?'sel-g':'sel-b');
-  el.querySelector('input').checked=true;
-}
-
-/* ============================================================
-   HAZARD RENDER — per-hazard control box
-   ============================================================ */
-function renderHazards(){
-  const el = document.getElementById('hzList');
-  if(!el) return;
-  let h = '';
-  HZDATA.forEach(cat => {
-    h += `<div class="hazard-card"><div class="hazard-title">${cat.n}</div>`;
-    cat.items.forEach((it,i) => {
-      const k = cat.id+'_'+i;
-      if(!HZ[k]) HZ[k] = {checked:false, control:''};
-      const checked = HZ[k].checked;
-      h += `<div class="hazard-check">
-        <input type="checkbox" id="${k}" ${checked?'checked':''} onchange="toggleHZ('${k}',this.checked)">
-        <label for="${k}">${it}</label>
-      </div>
-      <div class="control-box" id="ctrl_${k}" style="display:${checked?'block':'none'}">
-        <label>🛡️ Tindakan kontrol untuk bahaya ini:</label>
-        <textarea rows="2" placeholder="Tuliskan tindakan pengendalian risiko..." onchange="HZ['${k}'].control=this.value">${HZ[k].control}</textarea>
-      </div>`;
-    });
-    h += `</div>`;
-  });
-  el.innerHTML = h;
-}
-
-function toggleHZ(k, checked){
-  HZ[k].checked = checked;
-  const box = document.getElementById('ctrl_'+k);
-  if(box) box.style.display = checked ? 'block' : 'none';
-}
-
-/* ============================================================
-   CUSTOM HAZARDS
-   ============================================================ */
-function renderCustomHazards(){
-  const el = document.getElementById('customHazardList');
-  if(!el) return;
-  if(customHazards.length===0){ el.innerHTML=''; return; }
-  let h = '';
-  customHazards.forEach((hz,i) => {
-    h += `<div style="margin-bottom:6px">
-      <div class="hazard-check">
-        <span style="width:16px;flex-shrink:0">🔸</span>
-        <label style="flex:1;font-weight:600;color:#7c3aed">${hz.text}</label>
-        <button class="remove-btn" onclick="removeCustomHazard(${i})">✕</button>
-      </div>
-      <div class="control-box" style="border-color:#7c3aed;background:#f5f3ff">
-        <label style="color:#5b21b6">🛡️ Tindakan kontrol untuk bahaya ini:</label>
-        <textarea rows="2" placeholder="Tuliskan tindakan pengendalian risiko..." onchange="customHazards[${i}].control=this.value">${hz.control}</textarea>
-      </div>
-    </div>`;
-  });
-  el.innerHTML = h;
-}
-
-function addCustomHazard(){
-  const inp = document.getElementById('customHazardInput');
-  const val = inp.value.trim();
-  if(!val){ alert('Tulis nama bahaya terlebih dahulu'); return; }
-  customHazards.push({text:val, control:''});
-  inp.value = '';
-  renderCustomHazards();
-}
-
-function removeCustomHazard(i){
-  customHazards.splice(i,1);
-  renderCustomHazards();
-}
-
-/* ============================================================
-   APD / CONTROL RENDER
-   ============================================================ */
-function renderCt(){
-  const el = document.getElementById('ctList');
-  if(!el) return;
-  let h = '';
-  CTDATA.forEach((it,i) => {
-    h += `<div class="hazard-check">
-      <input type="checkbox" id="ct${i}" ${CT['ct'+i]?'checked':''} onchange="CT['ct${i}']=this.checked">
-      <label for="ct${i}">${it}</label>
-    </div>`;
-  });
-  el.innerHTML = h;
-}
-
-/* ============================================================
-   NAVIGATION
-   ============================================================ */
-function next1(){
-  S.n   = document.getElementById('nama').value.trim();
-  S.nid = document.getElementById('nid').value.trim();
-  S.p   = document.getElementById('telp').value.trim();
-  S.pt  = document.getElementById('posisi').value.trim();
-  S.l   = document.getElementById('lokasi').value.trim();
-  if(!S.n||!S.nid||!S.p||!S.pt||!S.l){ alert('Lengkapi semua data pekerja'); return; }
-  if(!/^08\d{8,12}$/.test(S.p)){ alert('Format nomor telepon tidak valid (contoh: 08123456789)'); return; }
-  if(S.spvIdx===null){ alert('Pilih supervisor terlebih dahulu'); return; }
-  go(2);
-}
-function next2(){ if(Object.keys(HC).length<4){ alert('Jawab semua pertanyaan kesehatan'); return; } go(3); }
-function next3(){
-  S.job = document.getElementById('jobDesc').value.trim();
-  if(!S.job){ alert('Isi deskripsi pekerjaan'); return; }
-  const sel = Object.keys(HZ).filter(k=>HZ[k].checked);
-  if(sel.length===0 && customHazards.length===0){ alert('Pilih minimal satu potensi bahaya'); return; }
-  const missing = sel.filter(k=>!HZ[k].control.trim());
-  const missingCustom = customHazards.filter(h=>!h.control.trim());
-  if(missing.length>0||missingCustom.length>0){ alert('Isi tindakan kontrol untuk setiap bahaya yang dipilih'); return; }
-  go(4);
-}
-function next4(){ go(5); }
-
-function go(n){
-  if(n===3) renderStep3();
-  if(n===4) renderStep4();
-  if(n===5){
-    renderStep5();
-    const spv = SUPERVISORS[S.spvIdx];
-    document.getElementById('spvSendInfo').textContent = `${spv.name} (${spv.title}) — +${spv.wa}`;
-    document.getElementById('rvBox').innerHTML = summaryHTML(buildData());
-  }
-  cur = n;
-  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
-  document.getElementById('step'+n).classList.add('active');
-  renderDots();
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-function renderDots(){
-  let h='';
-  for(let i=1;i<=STEPS;i++) h+=`<div class="dot${i===cur?' active':''}"></div>`;
-  document.getElementById('dots').innerHTML=h;
-}
-
-/* ============================================================
-   BUILD DATA
-   ============================================================ */
-function buildData(){
-  const hz = [];
-  Object.keys(HZ).filter(k=>HZ[k].checked).forEach(k=>{
-    const [cid,idx] = k.split('_');
-    const cat = HZDATA.find(c=>c.id===cid);
-    if(cat) hz.push({name: cat.items[parseInt(idx)], control: HZ[k].control});
-  });
-  customHazards.forEach(c => hz.push({name: c.text, control: c.control}));
-  const ct = [];
-  Object.keys(CT).filter(k=>CT[k]).forEach(k=>{ const i=parseInt(k.replace('ct','')); ct.push(CTDATA[i]); });
-  const spv = SUPERVISORS[S.spvIdx];
-  return { n:S.n, nid:S.nid, p:S.p, pt:S.pt, l:S.l, tgl:S.tgl, jam:S.jam, hc:HC, job:S.job, hz, ct,
-           spv_name:spv.name, spv_title:spv.title, spv_wa:spv.wa };
-}
-
-/* ============================================================
-   SUMMARY HTML
-   ============================================================ */
-function summaryHTML(d){
-  const hzLines = (d.hz||[]).map(h=>`<div style="margin:4px 0 2px"><span style="font-weight:700;color:#dc2626">• ${h.name}</span><br><span style="padding-left:12px;color:#555">🛡️ ${h.control||'-'}</span></div>`).join('');
-  return `
-    <strong>👤 Nama:</strong> ${d.n}<br>
-    <strong>🪪 ID Pekerja:</strong> ${d.nid||'-'}<br>
-    <strong>📞 Telp:</strong> ${d.p}<br>
-    <strong>💼 Posisi:</strong> ${d.pt}<br>
-    <strong>📍 Lokasi:</strong> ${d.l}<br>
-    <strong>📅 Tanggal:</strong> ${d.tgl} &nbsp; <strong>⏰ Jam:</strong> ${d.jam}<br>
-    <strong>👨‍💼 Supervisor:</strong> ${d.spv_name||'-'}<br>
-    <hr>
-    <strong>❤️ Kondisi Kesehatan:</strong><br>
-    • Sehat: ${d.hc&&d.hc.hc1||'-'}<br>
-    • Cukup tidur: ${d.hc&&d.hc.hc2||'-'}<br>
-    • Bebas obat/alkohol: ${d.hc&&d.hc.hc3||'-'}<br>
-    • Paham pekerjaan: ${d.hc&&d.hc.hc4||'-'}<br>
-    <hr>
-    <strong>📝 Pekerjaan:</strong> ${d.job||'-'}<br>
-    <strong>⚠️ Bahaya & Kontrol:</strong><br>${hzLines||'-'}<br>
-    <strong>🦺 APD:</strong> ${(d.ct||[]).join(', ')||'-'}`;
-}
-
-/* ============================================================
-   SEND WA TO SUPERVISOR
-   ============================================================ */
-/* ============================================================
-   SEND WA TO SUPERVISOR — VERSI ANTI SINYAL BURUK + HSE FINAL ONLY
-   ============================================================ */
-// ✅ PERBAIKAN 1: Config retry untuk sinyal buruk
-const RETRY_CONFIG = {
-  maxRetries: 5,
-  retryDelay: 3000,
-  timeout: 15000
-};
-
-// ✅ PERBAIKAN 2: Offline queue
+const RETRY_CONFIG = {maxRetries:5, retryDelay:3000, timeout:15000};
 let offlineQueue = JSON.parse(localStorage.getItem('safetyQueue') || '[]');
 
-function saveToQueue(data) {
-  offlineQueue.unshift(data);
-  localStorage.setItem('safetyQueue', JSON.stringify(offlineQueue.slice(0, 10)));
+async function postToSheet(payload, retries=0){
+  try{
+    const controller = new AbortController();
+    const timeoutId = setTimeout(()=>controller.abort(), RETRY_CONFIG.timeout);
+    
+    const res = await fetch(GAS_URL, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload),
+      signal:controller.signal
+    });
+    clearTimeout(timeoutId);
+    
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  }catch(e){
+    if(retries < RETRY_CONFIG.maxRetries){
+      await new Promise(r=>setTimeout(r, RETRY_CONFIG.retryDelay*(retries+1)));
+      return postToSheet(payload, retries+1);
+    }
+    throw e;
+  }
 }
 
-function processQueue() {
-  if (offlineQueue.length === 0) return;
+function saveToQueue(data){
+  offlineQueue.unshift(data);
+  localStorage.setItem('safetyQueue', JSON.stringify(offlineQueue.slice(0,10)));
+}
+
+async function processQueue(){
+  if(offlineQueue.length===0 || !navigator.onLine) return;
   const item = offlineQueue[0];
-  sendWAQueued(item).then(success => {
-    if (success) offlineQueue.shift();
-    localStorage.setItem('safetyQueue', JSON.stringify(offlineQueue));
-  });
+  try{
+    const res = await postToSheet({action:"submit", ...item});
+    if(res.ok){
+      offlineQueue.shift();
+      localStorage.setItem('safetyQueue', JSON.stringify(offlineQueue));
+    }
+  }catch(e){
+    console.warn('Queue failed:', e);
+  }
 }
 
 window.addEventListener('online', processQueue);
 setInterval(processQueue, 10000);
 
-// ✅ PERBAIKAN 3: Google Sheets dengan retry
-async function postToSheet(payload, retries = 0) {
-  if (!GAS_URL || GAS_URL === "GANTI_DENGAN_URL_APPS_SCRIPT") return null;
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), RETRY_CONFIG.timeout);
-    
-    const res = await fetch(GAS_URL, {
-      method: "POST",
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-      signal: controller.signal
+/* ============================================================
+   UI HELPERS
+   ============================================================ */
+function showProgress(msg){ 
+  let ind = document.getElementById('progressIndicator');
+  if(!ind){
+    document.body.insertAdjacentHTML('beforeend',`<div id="progressIndicator"></div>`);
+    ind = document.getElementById('progressIndicator');
+  }
+  ind.textContent = msg;
+  ind.style.display = 'block';
+  ind.style.animation = 'none';
+  setTimeout(()=>ind.style.animation = 'pulse 1.5s infinite', 10);
+}
+
+function hideProgress(){
+  const ind = document.getElementById('progressIndicator');
+  if(ind) ind.style.display = 'none';
+}
+
+function selectSPV(val){
+  S.spvIdx = val==='' ? null : parseInt(val);
+  const spv = SUPERVISORS[S.spvIdx];
+  const el = document.getElementById('spvDetail');
+  if(!spv){ el.style.display='none'; return; }
+  
+  el.style.display = 'block';
+  el.innerHTML = `
+    👨‍💼 <strong>${spv.name}</strong><br>
+    💼 ${spv.title} • ${spv.dept}<br>
+    📱 <strong>+${spv.wa}</strong>
+  `;
+  autoSaveDraft();
+}
+
+function hcHTML(id,q){
+  return `<div class="check-group">
+    <p style="font-size:.92rem;font-weight:700;margin-bottom:10px;color:#1f2937">${q}</p>
+    <div class="check-item" onclick="selHC('${id}','ya',this)"><input type="radio" name="${id}" id="${id}y"><label for="${id}y">✅ Ya, siap kerja</label></div>
+    <div class="check-item" onclick="selHC('${id}','tidak',this)"><input type="radio" name="${id}" id="${id}n"><label for="${id}n">❌ Tidak</label></div>
+  </div>`;
+}
+
+function selHC(id,v,el){
+  HC[id] = v;
+  el.parentElement.querySelectorAll('.check-item').forEach(c=>c.classList.remove('sel-g','sel-b'));
+  el.classList.add(v==='ya'?'sel-g':'sel-b');
+  el.querySelector('input').checked = true;
+  autoSaveDraft();
+}
+
+function renderHazards(){
+  const el = document.getElementById('hzList');
+  if(!el) return;
+  let html = '';
+  HZDATA.forEach(cat=>{
+    html += `<div class="hazard-card"><div class="hazard-title">${cat.n}</div>`;
+    cat.items.forEach((item,i)=>{
+      const key = cat.id+'_'+i;
+      if(!HZ[key]) HZ[key] = {checked:false, control:''};
+      const checked = HZ[key].checked;
+      html += `
+        <div class="hazard-check" onclick="toggleHZ('${key}', !${checked})">
+          <input type="checkbox" id="${key}" ${checked?'checked':''}>
+          <label for="${key}">${item}</label>
+        </div>
+        <div class="control-box" id="ctrl_${key}" style="display:${checked?'block':'none'}">
+          <label>🛡️ Tindakan kontrol wajib:</label>
+          <textarea placeholder="Tuliskan langkah pengendalian risiko..." 
+                    onchange="HZ['${key}'].control=this.value;autoSaveDraft()">${HZ[key].control}</textarea>
+        </div>`;
     });
-    clearTimeout(timeoutId);
-    
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
-  } catch(e) {
-    if (retries < RETRY_CONFIG.maxRetries) {
-      await new Promise(r => setTimeout(r, RETRY_CONFIG.retryDelay * (retries + 1)));
-      return postToSheet(payload, retries + 1);
-    }
-    return null;
+    html += '</div>';
+  });
+  el.innerHTML = html;
+}
+
+function toggleHZ(key, checked){
+  HZ[key].checked = checked;
+  const box = document.getElementById('ctrl_'+key);
+  box.style.display = checked ? 'block' : 'none';
+  if(checked) box.querySelector('textarea').focus();
+  autoSaveDraft();
+}
+
+function renderCustomHazards(){
+  const el = document.getElementById('customHazardList');
+  if(!el || customHazards.length===0){ el&&(el.innerHTML=''); return; }
+  let html = '';
+  customHazards.forEach((hz,i)=>{
+    html += `
+      <div style="margin-bottom:12px">
+        <div class="hazard-check">
+          <span style="width:20px;flex-shrink:0;font-size:1.2rem">🔸</span>
+          <label style="font-weight:700;color:#7c3aed">${hz.text}</label>
+          <button class="remove-btn" onclick="removeCustomHazard(${i})">✕</button>
+        </div>
+        <div class="control-box" style="border-color:#7c3aed">
+          <label>🛡️ Tindakan kontrol:</label>
+          <textarea placeholder="Tindakan pengendalian risiko..." onchange="customHazards[${i}].control=this.value">${hz.control}</textarea>
+        </div>
+      </div>`;
+  });
+  el.innerHTML = html;
+}
+
+function addCustomHazard(){
+  const inp = document.getElementById('customHazardInput');
+  const val = inp.value.trim();
+  if(!val){ alert('Masukkan nama bahaya'); return; }
+  customHazards.push({text:val, control:''});
+  inp.value = '';
+  renderCustomHazards();
+  autoSaveDraft();
+}
+
+function removeCustomHazard(i){
+  customHazards.splice(i,1);
+  renderCustomHazards();
+  autoSaveDraft();
+}
+
+function renderCt(){
+  const el = document.getElementById('ctList');
+  if(!el) return;
+  let html = '';
+  CTDATA.forEach((item,i)=>{
+    const key = 'ct'+i;
+    html += `
+      <div class="hazard-check">
+        <input type="checkbox" id="${key}" ${CT[key]?'checked':''} onchange="CT['${key}']=this.checked;autoSaveDraft()">
+        <label for="${key}">${item}</label>
+      </div>`;
+  });
+  el.innerHTML = html;
+}
+
+/* ============================================================
+   NAVIGATION & VALIDATION
+   ============================================================ */
+function next1(){
+  S.n = sanitize(document.getElementById('nama').value);
+  S.nid = sanitize(document.getElementById('nid').value);
+  S.p = document.getElementById('telp').value.replace(/[^0-9]/g,'');
+  S.pt = sanitize(document.getElementById('posisi').value);
+  S.l = sanitize(document.getElementById('lokasi').value);
+  
+  if(!S.n || !S.nid || !S.p || !S.pt || !S.l){
+    alert('Lengkapi semua field wajib *'); return;
   }
-}
-
-// ✅ PERBAIKAN 4: Progress indicator
-function showProgressIndicator(message) {
-  let indicator = document.getElementById('progressIndicator');
-  if (!indicator) {
-    document.querySelector('.container').insertAdjacentHTML('beforeend', 
-      '<div id="progressIndicator" style="position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1a5276;color:white;padding:12px 20px;border-radius:25px;box-shadow:0 4px 20px rgba(0,0,0,0.3);z-index:9999;font-weight:600;min-width:280px;text-align:center;font-size:0.9rem;display:none"></div>'
-    );
-    indicator = document.getElementById('progressIndicator');
+  if(!/^08\d{8,12}$/.test(S.p)){
+    alert('Format HP: 08123456789'); return;
   }
-  indicator.textContent = message;
-  indicator.style.display = 'block';
+  if(S.spvIdx===null){
+    alert('Pilih supervisor'); return;
+  }
+  go(2);
 }
 
-function hideProgressIndicator() {
-  const indicator = document.getElementById('progressIndicator');
-  if (indicator) indicator.style.display = 'none';
+function next2(){
+  if(Object.keys(HC).length < 4){
+    alert('Jawab semua pertanyaan kesehatan'); return;
+  }
+  if(Object.values(HC).some(v=>v==='tidak')){
+    alert('⚠️ Kondisi kesehatan tidak memenuhi syarat kerja!'); return;
+  }
+  go(3);
 }
 
-// ✅ FUNGSI UTAMA - GANTI INI SAJA
+function next3(){
+  S.job = sanitize(document.getElementById('jobDesc').value);
+  if(!S.job){ alert('Isi deskripsi pekerjaan'); return; }
+  
+  const hazards = Object.values(HZ).filter(h=>h.checked).length + customHazards.length;
+  if(hazards === 0){ alert('Pilih minimal 1 potensi bahaya'); return; }
+  
+  const missingCtrl = Object.values(HZ).filter(h=>h.checked && !h.control.trim()).length +
+                     customHazards.filter(h=>!h.control.trim()).length;
+  if(missingCtrl > 0){ alert('Isi kontrol untuk semua bahaya yang dipilih'); return; }
+  
+  go(4);
+}
+
+function next4(){ go(5); }
+
+function go(n){
+  if(n===3){ renderStep3(); renderHazards(); renderCustomHazards(); }
+  if(n===4){ renderStep4(); renderCt(); }
+  if(n===5){
+    renderStep5();
+    document.getElementById('rvBox').innerHTML = summaryHTML(buildData());
+    const spv = SUPERVISORS[S.spvIdx];
+    document.getElementById('spvSendInfo').textContent = `${spv.name} (${spv.title})`;
+  }
+  
+  cur = n;
+  document.querySelectorAll('.step').forEach((s,i)=>s.classList.toggle('active', i+1===n));
+  renderDots();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function renderDots(){
+  let html = '';
+  for(let i=1; i<=STEPS; i++){
+    html += `<div class="dot ${i===cur ? 'active' : ''}"></div>`;
+  }
+  document.getElementById('dots').innerHTML = html;
+}
+
+/* ============================================================
+   CORE FUNCTIONS
+   ============================================================ */
+function sanitize(str){
+  return str.replace(/[<>&"']/g, '').trim().substring(0, 100);
+}
+
+function buildData(){
+  const hz = [];
+  Object.entries(HZ).filter(([k,v])=>v.checked).forEach(([k,v])=>{
+    const [catId,idx] = k.split('_');
+    const cat = HZDATA.find(c=>c.id===catId);
+    if(cat) hz.push({name: cat.items[parseInt(idx)], control: v.control});
+  });
+  customHazards.forEach(c=>hz.push({name: c.text, control: c.control}));
+  
+  const ct = Object.entries(CT).filter(([k,v])=>v).map(([k])=>{
+    const i = parseInt(k.replace('ct',''));
+    return CTDATA[i];
+  });
+  
+  const spv = SUPERVISORS[S.spvIdx];
+  return {
+    n: S.n, nid: S.nid, p: S.p, pt: S.pt, l: S.l,
+    tgl: S.tgl, jam: S.jam, hc: HC, job: S.job, hz, ct,
+    spv_name: spv.name, spv_title: spv.title, spv_wa: spv.wa
+  };
+}
+
+function summaryHTML(d){
+  const hzList = (d.hz||[]).map(h=>`
+    <div style="margin:6px 0">
+      <span style="color:#dc2626;font-weight:700">⚠️ ${h.name}</span><br>
+      <span style="padding-left:20px;color:#059669">🛡️ ${h.control}</span>
+    </div>
+  `).join('');
+  
+  return `
+    <strong>👤 ${d.n}</strong> | 🪪 ${d.nid} | 📞 ${d.p}<br>
+    <strong>💼 ${d.pt}</strong> | 📍 ${d.l}<br>
+    <strong>📅 ${d.tgl} | ⏰ ${d.jam}</strong><hr>
+    <strong>❤️ Kesehatan:</strong> ${Object.entries(d.hc||{}).map(([k,v])=>`${v==='ya'?'✅':'❌'}`).join(' ')}<br>
+    <strong>📝 Pekerjaan:</strong> ${d.job}<br>
+    <strong>⚠️ ${d.hz?.length || 0} Bahaya:</strong><br>${hzList}<br>
+    <strong>🛡️ APD:</strong> ${d.ct?.join(', ') || 'Tidak ada'}
+  `;
+}
+
 async function sendWA(){
-  const d = buildData();
+  const data = buildData();
+  showProgress('📝 Validasi data...');
   
-  showProgressIndicator('📝 Menyimpan data...');
-  
-  // Backup lokal
-  localStorage.setItem('lastDraft', LZ.compress(JSON.stringify(d)));
-  
-  // Kirim dengan sistem anti-gagal
-  const success = await sendWAQueued(d);
-  
-  if (success) {
-    document.getElementById('sentInfo').innerHTML = `
-      <strong>✅ Terkirim ke Supervisor!</strong><br>
-      ${d.spv_name} — ${d.spv_title}<br>
-      <small style="color:#065f46">HSE akan diberitahu setelah supervisor approve/reject...</small>`;
-  } else {
-    document.getElementById('sentInfo').innerHTML = `
-      <strong>⚠️ Tersimpan lokal</strong><br>
-      Data akan terkirim otomatis saat sinyal kembali<br>
-      <button class="btn btn-primary" onclick="processQueue()" style="margin-top:10px;font-size:0.8rem;padding:8px;width:auto">🔄 Kirim Sekarang</button>`;
-  }
-  go(6);
-}
-
-async function sendWAQueued(data) {
-  showProgressIndicator('📡 Menghubungkan internet...');
-  
-  try {
-    // Sheets dulu
-    const sheetRes = await postToSheet({ action: "submit", ...data });
-    if (sheetRes && sheetRes.ok) data.rowId = sheetRes.rowId;
+  try{
+    showProgress('💾 Menyimpan ke Google Sheets...');
+    const sheetRes = await postToSheet({action: "submit", ...data});
+    data.rowId = sheetRes.rowId;
     
-    // WA **HANYA ke Supervisor** (HSE skip di sini)
+    showProgress('📱 Membuka WhatsApp...');
     const enc = LZ.compress(JSON.stringify(data));
-    const vUrl = `${BASE}?v=${enc}`;
-    const hzText = (data.hz||[]).map(h=>`• ${h.name}\n  🛡️ Kontrol: ${h.control||'-'}`).join('\n');
-    const msg = `🔔 *SAFETY CHECKLIST — MOHON VERIFIKASI*\n\n👷 Pekerja: ${data.n}\n🪪 ID: ${data.nid}\n📞 HP: ${data.p}\n💼 Posisi: ${data.pt}\n📍 Lokasi: ${data.l}\n📅 ${data.tgl} | ⏰ ${data.jam}\n\n📝 Pekerjaan:\n${data.job}\n\n⚠️ Potensi Bahaya & Kontrol:\n${hzText}\n\n🦺 APD:\n${(data.ct||[]).map(c=>'• '+c).join('\n')||'-'}\n\n✅ *Klik untuk verifikasi:*\n${vUrl}`;
-
-    window.open(`https://wa.me/${data.spv_wa.replace(/^0/, '62')}?text=${encodeURIComponent(msg)}`, '_blank');
+    const vUrl = `${BASE_URL}?v=${enc}`;
     
-    hideProgressIndicator();
-    return true;
-  } catch(e) {
-    console.error('Send failed:', e);
+    const hzText = data.hz.map(h=>`• ${h.name}\n  🛡️ ${h.control}`).join('\n');
+    const msg = `🔔 *SAFETY CHECKLIST - VERIFIKASI*\n\n👷 ${data.n}\n🪪 ${data.nid}\n📞 ${data.p}\n💼 ${data.pt}\n📍 ${data.l}\n📅 ${data.tgl} ${data.jam}\n\n📝 ${data.job}\n\n⚠️ BAHAYA:\n${hzText}\n\n🛡️ APD: ${data.ct.join(', ') || '-'}\n\n✅ *Verifikasi sekarang:*\n${vUrl}`;
+    
+    window.open(`https://wa.me/${data.spv_wa.replace(/^0/,'62')}?text=${encodeURIComponent(msg)}`, '_blank');
+    
+    localStorage.removeItem('safetyDraft');
+    go(6);
+    document.getElementById('sentInfo').innerHTML = `
+      <strong>✅ Terkirim ke ${data.spv_name}!</strong><br>
+      ID: <strong>${data.rowId}</strong><br>
+      <small>HSE akan diberitahu setelah approval</small>
+    `;
+    
+  }catch(e){
+    console.error(e);
     saveToQueue(data);
-    showProgressIndicator('⚠️ Sinyal lemah\nData tersimpan & akan terkirim otomatis');
-    setTimeout(hideProgressIndicator, 4000);
-    return false;
+    alert('⚠️ Offline mode: Data tersimpan lokal & akan terkirim otomatis');
+    go(6);
+    document.getElementById('sentInfo').innerHTML = `
+      <strong>💾 Tersimpan Lokal (Offline)</strong><br>
+      ID Draft: ${Date.now()}<br>
+      <small>Otomatis sync saat online</small>
+    `;
   }
 }
+
+/* ============================================================
+   DRAFT & PERSISTENCE
+   ============================================================ */
+function autoSaveDraft(){
+  const draft = {S, HC, HZ, CT, customHazards};
+  localStorage.setItem('safetyDraft', LZ.compress(JSON.stringify(draft)));
+}
+
+function loadDraft(){
+  try{
+    const draftStr = localStorage.getItem('safetyDraft');
+    if(!draftStr) return;
+    
+    const draft = JSON.parse(LZ.decompress(draftStr));
+    Object.assign(S, draft.S || {});
+    Object.assign(HC, draft.HC || {});
+    Object.assign(HZ, draft.HZ || {});
+    Object.assign(CT, draft.CT || {});
+    customHazards = draft.customHazards || [];
+    S.spvIdx = draft.S?.spvIdx || null;
+  }catch(e){
+    console.warn('Draft corrupt, ignore');
+  }
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+init();
+processQueue(); // Coba process queue lama
+</script>
+</
