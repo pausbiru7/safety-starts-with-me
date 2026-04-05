@@ -501,8 +501,26 @@ function renderHazardList(){
 function toggleHZ(key, event){
   const cb = document.getElementById(key);
   if(!cb) return;
-  HZ[key].checked = cb.checked;
 
+  /* FIX: Toggle manual karena event fired sebelum checkbox berubah */
+  if(event && event.target === cb){
+    /* Klik langsung di checkbox — biarkan browser handle, 
+       ambil nilai setelah browser update */
+    setTimeout(() => {
+      HZ[key].checked = cb.checked;
+      updateHZBox(key);
+      autoSaveDraft();
+    }, 0);
+  } else {
+    /* Klik di div — toggle manual */
+    cb.checked = !cb.checked;
+    HZ[key].checked = cb.checked;
+    updateHZBox(key);
+    autoSaveDraft();
+  }
+}
+
+function updateHZBox(key){
   const box = document.getElementById('ctrl_' + key);
   if(!box) return;
 
@@ -514,8 +532,11 @@ function toggleHZ(key, event){
     }, 100);
   } else {
     box.style.display = 'none';
+    /* Reset control jika unchecked */
+    const ta = document.getElementById('ctrltext_' + key);
+    if(ta) ta.value = '';
+    HZ[key].control = '';
   }
-  autoSaveDraft();
 }
 
 function renderCustomHazardList(){
@@ -602,13 +623,28 @@ function renderCTList(){
 function toggleCT(key, event){
   const cb = document.getElementById(key);
   if(!cb) return;
-  CT[key] = cb.checked;
+
+  /* FIX: Sama seperti toggleHZ */
+  if(event && event.target === cb){
+    setTimeout(() => {
+      CT[key] = cb.checked;
+      updateCTBox(key, cb);
+      autoSaveDraft();
+    }, 0);
+  } else {
+    cb.checked = !cb.checked;
+    CT[key] = cb.checked;
+    updateCTBox(key, cb);
+    autoSaveDraft();
+  }
+}
+
+function updateCTBox(key, cb){
   const parent = cb.closest('.hazard-check');
   if(parent){
     parent.style.borderColor = CT[key] ? '#059669' : '#e5e7eb';
     parent.style.background  = CT[key] ? '#f0fdf4' : '#fff';
   }
-  autoSaveDraft();
 }
 
 /* --- STEP 5: REVIEW --- */
