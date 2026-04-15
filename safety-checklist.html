@@ -479,7 +479,8 @@ function renderHazardList(){
       html += `
         <div class="hazard-check" onclick="toggleHZ('${key}',event)">
           <input type="checkbox" id="${key}" ${checked ? 'checked' : ''}
-            onclick="event.stopPropagation()">
+  onchange="HZ['${key}'].checked=this.checked;updateHZBox('${key}');autoSaveDraft()"
+  onclick="event.stopPropagation()">
           <label for="${key}" onclick="event.stopPropagation()">${escHtml(item)}</label>
         </div>
         <div class="control-box" id="ctrl_${key}"
