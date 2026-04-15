@@ -1135,9 +1135,15 @@ function buildData(){
 }
 
 function buildSummaryHTML(d){
-  const hcIcons = Object.values(d.hc || {})
-    .map(v => v === 'ya' ? '✅' : '❌').join(' ');
-
+  const HC_LABELS = {
+    hc1: 'Merasa sehat hari ini',
+    hc2: 'Tidur cukup (min. 6 jam)',
+    hc3: 'Bebas obat-obatan/alkohol',
+    hc4: 'Memahami pekerjaan & risiko'
+  };
+  const hcIcons = Object.entries(d.hc || {})
+    .map(([k,v]) => `${v === 'ya' ? '✅' : '❌'} ${HC_LABELS[k] || k}`)
+    .join('<br>');
   const hzHTML = (d.hz || []).map(h => `
     <div style="margin:6px 0;padding:8px;background:#fff;
       border-radius:8px;border-left:3px solid #ef4444">
@@ -1146,11 +1152,9 @@ function buildSummaryHTML(d){
         🛡️ ${escHtml(h.control)}
       </span>
     </div>`).join('');
-
   const ctText = (d.ct || []).length > 0
     ? d.ct.map(c => escHtml(c)).join(', ')
     : '<em style="color:#9ca3af">Tidak ada APD dipilih</em>';
-
   return `
     <strong>👤 ${escHtml(d.n)}</strong>
     &nbsp;|&nbsp; 🪪 ${escHtml(d.nid)}
@@ -1160,7 +1164,7 @@ function buildSummaryHTML(d){
     <strong>📅 ${escHtml(d.tgl)}</strong>
     &nbsp;|&nbsp; ⏰ ${escHtml(d.jam)}
     <hr>
-    <strong>❤️ Kesehatan:</strong> ${hcIcons}<br>
+    <strong>❤️ Kesehatan:</strong><br>${hcIcons}<br>
     <strong>📝 Pekerjaan:</strong> ${escHtml(d.job)}
     <hr>
     <strong>⚠️ Potensi Bahaya (${(d.hz || []).length}):</strong>
