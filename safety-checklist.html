@@ -613,7 +613,8 @@ function renderCTList(){
           border-radius:10px;margin-bottom:8px;padding:12px;
           background:${CT[key] ? '#f0fdf4' : '#fff'};transition:all .2s">
         <input type="checkbox" id="${key}" ${CT[key] ? 'checked' : ''}
-          onclick="event.stopPropagation()">
+  onchange="CT['${key}'] = this.checked; updateCTBox('${key}', this); autoSaveDraft();"
+  onclick="event.stopPropagation()">
         <label for="${key}" onclick="event.stopPropagation()"
           style="font-weight:600;cursor:pointer">${escHtml(item)}</label>
       </div>`;
