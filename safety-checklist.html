@@ -1181,7 +1181,11 @@ function buildSummaryHTML(d){
    ============================================================ */
 async function submitChecklist(){
   const data = buildData();
-
+  
+  // DEBUG: Cek data sebelum kirim
+  console.log('🔍 Debug S.ct (state APD):', S.ct);
+  console.log('📦 Debug data.ct (hasil buildData):', data.ct);
+  console.log('📋 Full Data:', data);
   if(!data.n || !data.spv_wa){
     showAlert('Data tidak lengkap. Kembali dan periksa kembali.');
     return;
