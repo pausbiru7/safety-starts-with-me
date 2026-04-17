@@ -678,6 +678,10 @@ function renderStep5(){
 /* --- STEP 6: SUKSES --- */
 /* FIX: render dulu sebelum goStep(6) dipanggil */
 function renderStep6(rowId, spvName){
+  /* Ambil data WA SPV untuk fallback link */
+  const d     = buildData();
+  const spvWA = d.spv_wa.replace(/^0/, '62').replace(/[^0-9]/g, '');
+
   document.getElementById('step6').innerHTML = `
     <div class="result-card">
       <div class="big">📨</div>
@@ -695,11 +699,31 @@ function renderStep6(rowId, spvName){
           Anda akan mendapat notifikasi WhatsApp setelah supervisor memverifikasi
         </small>
       </div>
-      <button class="btn btn-primary" style="margin-top:24px"
+
+      <!-- FALLBACK jika WA tidak terbuka otomatis -->
+      <div style="background:#fef9c3;border:1px solid #fbbf24;
+        border-radius:10px;padding:12px;margin-top:16px;
+        font-size:.85rem;color:#92400e;text-align:center">
+        ⚠️ Jika WhatsApp supervisor belum terbuka otomatis,<br>
+        <a id="linkResendSPV" href="#"
+          style="color:#2563eb;font-weight:700;
+            text-decoration:underline;margin-top:4px;display:inline-block">
+          👆 Klik di sini untuk kirim ulang ke Supervisor
+        </a>
+      </div>
+
+      <button class="btn btn-primary" style="margin-top:24px;width:100%"
         onclick="resetApp()">
         🔄 Buat Checklist Baru
       </button>
     </div>`;
+
+  /* Set link fallback setelah render selesai */
+  const linkEl = document.getElementById('linkResendSPV');
+  if(linkEl && window._waSPVLink){
+    linkEl.href = window._waSPVLink;
+    linkEl.target = '_blank';
+  }
 }
 
 /* ============================================================
@@ -1255,12 +1279,15 @@ async function submitChecklist(){
   /* Bersihkan draft */
   localStorage.removeItem('safetyDraft');
 
-  /* Buka WA supervisor */
-  const spvWA = data.spv_wa.replace(/^0/, '62').replace(/[^0-9]/g, '');
-  window.open(
-    `https://wa.me/${spvWA}?text=${encodeURIComponent(msg)}`,
-    '_blank'
-  );
+/* Buka WA supervisor */
+  const spvWA  = data.spv_wa.replace(/^0/, '62').replace(/[^0-9]/g, '');
+  const waLink = `https://wa.me/${spvWA}?text=${encodeURIComponent(msg)}`;
+
+  /* Simpan link untuk fallback di Step 6 */
+  window._waSPVLink = waLink;
+
+  /* Buka WA */
+  window.open(waLink, '_blank');
 
   /* FIX: render dulu, baru goStep */
   renderStep6(rowId, data.spv_name);
