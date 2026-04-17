@@ -848,21 +848,33 @@ async function doReject(){
    NOTIFIKASI KE WORKER & HSE
    FIX: Kurung kurawal berlebih dihapus
    ============================================================ */
+let _notifStep = 1;
 function kirimSemuaNotif(btn){
-  /* Buka keduanya dalam 1 user gesture — browser tidak blokir */
-  window.open(window._waWorkerLink, '_blank');
-  window.open(window._waHSELink,    '_blank');
-  /* Update tampilan tombol */
-  btn.innerHTML        = '✅ Notifikasi Terkirim!';
-  btn.disabled         = true;
-  btn.style.background = '#9ca3af';
-  /* Update hint text */
-  const hint = btn.nextElementSibling;
-  if(hint){
-    hint.innerHTML =
-      '<span style="color:#059669;font-weight:700">' +
-      '✅ Notifikasi ke Pekerja & HSE sudah terkirim! 🎉' +
-      '</span>';
+  const hint = document.getElementById('notifHint');
+  if(_notifStep === 1){
+    /* KLIK PERTAMA: Kirim ke Pekerja */
+    window.open(window._waWorkerLink, '_blank');
+    _notifStep = 2;
+    btn.innerHTML        = '📱 Lanjut: Kirim Laporan ke HSE →';
+    btn.style.background = '#3b82f6';
+    if(hint){
+      hint.innerHTML =
+        '<span style="color:#059669">✅ Notifikasi Pekerja terkirim!</span><br>' +
+        '<span style="color:#3b82f6">👆 Klik tombol lagi untuk kirim ke HSE</span>';
+    }
+  } else if(_notifStep === 2){
+    /* KLIK KEDUA: Kirim ke HSE */
+    window.open(window._waHSELink, '_blank');
+    _notifStep = 3;
+    btn.innerHTML        = '✅ Semua Notifikasi Terkirim!';
+    btn.disabled         = true;
+    btn.style.background = '#9ca3af';
+    if(hint){
+      hint.innerHTML =
+        '<span style="color:#059669;font-weight:700">' +
+        '✅ Notifikasi Pekerja & HSE sudah terkirim! 🎉' +
+        '</span>';
+    }
   }
 }
   function kirimNotifikasiKeWorker(data){
@@ -976,7 +988,7 @@ function showDone(enc){
     infoClass   = 'rejected';
   }
   /* --- TOMBOL 1 KLIK KIRIM KE PEKERJA & HSE --- */
-  const notifSection = hasSV ? `
+ const notifSection = hasSV ? `
     <div style="margin-top:16px">
       <p style="font-weight:700;color:#374151;margin-bottom:10px;font-size:.95rem">
         📤 Kirim Notifikasi:
@@ -988,9 +1000,10 @@ function showDone(enc){
         onclick="kirimSemuaNotif(this)">
         📱 Kirim Notifikasi ke Pekerja & HSE
       </button>
-      <p style="text-align:center;font-size:.8rem;
-        color:#6b7280;margin-top:8px">
-        Pekerja & HSE akan menerima notifikasi sekaligus
+      <p id="notifHint"
+        style="text-align:center;font-size:.8rem;
+          color:#6b7280;margin-top:8px">
+        Klik tombol 2x: pertama ke Pekerja, kedua ke HSE
       </p>
     </div>` : '';
   document.getElementById('SD').innerHTML = `
