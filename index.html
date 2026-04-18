@@ -988,56 +988,8 @@ function showDone(enc){
     infoClass   = 'rejected';
   }
   /* --- TOMBOL 1 KLIK KIRIM KE PEKERJA & HSE --- */
- const notifSection = hasSV ? `
-    <div style="margin-top:16px">
-      <p style="font-weight:700;color:#374151;margin-bottom:10px;font-size:.95rem">
-        📤 Kirim Notifikasi:
-      </p>
-      <button
-        id="btnKirimNotif"
-        class="btn btn-approve"
-        style="width:100%;font-size:.95rem;padding:14px"
-        onclick="kirimSemuaNotif(this)">
-        📱 Kirim Notifikasi ke Pekerja & HSE
-      </button>
-      <p id="notifHint"
-        style="text-align:center;font-size:.8rem;
-          color:#6b7280;margin-top:8px">
-        Klik tombol 2x: pertama ke Pekerja, kedua ke HSE
-      </p>
-    </div>` : '';
-  document.getElementById('SD').innerHTML = `
-    <div class="result-card">
-      <div class="big">${statusIcon}</div>
-      <h2 style="color:${statusColor};font-size:1.6rem;font-weight:900">
-        ${statusText}
-      </h2>
-      <p style="color:#6b7280;margin-top:8px">
-        ${hasSV ? data.sv.time : 'Checklist berhasil dikirim ke supervisor'}
-      </p>
-    </div>
-    <div class="section">
-      <div class="sbox">${buildSummaryHTML(data)}</div>
-      ${hasSV ? `
-        <div class="sent-info ${infoClass}">
-          <strong>👨‍💼 Supervisor: ${escHtml(data.sv.nama)}</strong><br>
-          ${data.sv.note
-            ? `<strong>${isApproved ? '📝 Catatan' : '📝 Alasan'}:</strong>
-               ${escHtml(data.sv.note)}<br>`
-            : ''}
-          <small>🕐 ${escHtml(data.sv.time)}</small>
-        </div>` : `
-        <div class="sent-info">
-          <strong>⏳ Menunggu verifikasi supervisor</strong><br>
-          <small>Supervisor akan memverifikasi via WhatsApp</small>
-        </div>`}
-      ${notifSection}
-      <button class="btn btn-primary" style="margin-top:16px;width:100%"
-        onclick="location.href='.'">
-        🔄 Buat Checklist Baru
-      </button>
-    </div>`;
-}
+ const notifSection = '';
+   
 
 /* ============================================================
    NAVIGASI & VALIDASI
