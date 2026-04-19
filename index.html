@@ -988,7 +988,39 @@ function showDone(enc){
     infoClass   = 'rejected';
   }
   /* --- TOMBOL 1 KLIK KIRIM KE PEKERJA & HSE --- */
- const notifSection = '';
+ const notifSection = (hasSV)
+    ? `<div style="margin-top:20px;text-align:center">
+         <button class="btn btn-wa" onclick="kirimSemuaNotif(this)"
+           style="width:100%">
+           📱 Kirim Notifikasi ke Pekerja
+         </button>
+         <p id="notifHint" style="font-size:.82rem;color:#6b7280;margin-top:8px">
+           Klik tombol di atas untuk mengirim notifikasi bertahap
+         </p>
+       </div>`
+    : '';
+
+  document.getElementById('SD').innerHTML = `
+    <div class="section">
+      <div class="result-card">
+        <div class="big">${statusIcon}</div>
+        <h2 style="color:${statusColor};font-size:1.6rem;font-weight:900">
+          ${statusText}
+        </h2>
+      </div>
+      <div class="sbox">${buildSummaryHTML(data)}</div>
+      ${hasSV ? `
+        <div class="sent-info ${infoClass}">
+          <strong>👨‍💼 Supervisor: ${escHtml(data.sv.nama)}</strong><br>
+          Status: <strong>${escHtml(data.sv.status)}</strong><br>
+          ${data.sv.note ? `📝 Catatan: ${escHtml(data.sv.note)}<br>` : ''}
+          🕐 Waktu: ${escHtml(data.sv.time)}
+        </div>` : ''}
+      ${notifSection}
+      <button class="btn btn-primary" style="margin-top:24px"
+        onclick="location.href='.'">🔄 Kembali ke Beranda</button>
+    </div>`;
+}
    
 
 /* ============================================================
