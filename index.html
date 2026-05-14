@@ -782,27 +782,32 @@ function showSupervisor(enc){
 async function doApprove(){
   const svNama = document.getElementById('svNama').value.trim();
   const svNote = document.getElementById('svNote').value.trim();
-  if(!svNama){ showAlert('Masukkan nama supervisor terlebih dahulu'); return; }
+  if(!svNama){ 
+    showAlert('Masukkan nama supervisor terlebih dahulu'); 
+    return; 
+  }
 
-  const data = window._svData;
+  const data = window.svData;
   data.sv = {
     nama   : svNama,
     status : 'APPROVED',
     note   : svNote,
-    time   : new Date().toLocaleString('id-ID')
+    time   : formatIDDateTime(new Date())
   };
 
   showProgress('📤 Menyimpan ke Google Sheets...', 'Mohon tunggu');
   try{
     await postToGAS({
-      action  : 'respond',
-      rowId   : data.rowId,
-      status  : 'APPROVED',
-      sv_name : svNama,
-      sv_note : svNote,
-      sv_time : data.sv.time
+      action : 'respond',
+      rowId  : data.rowId,
+      status : 'APPROVED',
+      svname : svNama,
+      svnote : svNote,
+      svtime : data.sv.time
     });
-  }catch(e){ console.warn('GAS respond failed (non-critical):', e.message); }
+  }catch(e){ 
+    console.warn('GAS respond failed (non-critical):', e.message); 
+  }
   hideProgress();
 
   kirimNotifikasiKeWorker(data);
@@ -814,28 +819,36 @@ async function doApprove(){
 async function doReject(){
   const svNama = document.getElementById('svNama').value.trim();
   const svNote = document.getElementById('svNote').value.trim();
-  if(!svNama){ showAlert('Masukkan nama supervisor terlebih dahulu'); return; }
-  if(!svNote){ showAlert('Berikan alasan penolakan terlebih dahulu'); return; }
+  if(!svNama){ 
+    showAlert('Masukkan nama supervisor terlebih dahulu'); 
+    return; 
+  }
+  if(!svNote){ 
+    showAlert('Berikan alasan penolakan terlebih dahulu'); 
+    return; 
+  }
 
-  const data = window._svData;
+  const data = window.svData;
   data.sv = {
     nama   : svNama,
     status : 'REJECTED',
     note   : svNote,
-    time   : new Date().toLocaleString('id-ID')
+    time   : formatIDDateTime(new Date())
   };
 
   showProgress('📤 Menyimpan ke Google Sheets...', 'Mohon tunggu');
   try{
     await postToGAS({
-      action  : 'respond',
-      rowId   : data.rowId,
-      status  : 'REJECTED',
-      sv_name : svNama,
-      sv_note : svNote,
-      sv_time : data.sv.time
+      action : 'respond',
+      rowId  : data.rowId,
+      status : 'REJECTED',
+      svname : svNama,
+      svnote : svNote,
+      svtime : data.sv.time
     });
-  }catch(e){ console.warn('GAS respond failed (non-critical):', e.message); }
+  }catch(e){ 
+    console.warn('GAS respond failed (non-critical):', e.message); 
+  }
   hideProgress();
 
   kirimNotifikasiKeWorker(data);
@@ -1334,7 +1347,14 @@ function loadDraft(){
 /* ============================================================
    UTILITY FUNCTIONS
    ============================================================ */
-
+function formatIDDateTime(d = new Date()) {
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const yyyy = d.getFullYear();
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mi = String(d.getMinutes()).padStart(2, "0");
+  return `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
+}
 /* Sanitasi input — cegah XSS */
 function sanitize(str){
   if(typeof str !== 'string') return '';
