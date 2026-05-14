@@ -838,8 +838,8 @@ function showSupervisor(enc){
     return;
   }
 
-  window._svData = data;
-  window._svEnc  = enc;
+  window.svData = data;
+  window.svEnc  = enc;
 
   document.getElementById('SM').innerHTML = `
     <div class="sv-banner">
@@ -853,23 +853,24 @@ function showSupervisor(enc){
       <label>Nama Supervisor *</label>
       <input type="text" id="svNama"
         placeholder="Masukkan nama lengkap supervisor"
-        value="${escHtml(data.spv_name || '')}">
+        value="${escHtml(data.spvname || '')}">
 
       <label>Catatan (opsional)</label>
       <textarea id="svNote" rows="3"
         placeholder="Catatan persetujuan atau alasan penolakan..."></textarea>
 
       <div class="row">
-        <button class="btn btn-approve" onclick="doApprove()">✅ SETUJUI</button>
-        <button class="btn btn-reject"  onclick="doReject()">❌ TOLAK</button>
+        <button type="button" class="btn btn-approve" onclick="doApprove()">✅ SETUJUI</button>
+        <button type="button" class="btn btn-reject" onclick="doReject()">❌ TOLAK</button>
       </div>
-      <button class="btn btn-back" onclick="history.back()">← Kembali</button>
+      <button type="button" class="btn btn-back" onclick="history.back()">← Kembali</button>
     </div>`;
 }
 
 async function doApprove(){
   console.log('doApprove jalan');
   alert('doApprove jalan');
+
   const svNamaEl = document.getElementById('svNama');
   const svNoteEl = document.getElementById('svNote');
 
@@ -881,7 +882,12 @@ async function doApprove(){
     return;
   }
 
-  const data = window.svData || {};
+  const data = window.svData;
+  if(!data){
+    showAlert('Data supervisor tidak ditemukan. Buka ulang link verifikasi.');
+    return;
+  }
+
   data.sv = {
     nama   : svNama,
     status : 'APPROVED',
@@ -896,8 +902,9 @@ async function doApprove(){
       action  : 'respond',
       rowId   : data.rowId,
       status  : 'APPROVED',
-      sv_name : svNama,
-      sv_note : svNote
+      svname  : svNama,
+      svnote  : svNote,
+      svtime  : data.sv.time
     });
   }catch(e){
     console.warn('GAS respond failed:', e.message);
@@ -910,19 +917,29 @@ async function doApprove(){
   showDone(enc);
 }
 window.doApprove = doApprove;
+
 async function doReject(){
-  const svNama = document.getElementById('svNama').value.trim();
-  const svNote = document.getElementById('svNote').value.trim();
-  if(!svNama){ 
-    showAlert('Masukkan nama supervisor terlebih dahulu'); 
-    return; 
+  const svNamaEl = document.getElementById('svNama');
+  const svNoteEl = document.getElementById('svNote');
+
+  const svNama = svNamaEl ? svNamaEl.value.trim() : '';
+  const svNote = svNoteEl ? svNoteEl.value.trim() : '';
+
+  if(!svNama){
+    showAlert('Masukkan nama supervisor terlebih dahulu');
+    return;
   }
-  if(!svNote){ 
-    showAlert('Berikan alasan penolakan terlebih dahulu'); 
-    return; 
+  if(!svNote){
+    showAlert('Berikan alasan penolakan terlebih dahulu');
+    return;
   }
 
   const data = window.svData;
+  if(!data){
+    showAlert('Data supervisor tidak ditemukan. Buka ulang link verifikasi.');
+    return;
+  }
+
   data.sv = {
     nama   : svNama,
     status : 'REJECTED',
@@ -940,17 +957,17 @@ async function doReject(){
       svnote : svNote,
       svtime : data.sv.time
     });
-  }catch(e){ 
-    console.warn('GAS respond failed (non-critical):', e.message); 
+  }catch(e){
+    console.warn('GAS respond failed (non-critical):', e.message);
   }
-  hideProgress();
 
+  hideProgress();
   kirimNotifikasiKeWorker(data);
 
   const enc = LZ.compress(JSON.stringify(data));
   showDone(enc);
 }
-
+window.doReject = doReject;
 /* ============================================================
    NOTIFIKASI KE WORKER & HSE
    FIX: Kurung kurawal berlebih dihapus
