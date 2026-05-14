@@ -308,6 +308,7 @@ function renderStep1(){
     <div class="section-title">
       <span class="icon icon-blue">👤</span>Data Diri Pekerja
     </div>
+
     <label>Nama Lengkap *</label>
     <input type="text" id="nama" placeholder="Masukkan nama lengkap"
       value="${escHtml(S.n)}" oninput="autoSaveDraft()">
@@ -321,8 +322,80 @@ function renderStep1(){
       value="${escHtml(S.p)}" oninput="autoSaveDraft()">
 
     <label>Posisi / Jabatan *</label>
-    <input type="text" id="posisi" placeholder="Operator, Teknisi, dll"
-      value="${escHtml(S.pt)}" oninput="autoSaveDraft()">
+    <select id="posisi" onchange="togglePosisiLainnya(); autoSaveDraft()">
+      <option value="">-- Pilih Posisi / Jabatan --</option>
+      ${[
+        "CREW",
+        "ELECTRICIAN",
+        "PLUMBER",
+        "LH ELECTRIC",
+        "FOREMAN ELECTRIC",
+        "LH MECHANICAL",
+        "FOREMAN MECHANICAL",
+        "HSE",
+        "QA/QC",
+        "SUPERVISOR ELECTRIC",
+        "SUPERVISOR MECHANICAL",
+        "LAINNYA"
+      ].map(v => {
+        const selected = (
+          S.pt === v ||
+          (v === "LAINNYA" && S.pt && ![
+            "CREW",
+            "ELECTRICIAN",
+            "PLUMBER",
+            "LH ELECTRIC",
+            "FOREMAN ELECTRIC",
+            "LH MECHANICAL",
+            "FOREMAN MECHANICAL",
+            "HSE",
+            "QA/QC",
+            "SUPERVISOR ELECTRIC",
+            "SUPERVISOR MECHANICAL"
+          ].includes(S.pt))
+        ) ? 'selected' : '';
+        return `<option value="${v}" ${selected}>${v}</option>`;
+      }).join('')}
+    </select>
+
+    <div id="posisiLainnyaWrap" style="
+      display:${(
+        S.pt &&
+        ![
+          "CREW",
+          "ELECTRICIAN",
+          "PLUMBER",
+          "LH ELECTRIC",
+          "FOREMAN ELECTRIC",
+          "LH MECHANICAL",
+          "FOREMAN MECHANICAL",
+          "HSE",
+          "QA/QC",
+          "SUPERVISOR ELECTRIC",
+          "SUPERVISOR MECHANICAL"
+        ].includes(S.pt)
+      ) ? 'block' : 'none'};
+    ">
+      <label>Isi Posisi Lainnya *</label>
+      <input type="text" id="posisiLainnya" placeholder="Tulis posisi / jabatan"
+        value="${(
+          S.pt &&
+          ![
+            "CREW",
+            "ELECTRICIAN",
+            "PLUMBER",
+            "LH ELECTRIC",
+            "FOREMAN ELECTRIC",
+            "LH MECHANICAL",
+            "FOREMAN MECHANICAL",
+            "HSE",
+            "QA/QC",
+            "SUPERVISOR ELECTRIC",
+            "SUPERVISOR MECHANICAL"
+          ].includes(S.pt)
+        ) ? escHtml(S.pt) : ''}"
+        oninput="autoSaveDraft()">
+    </div>
 
     <label>Lokasi Kerja Hari Ini *</label>
     <input type="text" id="lokasi" placeholder="Area/Site kerja"
@@ -348,6 +421,21 @@ function renderStep1(){
   if(S.spvIdx !== null) renderSPVDetail(S.spvIdx);
 }
 
+function togglePosisiLainnya(){
+  const posisi = document.getElementById('posisi');
+  const wrap = document.getElementById('posisiLainnyaWrap');
+  const input = document.getElementById('posisiLainnya');
+
+  if(!posisi || !wrap) return;
+
+  if(posisi.value === 'LAINNYA'){
+    wrap.style.display = 'block';
+    if(input) setTimeout(() => input.focus(), 100);
+  } else {
+    wrap.style.display = 'none';
+    if(input) input.value = '';
+  }
+}
 function selectSPV(val){
   S.spvIdx = val === '' ? null : parseInt(val);
   renderSPVDetail(S.spvIdx);
@@ -1039,18 +1127,26 @@ function showDone(enc){
 /* ============================================================
    NAVIGASI & VALIDASI
    ============================================================ */
-function next1(){
-  S.n   = sanitize(document.getElementById('nama').value);
-  S.nid = sanitize(document.getElementById('nid').value);
-  S.p   = document.getElementById('telp').value.replace(/[^0-9]/g, '');
-  S.pt  = sanitize(document.getElementById('posisi').value);
-  S.l   = sanitize(document.getElementById('lokasi').value);
+S.n   = sanitize(document.getElementById('nama').value);
+S.nid = sanitize(document.getElementById('nid').value);
+S.p   = document.getElementById('telp').value.replace(/[^0-9]/g, '');
+
+const posisiEl = document.getElementById('posisi');
+const posisiLainnyaEl = document.getElementById('posisiLainnya');
+
+if(posisiEl && posisiEl.value === 'LAINNYA'){
+  S.pt = sanitize(posisiLainnyaEl ? posisiLainnyaEl.value : '');
+} else {
+  S.pt = sanitize(posisiEl ? posisiEl.value : '');
+}
+
+S.l = sanitize(document.getElementById('lokasi').value);
 
   if(!S.n || !S.nid || !S.p || !S.pt || !S.l){
     showAlert('⚠️ Lengkapi semua field yang bertanda *');
     return;
   }
-  if(!/^08\d{8,12}$/.test(S.p)){
+ if(!/^08[0-9]{8,12}$/.test(S.p)){
     showAlert('⚠️ Format nomor WA tidak valid.\nContoh: 08123456789');
     return;
   }
