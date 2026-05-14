@@ -907,7 +907,7 @@ async function doApprove(){
   const enc = LZ.compress(JSON.stringify(data));
   showDone(enc);
 }
-
+window.doApprove = doApprove;
 async function doReject(){
   const svNama = document.getElementById('svNama').value.trim();
   const svNote = document.getElementById('svNote').value.trim();
