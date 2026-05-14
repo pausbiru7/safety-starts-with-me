@@ -1127,7 +1127,8 @@ function showDone(enc){
 /* ============================================================
    NAVIGASI & VALIDASI
    ============================================================ */
-S.n   = sanitize(document.getElementById('nama').value);
+function next1(){
+  S.n   = sanitize(document.getElementById('nama').value);
 S.nid = sanitize(document.getElementById('nid').value);
 S.p   = document.getElementById('telp').value.replace(/[^0-9]/g, '');
 
@@ -1147,7 +1148,7 @@ S.l = sanitize(document.getElementById('lokasi').value);
     return;
   }
  if(!/^08[0-9]{8,12}$/.test(S.p)){
-    showAlert('⚠️ Format nomor WA tidak valid.\nContoh: 08123456789');
+    showAlert('⚠️ Format nomor WA tidak valid.<br>Contoh: 08123456789');
     return;
   }
   /* FIX: Validasi spvIdx yang benar */
