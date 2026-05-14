@@ -868,14 +868,18 @@ function showSupervisor(enc){
 }
 
 async function doApprove(){
-  const svNama = document.getElementById('svNama').value.trim();
-  const svNote = document.getElementById('svNote').value.trim();
-  if(!svNama){ 
-    showAlert('Masukkan nama supervisor terlebih dahulu'); 
-    return; 
+  const svNamaEl = document.getElementById('svNama');
+  const svNoteEl = document.getElementById('svNote');
+
+  const svNama = svNamaEl ? svNamaEl.value.trim() : '';
+  const svNote = svNoteEl ? svNoteEl.value.trim() : '';
+
+  if(!svNama){
+    showAlert('Masukkan nama supervisor terlebih dahulu');
+    return;
   }
 
-  const data = window.svData;
+  const data = window.svData || {};
   data.sv = {
     nama   : svNama,
     status : 'APPROVED',
@@ -884,20 +888,20 @@ async function doApprove(){
   };
 
   showProgress('📤 Menyimpan ke Google Sheets...', 'Mohon tunggu');
+
   try{
     await postToGAS({
-      action : 'respond',
-      rowId  : data.rowId,
-      status : 'APPROVED',
-      svname : svNama,
-      svnote : svNote,
-      svtime : data.sv.time
+      action  : 'respond',
+      rowId   : data.rowId,
+      status  : 'APPROVED',
+      sv_name : svNama,
+      sv_note : svNote
     });
-  }catch(e){ 
-    console.warn('GAS respond failed (non-critical):', e.message); 
+  }catch(e){
+    console.warn('GAS respond failed:', e.message);
   }
-  hideProgress();
 
+  hideProgress();
   kirimNotifikasiKeWorker(data);
 
   const enc = LZ.compress(JSON.stringify(data));
