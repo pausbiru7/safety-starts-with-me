@@ -1355,6 +1355,7 @@ async function submitChecklist(){
   console.log('🔍 Debug S.ct (state APD):', S.ct);
   console.log('📦 Debug data.ct (hasil buildData):', data.ct);
   console.log('📋 Full Data:', data);
+
   if(!data.n || !data.spv_wa){
     showAlert('Data tidak lengkap. Kembali dan periksa kembali.');
     return;
@@ -1374,11 +1375,22 @@ async function submitChecklist(){
     saveToQueue(data);
   }
 
-  hideProgress();
-
   /* Buat URL verifikasi untuk supervisor */
   const enc  = LZ.compress(JSON.stringify(data));
   const vUrl = `${CONFIG.BASE_URL}?v=${enc}`;
+
+  /* SIMPAN LINK VERIFIKASI KE KOLOM S DI SPREADSHEET */
+  try{
+    await postToGAS({
+      action: 'updateVerifyLink',
+      rowId: data.rowId,
+      verifyLink: vUrl
+    });
+  }catch(e){
+    console.warn('Update verifyLink gagal:', e.message);
+  }
+
+  hideProgress();
 
   /* Buat pesan WA supervisor */
   const hzText = data.hz.map(h =>
@@ -1406,7 +1418,7 @@ async function submitChecklist(){
   /* Bersihkan draft */
   localStorage.removeItem('safetyDraft');
 
-/* Buka WA supervisor */
+  /* Buka WA supervisor */
   const spvWA  = data.spv_wa.replace(/^0/, '62').replace(/[^0-9]/g, '');
   const waLink = `https://wa.me/${spvWA}?text=${encodeURIComponent(msg)}`;
 
