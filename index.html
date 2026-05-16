@@ -398,8 +398,64 @@ function renderStep1(){
     </div>
 
     <label>Lokasi Kerja Hari Ini *</label>
-    <input type="text" id="lokasi" placeholder="Area/Site kerja"
-      value="${escHtml(S.l)}" oninput="autoSaveDraft()">
+<select id="lokasiSelect" onchange="toggleLokasiLainnya(); autoSaveDraft()">
+  <option value="">-- Pilih Lokasi Kerja --</option>
+  ${[
+    'PAD 1',
+    'PAD 2',
+    'PAD 3',
+    'PAD 4',
+    'PAD 5',
+    'PAD 6',
+    'PAD 7',
+    'PAD 8',
+    'LAINNYA'
+  ].map(v => {
+    const standar = [
+      'PAD 1',
+      'PAD 2',
+      'PAD 3',
+      'PAD 4',
+      'PAD 5',
+      'PAD 6',
+      'PAD 7',
+      'PAD 8'
+    ];
+    const selected = S.l === v || (v === 'LAINNYA' && S.l && !standar.includes(S.l));
+    return `<option value="${v}" ${selected ? 'selected' : ''}>${v}</option>`;
+  }).join('')}
+</select>
+
+<div id="lokasiLainnyaWrap" style="display:${(
+  S.l &&
+  ![
+    'PAD 1',
+    'PAD 2',
+    'PAD 3',
+    'PAD 4',
+    'PAD 5',
+    'PAD 6',
+    'PAD 7',
+    'PAD 8'
+  ].includes(S.l)
+) ? 'block' : 'none'}">
+  <label>Isi Lokasi Lainnya *</label>
+  <input type="text" id="lokasiLainnya" placeholder="Tulis lokasi kerja"
+    value="${(
+      S.l &&
+      ![
+        'PAD 1',
+        'PAD 2',
+        'PAD 3',
+        'PAD 4',
+        'PAD 5',
+        'PAD 6',
+        'PAD 7',
+        'PAD 8'
+      ].includes(S.l)
+    ) ? escHtml(S.l) : ''}"
+    oninput="autoSaveDraft()">
+</div>
 
     <label>Pilih Supervisor *</label>
     <select id="spvSelect" onchange="selectSPV(this.value)">
@@ -429,6 +485,21 @@ function togglePosisiLainnya(){
   if(!posisi || !wrap) return;
 
   if(posisi.value === 'LAINNYA'){
+    wrap.style.display = 'block';
+    if(input) setTimeout(() => input.focus(), 100);
+  } else {
+    wrap.style.display = 'none';
+    if(input) input.value = '';
+  }
+}
+  function toggleLokasiLainnya(){
+  const lokasi = document.getElementById('lokasiSelect');
+  const wrap = document.getElementById('lokasiLainnyaWrap');
+  const input = document.getElementById('lokasiLainnya');
+
+  if(!lokasi || !wrap) return;
+
+  if(lokasi.value === 'LAINNYA'){
     wrap.style.display = 'block';
     if(input) setTimeout(() => input.focus(), 100);
   } else {
@@ -1161,12 +1232,20 @@ if(posisiEl && posisiEl.value === 'LAINNYA'){
   S.pt = sanitize(posisiEl ? posisiEl.value : '');
 }
 
-S.l = sanitize(document.getElementById('lokasi').value);
+const lokasiEl = document.getElementById('lokasiSelect');
+const lokasiLainnyaEl = document.getElementById('lokasiLainnya');
 
-  if(!S.n || !S.nid || !S.p || !S.pt || !S.l){
-    showAlert('⚠️ Lengkapi semua field yang bertanda *');
-    return;
-  }
+if(lokasiEl && lokasiEl.value === 'LAINNYA'){
+  S.l = sanitize(lokasiLainnyaEl ? lokasiLainnyaEl.value : '');
+} else {
+  S.l = sanitize(lokasiEl ? lokasiEl.value : '');
+}
+
+if(!S.n || !S.nid || !S.p || !S.pt || !S.l){
+  showAlert('⚠️ Lengkapi semua field yang bertanda *');
+  return;
+}
+  
  if(!/^08[0-9]{8,12}$/.test(S.p)){
     showAlert('⚠️ Format nomor WA tidak valid.<br>Contoh: 08123456789');
     return;
