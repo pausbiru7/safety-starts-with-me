@@ -924,7 +924,7 @@ function showSupervisor(enc){
       <label>Nama Supervisor *</label>
       <input type="text" id="svNama"
         placeholder="Masukkan nama lengkap supervisor"
-        value="${escHtml(data.spvname || '')}">
+        value="${escHtml(data.spvname || (data.spvIdx != null ? SUPERVISORS[data.spvIdx].name : ''))}">
 
       <label>Catatan (opsional)</label>
       <textarea id="svNote" rows="3"
