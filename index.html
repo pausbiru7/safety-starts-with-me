@@ -192,11 +192,11 @@ const TOTAL_STEPS = 6;
    ============================================================ */
 function init(){
   const params = new URLSearchParams(location.search);
-  const vParam = params.get('v');
+  const idParam = params.get('id'); // Parameter baru
   const dParam = params.get('d');
 
-  if(vParam){ showSupervisor(vParam); return; }
-  if(dParam){ showDone(dParam); return; }
+  if(idParam){ showSupervisor(idParam); return; }
+  if(dParam){ showDone(dParam); return; } // dParam juga sebaiknya pakai ID di masa depan
 
   loadDraft();
   setDateTime();
@@ -888,54 +888,76 @@ function renderStep6(rowId, spvName){
 /* ============================================================
    SUPERVISOR MODE
    ============================================================ */
-function showSupervisor(enc){
+async function showSupervisor(id){
   document.getElementById('WM').style.display = 'none';
   document.getElementById('SM').style.display = 'block';
 
-  let data;
-  try{
-    const decoded = LZ.decompress(enc);
-    if(!decoded) throw new Error('Decode failed');
-    data = JSON.parse(decoded);
-  }catch(e){
-    document.getElementById('SM').innerHTML = `
-      <div class="section" style="text-align:center;padding:60px 24px">
-        <div style="font-size:3rem;margin-bottom:16px">❌</div>
-        <h3 style="color:#dc2626">Link Tidak Valid</h3>
-        <p style="color:#6b7280;margin-top:8px">
-          Data tidak dapat dibaca. Minta pekerja mengirim ulang checklist.
-        </p>
-      </div>`;
-    return;
-  }
-
-  window.svData = data;
-  window.svEnc  = enc;
-
+  // 1. Tampilkan Loading State sementara menunggu data dari Google Sheets
   document.getElementById('SM').innerHTML = `
     <div class="sv-banner">
       <div style="font-size:2.8rem">🔍</div>
       <h2>Verifikasi Supervisor</h2>
-      <p style="opacity:.9;font-size:.88rem">Periksa & setujui checklist safety pekerja</p>
     </div>
-    <div class="section">
-      <div class="sbox">${buildSummaryHTML(data)}</div>
+    <div class="section" style="text-align:center;padding:60px 24px">
+      <div class="spinner" style="margin:0 auto 16px"></div>
+      <p style="color:#1a5276;font-weight:700">Mengambil data checklist...</p>
+      <small style="color:#6b7280">Mencari ID: ${escHtml(id)}</small>
+    </div>
+  `;
 
-      <label>Nama Supervisor *</label>
-      <input type="text" id="svNama"
-        placeholder="Masukkan nama lengkap supervisor"
-        value="${escHtml(data.spv_name || (data.spvIdx != null ? SUPERVISORS[data.spvIdx].name : ''))}">
+  try {
+    // 2. Minta data ke server (Google Apps Script) berdasarkan ID
+    const res = await postToGAS({ action: 'get', rowId: id });
+    
+    // Jika response gagal atau data tidak ada
+    if(!res || !res.ok || !res.data) {
+        throw new Error(res.error || 'Data tidak ditemukan di server.');
+    }
 
-      <label>Catatan (opsional)</label>
-      <textarea id="svNote" rows="3"
-        placeholder="Catatan persetujuan atau alasan penolakan..."></textarea>
+    const data = res.data;
+    
+    // Simpan ke window agar bisa diakses oleh fungsi doApprove() dan doReject()
+    window.svData = data; 
+    window.svEnc = id; // Kita simpan ID-nya saja sekarang
 
-      <div class="row">
-        <button type="button" class="btn btn-approve" onclick="doApprove()">✅ SETUJUI</button>
-        <button type="button" class="btn btn-reject" onclick="doReject()">❌ TOLAK</button>
+    // 3. Render UI Supervisor setelah data berhasil didapat
+    document.getElementById('SM').innerHTML = `
+      <div class="sv-banner">
+        <div style="font-size:2.8rem">🔍</div>
+        <h2>Verifikasi Supervisor</h2>
+        <p style="opacity:.9;font-size:.88rem">Periksa & setujui checklist safety pekerja</p>
       </div>
-      <button type="button" class="btn btn-back" onclick="history.back()">← Kembali</button>
-    </div>`;
+      <div class="section">
+        <div class="sbox">${buildSummaryHTML(data)}</div>
+
+        <label>Nama Supervisor *</label>
+        <input type="text" id="svNama"
+          placeholder="Masukkan nama lengkap supervisor"
+          value="${escHtml(data.spv_name || (data.spvIdx != null ? SUPERVISORS[data.spvIdx].name : ''))}">
+
+        <label>Catatan (opsional)</label>
+        <textarea id="svNote" rows="3"
+          placeholder="Catatan persetujuan atau alasan penolakan..."></textarea>
+
+        <div class="row">
+          <button type="button" class="btn btn-approve" onclick="doApprove()">✅ SETUJUI</button>
+          <button type="button" class="btn btn-reject" onclick="doReject()">❌ TOLAK</button>
+        </div>
+        <button type="button" class="btn btn-back" onclick="history.back()">← Kembali</button>
+      </div>`;
+
+  } catch(e) {
+    // 4. Tampilkan pesan error jika data tidak ditemukan atau internet putus
+    document.getElementById('SM').innerHTML = `
+      <div class="section" style="text-align:center;padding:60px 24px">
+        <div style="font-size:3rem;margin-bottom:16px">❌</div>
+        <h3 style="color:#dc2626">Gagal Memuat Data</h3>
+        <p style="color:#6b7280;margin-top:8px">
+          ${escHtml(e.message)}<br>Pastikan link valid atau minta pekerja mengirim ulang link.
+        </p>
+        <button class="btn btn-primary" style="margin-top:24px" onclick="location.href='.'">🔄 Ke Halaman Utama</button>
+      </div>`;
+  }
 }
 
 async function doApprove(){
@@ -1455,9 +1477,7 @@ async function submitChecklist(){
     saveToQueue(data);
   }
 
-  /* Buat URL verifikasi untuk supervisor */
-  const enc  = LZ.compress(JSON.stringify(data));
-  const vUrl = `${CONFIG.BASE_URL}?v=${enc}`;
+const vUrl = `${CONFIG.BASE_URL}?id=${data.rowId}`;
 
   /* SIMPAN LINK VERIFIKASI KE KOLOM S DI SPREADSHEET */
   try{
