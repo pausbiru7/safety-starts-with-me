@@ -140,13 +140,18 @@ const SUPERVISORS = [
 ];
 
 const HZDATA = [
-  {id:'mek', n:'⚙️ Bahaya Mekanik',    items:['Terjepit mesin','Terpotong benda tajam','Tertimpa material','Terbentur benda keras','Terjatuh dari ketinggian']},
-  {id:'lis', n:'⚡ Bahaya Listrik',     items:['Tersengat listrik','Korsleting','Kabel terkelupas','Panel listrik rusak']},
-  {id:'kim', n:'🧪 Bahaya Kimia',       items:['Terhirup gas/uap berbahaya','Terkena cipratan cairan kimia','Iritasi kulit','Keracunan']},
-  {id:'erg', n:'🪑 Bahaya Ergonomi',    items:['Posisi kerja tidak ergonomis','Angkat beban berlebihan','Gerakan berulang','Pencahayaan buruk']},
-  {id:'fis', n:'🌡️ Bahaya Fisik',       items:['Kebisingan tinggi','Suhu/cuaca ekstrem','Getaran berlebih','Paparan radiasi']},
-  {id:'bio', n:'🦠 Bahaya Biologis',    items:['Paparan bakteri/virus','Gigitan serangga/hewan','Paparan jamur/lumut']},
-  {id:'psi', n:'🧠 Bahaya Psikososial', items:['Tekanan kerja tinggi','Konflik antar rekan kerja','Kelelahan mental']}
+  { id: 'mek', n: '⚙️ Bahaya Mekanik', items: ['Terjepit mesin', 'Terpotong benda tajam', 'Tertimpa material', 'Terbentur benda keras'] },
+  { id: 'kat', n: '🧗 Bahaya Ketinggian (Working at Height)', items: ['Terjatuh dari ketinggian / perancah (scaffolding)', 'Material / perkakas terjatuh dari atas', 'Kegagalan alat pelindung jatuh (Full Body Harness)'] },
+  { id: 'drv', n: '🚜 Bahaya Alat Berat, Kendaraan & Mobilitas', items: ['Tabrakan / senggolan dengan unit lain', 'Kecelakaan akibat blind spot', 'Kegagalan fungsi rem / kemudi / hidrolik', 'Ambles atau terperosok di jalan proyek'] },
+  { id: 'lis', n: '⚡ Bahaya Listrik', items: ['Tersengat listrik', 'Korsleting / arus pendek', 'Kabel terkelupas', 'Panel listrik rusak'] },
+  { id: 'kim', n: '🧪 Bahaya Kimia', items: ['Terhirup gas / uap / debu berbahaya', 'Terkena cipratan cairan kimia', 'Iritasi kulit / mata', 'Keracunan'] },
+  { id: 'ruf', n: '🕳️ Bahaya Ruang Terbatas (Confined Space)', items: ['Kekurangan oksigen / gas beracun', 'Kesulitan evakuasi darurat di area sempit'] },
+  { id: 'hot', n: '🔥 Bahaya Pekerjaan Panas (Hot Work)', items: ['Percikan api las / gerinda mengenai bahan mudah terbakar', 'Risiko kebakaran atau ledakan', 'Paparan radiasi sinar las'] },
+  { id: 'erg', n: '🪑 Bahaya Ergonomi', items: ['Posisi kerja tidak ergonomis', 'Angkat beban berlebihan', 'Gerakan berulang', 'Pencahayaan buruk'] },
+  { id: 'fis', n: '🌡️ Bahaya Fisik & Lingkungan', items: ['Kebisingan tinggi', 'Suhu / cuaca ekstrem', 'Getaran berlebih', 'Kurangnya jarak pandang'] },
+  { id: 'bio', n: '🦠 Bahaya Biologis', items: ['Paparan bakteri / virus', 'Gigitan serangga / hewan berbisa', 'Paparan jamur'] },
+  { id: 'env', n: '🌱 Bahaya Lingkungan & Pengelolaan Limbah', items: ['Potensi tumpahan oli / bahan kimia ke tanah', 'Paparan debu berlebih'] },
+  { id: 'psi', n: '🧠 Bahaya Psikososial', items: ['Tekanan kerja tinggi / deadline', 'Konflik antar rekan kerja', 'Kelelahan mental'] }
 ];
 
 const CTDATA = [
