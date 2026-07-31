@@ -341,6 +341,7 @@ function renderStep1(){
         "FOREMAN ELECTRIC",
         "LH MECHANICAL",
         "FOREMAN MECHANICAL",
+        "DRIVER/OPERATOR",
         "HSE",
         "QA/QC",
         "SUPERVISOR ELECTRIC",
@@ -357,6 +358,7 @@ function renderStep1(){
             "FOREMAN ELECTRIC",
             "LH MECHANICAL",
             "FOREMAN MECHANICAL",
+            "DRIVER/OPERATOR",
             "HSE",
             "QA/QC",
             "SUPERVISOR ELECTRIC",
@@ -378,6 +380,7 @@ function renderStep1(){
           "FOREMAN ELECTRIC",
           "LH MECHANICAL",
           "FOREMAN MECHANICAL",
+          "DRIVER/OPERATOR",
           "HSE",
           "QA/QC",
           "SUPERVISOR ELECTRIC",
@@ -397,6 +400,7 @@ function renderStep1(){
             "FOREMAN ELECTRIC",
             "LH MECHANICAL",
             "FOREMAN MECHANICAL",
+            "DRIVER/OPERATOR",
             "HSE",
             "QA/QC",
             "SUPERVISOR ELECTRIC",
@@ -433,7 +437,8 @@ function renderStep1(){
     const selected = S.l === v || (v === 'LAINNYA' && S.l && !standar.includes(S.l));
     return `<option value="${v}" ${selected ? 'selected' : ''}>${v}</option>`;
   }).join('')}
-</select>
+</select>`;
+}
 
 <div id="lokasiLainnyaWrap" style="display:${(
   S.l &&
