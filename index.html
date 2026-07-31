@@ -387,6 +387,7 @@ function renderStep1(){
           "SUPERVISOR MECHANICAL"
         ].includes(S.pt)
       ) ? 'block' : 'none'};
+      margin-top: 10px; margin-bottom: 15px;
     ">
       <label>Isi Posisi Lainnya *</label>
       <input type="text" id="posisiLainnya" placeholder="Tulis posisi / jabatan"
@@ -411,53 +412,9 @@ function renderStep1(){
     </div>
 
     <label>Lokasi Kerja Hari Ini *</label>
-<select id="lokasiSelect" onchange="toggleLokasiLainnya(); autoSaveDraft()">
-  <option value="">-- Pilih Lokasi Kerja --</option>
-  ${[
-    'PAD 1',
-    'PAD 2',
-    'PAD 3',
-    'PAD 4',
-    'PAD 5',
-    'PAD 6',
-    'PAD 7',
-    'PAD 8',
-    'LAINNYA'
-  ].map(v => {
-    const standar = [
-      'PAD 1',
-      'PAD 2',
-      'PAD 3',
-      'PAD 4',
-      'PAD 5',
-      'PAD 6',
-      'PAD 7',
-      'PAD 8'
-    ];
-    const selected = S.l === v || (v === 'LAINNYA' && S.l && !standar.includes(S.l));
-    return `<option value="${v}" ${selected ? 'selected' : ''}>${v}</option>`;
-  }).join('')}
-</select>`;
-}
-
-<div id="lokasiLainnyaWrap" style="display:${(
-  S.l &&
-  ![
-    'PAD 1',
-    'PAD 2',
-    'PAD 3',
-    'PAD 4',
-    'PAD 5',
-    'PAD 6',
-    'PAD 7',
-    'PAD 8'
-  ].includes(S.l)
-) ? 'block' : 'none'}">
-  <label>Isi Lokasi Lainnya *</label>
-  <input type="text" id="lokasiLainnya" placeholder="Tulis lokasi kerja"
-    value="${(
-      S.l &&
-      ![
+    <select id="lokasiSelect" onchange="toggleLokasiLainnya(); autoSaveDraft()">
+      <option value="">-- Pilih Lokasi Kerja --</option>
+      ${[
         'PAD 1',
         'PAD 2',
         'PAD 3',
@@ -465,11 +422,57 @@ function renderStep1(){
         'PAD 5',
         'PAD 6',
         'PAD 7',
-        'PAD 8'
-      ].includes(S.l)
-    ) ? escHtml(S.l) : ''}"
-    oninput="autoSaveDraft()">
-</div>
+        'PAD 8',
+        'LAINNYA'
+      ].map(v => {
+        const standar = [
+          'PAD 1',
+          'PAD 2',
+          'PAD 3',
+          'PAD 4',
+          'PAD 5',
+          'PAD 6',
+          'PAD 7',
+          'PAD 8'
+        ];
+        const selected = S.l === v || (v === 'LAINNYA' && S.l && !standar.includes(S.l));
+        return `<option value="${v}" ${selected ? 'selected' : ''}>${v}</option>`;
+      }).join('')}
+    </select>
+
+    <div id="lokasiLainnyaWrap" style="
+      display:${(
+        S.l &&
+        ![
+          'PAD 1',
+          'PAD 2',
+          'PAD 3',
+          'PAD 4',
+          'PAD 5',
+          'PAD 6',
+          'PAD 7',
+          'PAD 8'
+        ].includes(S.l)
+      ) ? 'block' : 'none'};
+      margin-top: 10px; margin-bottom: 15px;
+    ">
+      <label>Isi Lokasi Lainnya *</label>
+      <input type="text" id="lokasiLainnya" placeholder="Tulis lokasi kerja"
+        value="${(
+          S.l &&
+          ![
+            'PAD 1',
+            'PAD 2',
+            'PAD 3',
+            'PAD 4',
+            'PAD 5',
+            'PAD 6',
+            'PAD 7',
+            'PAD 8'
+          ].includes(S.l)
+        ) ? escHtml(S.l) : ''}"
+        oninput="autoSaveDraft()">
+    </div>
 
     <label>Pilih Supervisor *</label>
     <select id="spvSelect" onchange="selectSPV(this.value)">
@@ -482,7 +485,7 @@ function renderStep1(){
 
     <div id="spvDetail" style="display:${S.spvIdx !== null ? 'block' : 'none'};
       background:#dbeafe;border-radius:12px;padding:14px;
-      font-size:.85rem;color:#1e40af;margin-top:-8px;margin-bottom:16px"></div>
+      font-size:.85rem;color:#1e40af;margin-top:8px;margin-bottom:16px"></div>
 
     <button class="btn btn-primary" onclick="next1()">
       Lanjut ke Kesehatan →
