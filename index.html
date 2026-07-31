@@ -783,7 +783,7 @@ function renderCTList(){
       html += `
         <div class="hazard-check" style="border:2px solid ${isChecked ? '#059669' : '#e5e7eb'};
           border-radius:10px;margin-bottom:8px;padding:12px;
-          background:${isChecked ? '#f0fdf4' : '#fff'};transition:all .2s">
+          background:${isChecked ? '#f0fdf4' : '#fff'};transition:all .2s;display:block;">
           
           <div style="display:flex; align-items:center; cursor:pointer;" onclick="toggleCT('${key}', event)">
             <input type="checkbox" id="${key}" ${isChecked ? 'checked' : ''}
@@ -798,7 +798,7 @@ function renderCTList(){
               value="${escHtml(CT.apd_lainnya || '')}" 
               placeholder="Tuliskan APD lainnya secara manual..." 
               oninput="CT.apd_lainnya = this.value; autoSaveDraft();"
-              style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 0;" 
+              style="width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 0; font-size: 0.9rem;" 
               onclick="event.stopPropagation()">
           </div>
         </div>`;
