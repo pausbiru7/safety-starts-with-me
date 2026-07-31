@@ -150,9 +150,18 @@ const HZDATA = [
 ];
 
 const CTDATA = [
-  'Helm Safety','Kacamata Safety','Sarung Tangan','Sepatu Safety',
-  'Masker/Respirator','Ear Plug/Muff','Body Harness','Rompi Safety',
-  'Face Shield','APD Kimia'
+  'Helm Safety', 
+  'Kacamata Safety', 
+  'Sarung Tangan', 
+  'Sepatu Safety', 
+  'Masker/Respirator', 
+  'Ear Plug/Muff', 
+  'Full Body Harness & Lanyard', 
+  'Rompi Safety', 
+  'Face Shield', 
+  'Chemical Cartridge Respirator', 
+  'APD Kimia / Apron', 
+  'Lainnya'
 ];
 
 /* ============================================================
@@ -766,17 +775,40 @@ function renderCTList(){
   let html = '';
   CTDATA.forEach((item, i) => {
     const key = 'ct' + i;
-    html += `
-      <div class="hazard-check" onclick="toggleCT('${key}',event)"
-        style="border:2px solid ${CT[key] ? '#059669' : '#e5e7eb'};
+    
+    // Cek jika item adalah 'Lainnya'
+    if (item === 'Lainnya') {
+      html += `
+        <div class="hazard-check" style="border:2px solid ${CT[key] ? '#059669' : '#e5e7eb'};
           border-radius:10px;margin-bottom:8px;padding:12px;
           background:${CT[key] ? '#f0fdf4' : '#fff'};transition:all .2s">
-        <input type="checkbox" id="${key}" ${CT[key] ? 'checked' : ''}
-  onchange="CT['${key}'] = this.checked; updateCTBox('${key}', this); autoSaveDraft();"
-  onclick="event.stopPropagation()">
-        <label for="${key}" onclick="event.stopPropagation()"
-          style="font-weight:600;cursor:pointer">${escHtml(item)}</label>
-      </div>`;
+          <div onclick="toggleCT('${key}',event)" style="cursor:pointer; display:flex; align-items:center;">
+            <input type="checkbox" id="${key}" ${CT[key] ? 'checked' : ''}
+              onchange="CT['${key}'] = this.checked; updateCTBox('${key}', this); toggleApdLainnyaInput(); autoSaveDraft();"
+              onclick="event.stopPropagation()">
+            <label for="${key}" onclick="event.stopPropagation()"
+              style="font-weight:600;cursor:pointer;margin-left:8px">${escHtml(item)} (Sebutkan)</label>
+          </div>
+          <input type="text" id="inputApdLainnya" name="apd_lainnya" 
+            value="${CT.apd_lainnya || ''}" 
+            placeholder="Tuliskan APD lainnya..." 
+            oninput="CT.apd_lainnya = this.value; autoSaveDraft();"
+            style="display: ${CT[key] ? 'block' : 'none'}; margin-top: 10px; width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" 
+            onclick="event.stopPropagation()">
+        </div>`;
+    } else {
+      html += `
+        <div class="hazard-check" onclick="toggleCT('${key}',event)"
+          style="border:2px solid ${CT[key] ? '#059669' : '#e5e7eb'};
+            border-radius:10px;margin-bottom:8px;padding:12px;
+            background:${CT[key] ? '#f0fdf4' : '#fff'};transition:all .2s">
+          <input type="checkbox" id="${key}" ${CT[key] ? 'checked' : ''}
+            onchange="CT['${key}'] = this.checked; updateCTBox('${key}', this); autoSaveDraft();"
+            onclick="event.stopPropagation()">
+          <label for="${key}" onclick="event.stopPropagation()"
+            style="font-weight:600;cursor:pointer">${escHtml(item)}</label>
+        </div>`;
+    }
   });
   el.innerHTML = html;
 }
@@ -785,17 +817,18 @@ function toggleCT(key, event){
   const cb = document.getElementById(key);
   if(!cb) return;
 
-  /* FIX: Sama seperti toggleHZ */
   if(event && event.target === cb){
     setTimeout(() => {
       CT[key] = cb.checked;
       updateCTBox(key, cb);
+      toggleApdLainnyaInput();
       autoSaveDraft();
     }, 0);
   } else {
     cb.checked = !cb.checked;
     CT[key] = cb.checked;
     updateCTBox(key, cb);
+    toggleApdLainnyaInput();
     autoSaveDraft();
   }
 }
@@ -805,6 +838,24 @@ function updateCTBox(key, cb){
   if(parent){
     parent.style.borderColor = CT[key] ? '#059669' : '#e5e7eb';
     parent.style.background  = CT[key] ? '#f0fdf4' : '#fff';
+  }
+}
+
+function toggleApdLainnyaInput(){
+  // Mencari index item 'Lainnya' secara dinamis di CTDATA
+  const lainIndex = CTDATA.indexOf('Lainnya');
+  if (lainIndex === -1) return;
+  
+  const key = 'ct' + lainIndex;
+  const inputField = document.getElementById('inputApdLainnya');
+  if(!inputField) return;
+
+  if(CT[key]) {
+    inputField.style.display = 'block';
+  } else {
+    inputField.style.display = 'none';
+    inputField.value = '';
+    CT.apd_lainnya = '';
   }
 }
 
