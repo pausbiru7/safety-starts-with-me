@@ -1216,10 +1216,14 @@ function kirimSemuaNotif(btn){
     }
   }
 }
-  function kirimNotifikasiKeWorker(data){
+ function kirimNotifikasiKeWorker(data){
   const isApproved = data.sv.status === 'APPROVED';
   const enc        = LZ.compress(JSON.stringify(data));
   const doneUrl    = `${CONFIG.BASE_URL}?d=${enc}`;
+  
+  // Link ringkas khusus untuk HSE menggunakan rowId
+  const hseUrl     = `${CONFIG.BASE_URL}?id=${data.rowId || 'CHECKLIST'}`;
+  
   const workerWA   = data.p.replace(/^0/, '62').replace(/[^0-9]/g, '');
 
   /* --- PESAN KE PEKERJA --- */
@@ -1276,12 +1280,12 @@ function kirimSemuaNotif(btn){
     `Status   : ${isApproved ? '✅ DISETUJUI' : '❌ DITOLAK'}\n` +
     `${data.sv.note ? `Catatan  : ${data.sv.note}\n` : ''}` +
     `Waktu    : ${data.sv.time}\n\n` +
-    `🔗 Detail: ${doneUrl}`;
+    `🔗 Detail: ${hseUrl}`; // <-- Menggunakan hseUrl yang lebih ringkas
 
   /* --- SIMPAN LINK KE GLOBAL VARIABLE (dipakai tombol kirimSemuaNotif) --- */
-window._waWorkerLink = `https://wa.me/${workerWA}?text=${encodeURIComponent(workerMsg)}`;
+  window._waWorkerLink = `https://wa.me/${workerWA}?text=${encodeURIComponent(workerMsg)}`;
   window._waHSELink    = `https://wa.me/${CONFIG.HSE_WA}?text=${encodeURIComponent(hseMsg)}`;
-} 
+}
   
 /* ============================================================
    DONE / RESULT VIEW
