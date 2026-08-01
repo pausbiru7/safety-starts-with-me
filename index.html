@@ -1051,9 +1051,13 @@ async function showSupervisor(id){
         <div class="sbox">${buildSummaryHTML(data)}</div>
 
         <label>Nama Supervisor *</label>
-        <input type="text" id="svNama"
-          placeholder="Masukkan nama lengkap supervisor"
-          value="${escHtml(data.spv_name || (data.spvIdx != null ? SUPERVISORS[data.spvIdx].name : ''))}">
+        <select id="svNama">
+          <option value="">-- Pilih Nama Anda --</option>
+          ${SUPERVISORS.map(s => {
+            const selected = (data.spv_name === s.name || (data.spvIdx != null && SUPERVISORS[data.spvIdx].name === s.name)) ? 'selected' : '';
+            return `<option value="${escHtml(s.name)}" ${selected}>${escHtml(s.name)} — ${escHtml(s.title)}</option>`;
+          }).join('')}
+        </select>
 
         <label>Catatan (opsional)</label>
         <textarea id="svNote" rows="3"
