@@ -985,20 +985,20 @@ function kirimSemuaNotif(btn){
 
 function kirimNotifikasiKeWorker(data){
   const isApproved = data.sv.status === 'APPROVED';
-  const enc        = LZ.compress(JSON.stringify(data));
-  const doneUrl    = `${CONFIG.BASE_URL}?d=${enc}`;
-  const hseUrl     = `${CONFIG.BASE_URL}?id=${data.rowId || 'CHECKLIST'}`;
+  
+  // 🚀 LOGIKA BARU: LINK DIPERSINGKAT MENGGUNAKAN ID
+  const shortUrl   = `${CONFIG.BASE_URL}?id=${data.rowId || 'CHECKLIST'}`;
   const workerWA   = data.p.replace(/^0/, '62').replace(/[^0-9]/g, '');
 
   const workerMsg = isApproved
-    ? `✅ *SAFETY CHECKLIST DISETUJUI*\n\nHalo *${data.n}*,\n\nChecklist safety Anda telah *DISETUJUI* oleh supervisor.\n\n👨‍💼 Supervisor : ${data.sv.nama}\n🕐 Waktu      : ${data.sv.time}\n${data.sv.note ? `📝 Catatan    : ${data.sv.note}\n` : ''}\n✅ Anda diizinkan memulai pekerjaan.\n\n🔗 Detail: ${doneUrl}\n\n_Powered by Pausbiru7_`
-    : `❌ *SAFETY CHECKLIST DITOLAK*\n\nHalo *${data.n}*,\n\nChecklist safety Anda *DITOLAK* oleh supervisor.\n\n👨‍💼 Supervisor : ${data.sv.nama}\n📝 Alasan     : ${data.sv.note}\n🕐 Waktu      : ${data.sv.time}\n\n⚠️ Selesaikan perbaikan dan kirim ulang checklist.\n\n🔗 Detail: ${doneUrl}\n\n_Powered by Pausbiru7_`;
+    ? `✅ *SAFETY CHECKLIST DISETUJUI*\n\nHalo *${data.n}*,\n\nChecklist safety Anda telah *DISETUJUI* oleh supervisor.\n\n👨‍💼 Supervisor : ${data.sv.nama}\n🕐 Waktu      : ${data.sv.time}\n${data.sv.note ? `📝 Catatan    : ${data.sv.note}\n` : ''}\n✅ Anda diizinkan memulai pekerjaan.\n\n🔗 Detail Laporan:\n${shortUrl}\n\n_Powered by Pausbiru7_`
+    : `❌ *SAFETY CHECKLIST DITOLAK*\n\nHalo *${data.n}*,\n\nChecklist safety Anda *DITOLAK* oleh supervisor.\n\n👨‍💼 Supervisor : ${data.sv.nama}\n📝 Alasan     : ${data.sv.note}\n🕐 Waktu      : ${data.sv.time}\n\n⚠️ Selesaikan perbaikan dan kirim ulang checklist.\n\n🔗 Detail Laporan:\n${shortUrl}\n\n_Powered by Pausbiru7_`;
 
   const hzText = (data.hz || []).map(h => `• ${h.name}\n  🛡️ ${h.control}`).join('\n');
   const ctText = (data.ct || []).length > 0 ? data.ct.join(', ') : 'Tidak ada';
 
   const hseMsg =
-    `📋 *LAPORAN SAFETY CHECKLIST*\nStatus: *${isApproved ? '✅ APPROVED' : '❌ REJECTED'}*\n\n━━━━━━━━━━━━━━━━━━━━\n👷 *DATA PEKERJA*\nNama     : ${data.n}\nID       : ${data.nid}\nNo WA    : ${data.p}\nJabatan  : ${data.pt}\nLokasi   : ${data.l}\nTanggal  : ${data.tgl} | ${data.jam}\n\n━━━━━━━━━━━━━━━━━━━━\n📝 *PEKERJAAN*\n${data.job}\n\n━━━━━━━━━━━━━━━━━━━━\n⚠️ *POTENSI BAHAYA*\n${hzText || 'Tidak ada'}\n\n━━━━━━━━━━━━━━━━━━━━\n🛡️ *APD DIGUNAKAN*\n${ctText}\n\n━━━━━━━━━━━━━━━━━━━━\n👨‍💼 *VERIFIKASI SUPERVISOR*\nNama     : ${data.sv.nama}\nStatus   : ${isApproved ? '✅ DISETUJUI' : '❌ DITOLAK'}\n${data.sv.note ? `Catatan  : ${data.sv.note}\n` : ''}Waktu    : ${data.sv.time}\n\n🔗 Detail: ${hseUrl}\n\n_Powered by Pausbiru7_`;
+    `📋 *LAPORAN SAFETY CHECKLIST*\nStatus: *${isApproved ? '✅ APPROVED' : '❌ REJECTED'}*\n\n━━━━━━━━━━━━━━━━━━━━\n👷 *DATA PEKERJA*\nNama     : ${data.n}\nID       : ${data.nid}\nNo WA    : ${data.p}\nJabatan  : ${data.pt}\nLokasi   : ${data.l}\nTanggal  : ${data.tgl} | ${data.jam}\n\n━━━━━━━━━━━━━━━━━━━━\n📝 *PEKERJAAN*\n${data.job}\n\n━━━━━━━━━━━━━━━━━━━━\n⚠️ *POTENSI BAHAYA*\n${hzText || 'Tidak ada'}\n\n━━━━━━━━━━━━━━━━━━━━\n🛡️ *APD DIGUNAKAN*\n${ctText}\n\n━━━━━━━━━━━━━━━━━━━━\n👨‍💼 *VERIFIKASI SUPERVISOR*\nNama     : ${data.sv.nama}\nStatus   : ${isApproved ? '✅ DISETUJUI' : '❌ DITOLAK'}\n${data.sv.note ? `Catatan  : ${data.sv.note}\n` : ''}Waktu    : ${data.sv.time}\n\n🔗 Detail Laporan:\n${shortUrl}\n\n_Powered by Pausbiru7_`;
 
   window._waWorkerLink = `https://wa.me/${workerWA}?text=${encodeURIComponent(workerMsg)}`;
   window._waHSELink    = `https://wa.me/${CONFIG.HSE_WA}?text=${encodeURIComponent(hseMsg)}`;
