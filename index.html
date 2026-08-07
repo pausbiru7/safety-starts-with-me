@@ -1407,9 +1407,15 @@ function kirimSemuaNotif(btn){
 function kirimNotifikasiKeWorker(data){
   const isApproved = data.sv.status === 'APPROVED';
   
-  // UPGRADE: LINK PENDEK
-  const shortUrl   = `${CONFIG.BASE_URL}?id=${data.rowId || 'CHECKLIST'}`;
-  const workerWA   = data.p.replace(/^0/, '62').replace(/[^0-9]/g, '');
+  // Link untuk Pekerja (Bisa pakai id atau d)
+  const workerUrl = `${CONFIG.BASE_URL}?id=${data.rowId || 'CHECKLIST'}`;
+  
+  // 🚀 PERBAIKAN: Link khusus untuk HSE menggunakan format terkompresi (?d=...)
+  // Agar saat diklik HSE, langsung membuka halaman hasil akhir (showDone), bukan halaman approval SPV.
+  const encData   = LZ.compress(JSON.stringify(data));
+  const hseUrl    = `${CONFIG.BASE_URL}?d=${encData}`;
+
+  const workerWA  = data.p.replace(/^0/, '62').replace(/[^0-9]/g, '');
 
   const workerMsg = isApproved
     ? `✅ *SAFETY CHECKLIST DISETUJUI*\n\n` +
@@ -1419,7 +1425,7 @@ function kirimNotifikasiKeWorker(data){
       `🕐 Waktu      : ${data.sv.time}\n` +
       `${data.sv.note ? `📝 Catatan    : ${data.sv.note}\n` : ''}` +
       `\n✅ Anda diizinkan memulai pekerjaan.\n` +
-      `\n🔗 Detail Laporan:\n${shortUrl}\n\n_Powered by Pausbiru7_`
+      `\n🔗 Detail Laporan:\n${workerUrl}\n\n_Powered by Pausbiru7_`
     : `❌ *SAFETY CHECKLIST DITOLAK*\n\n` +
       `Halo *${data.n}*,\n\n` +
       `Checklist safety Anda *DITOLAK* oleh supervisor.\n\n` +
@@ -1427,7 +1433,7 @@ function kirimNotifikasiKeWorker(data){
       `📝 Alasan     : ${data.sv.note}\n` +
       `🕐 Waktu      : ${data.sv.time}\n` +
       `\n⚠️ Selesaikan perbaikan dan kirim ulang checklist.\n` +
-      `\n🔗 Detail Laporan:\n${shortUrl}\n\n_Powered by Pausbiru7_`;
+      `\n🔗 Detail Laporan:\n${workerUrl}\n\n_Powered by Pausbiru7_`;
 
   const hzText = (data.hz || []).map(h => `• ${h.name}\n  🛡️ ${h.control}`).join('\n');
   const ctText = (data.ct || []).length > 0 ? data.ct.join(', ') : 'Tidak ada';
@@ -1458,7 +1464,8 @@ function kirimNotifikasiKeWorker(data){
     `Status   : ${isApproved ? '✅ DISETUJUI' : '❌ DITOLAK'}\n` +
     `${data.sv.note ? `Catatan  : ${data.sv.note}\n` : ''}` +
     `Waktu    : ${data.sv.time}\n\n` +
-    `🔗 Detail Laporan:\n${shortUrl}\n\n_Powered by Pausbiru7_`;
+    // Menggunakan hseUrl (?d=...) agar langsung membuka laporan jadi
+    `🔗 Detail Laporan:\n${hseUrl}\n\n_Powered by Pausbiru7_`;
 
   window._waWorkerLink = `https://wa.me/${workerWA}?text=${encodeURIComponent(workerMsg)}`;
   window._waHSELink    = `https://wa.me/${CONFIG.HSE_WA}?text=${encodeURIComponent(hseMsg)}`;
