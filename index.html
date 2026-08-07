@@ -417,8 +417,9 @@ function handlePhotoUpload(event) {
    ============================================================ */
 async function postToGAS(payload){
   const MAX_RETRY = 3;
-  // Deteksi apakah ini sedang mengambil data atau mengirim persetujuan
-  const isGetAction = (payload.action === 'get');
+  
+  // 🚀 KUNCI PERBAIKAN: Mode pendobrak HANYA untuk Supervisor saat Setuju/Tolak
+  const isRespondAction = (payload.action === 'respond');
 
   for(let attempt = 1; attempt <= MAX_RETRY; attempt++){
     try{
@@ -431,21 +432,19 @@ async function postToGAS(payload){
         body    : JSON.stringify(payload)
       };
 
-      // 🚀 KUNCI RAHASIA: Jika ini proses Setuju/Tolak (bawa gambar TTD), 
-      // gunakan mode 'no-cors' agar browser HP tidak memblokir redirect Google!
-      if(!isGetAction){
+      // Aktifkan mode no-cors HANYA untuk Approve/Reject agar tidak diblokir HP
+      if(isRespondAction){
         fetchOptions.mode = 'no-cors';
       }
 
       const res = await fetch(CONFIG.GAS_URL, fetchOptions);
 
-      // Jika mengirim persetujuan (no-cors), kita tidak bisa baca balasan Google.
-      // Tapi selama tidak ada error jaringan, data PASTI sudah masuk. Langsung gas!
-      if(!isGetAction){
-        return { ok: true, rowId: payload.rowId || 'GAS' };
+      // Jika ini Approve/Reject (no-cors), kita langsung anggap sukses
+      if(isRespondAction){
+        return { ok: true, rowId: payload.rowId };
       }
 
-      // Jika mengambil data (mode normal), baca balasannya untuk ditampilkan di layar SPV
+      // Jika ini proses Pekerja (Submit) atau Load Data, BACA balasan dari server
       const text = await res.text();
       try { 
         return JSON.parse(text); 
@@ -455,14 +454,12 @@ async function postToGAS(payload){
 
     }catch(err){
       if(attempt === MAX_RETRY) {
-        throw new Error("Koneksi diblokir oleh sistem keamanan HP. Silakan coba klik Setujui sekali lagi.");
+        throw new Error("Koneksi bermasalah. Pastikan sinyal stabil lalu coba lagi.");
       }
-      // Tunggu sebentar sebelum mencoba lagi
       await new Promise(resolve => setTimeout(resolve, 1500 * attempt));
     }
   }
 }
-
 function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
 
 /* ============================================================
