@@ -316,6 +316,33 @@ function clearSignature(canvasId) {
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
+/* ============================================================
+   FUNGSI UPGRADE: KAMERA (FOTO LAPANGAN)
+   ============================================================ */
+function handlePhotoUpload(event) {
+  // ... (kode upload foto yang sudah ada)
+}
+
+// ⬇️ TEMPATKAN FUNGSI INI DI SINI (DI LUAR FUNGSI LAIN) ⬇️
+function bukaFotoPekerja() {
+  const data = window.svData;
+  if (!data || !data.fotoUrl || data.fotoUrl === '-' || data.fotoUrl.length < 50) {
+    showAlert("⚠️ Foto pekerja tidak ditemukan atau kosong.");
+    return;
+  }
+  
+  // Buka jendela baru dan tampilkan gambar secara bersih
+  const win = window.open('');
+  win.document.write(`
+    <html>
+      <head><title>Foto Lapangan Pekerja</title></head>
+      <body style="margin:0; background:#000; display:flex; align-items:center; justify-content:center; height:100vh;">
+        <img src="${data.fotoUrl}" style="max-width:100%; max-height:100%; object-fit:contain;" />
+      </body>
+    </html>
+  `);
+}
+
 
 function getSignatureBase64(canvasId) {
   const canvas = document.getElementById(canvasId);
@@ -1173,7 +1200,7 @@ async function showSupervisor(id){
         
         <!-- UPGRADE: TOMBOL LIHAT FOTO & LOKASI -->
         <div style="text-align:center; margin-bottom:20px;">
-          <a href="${data.fotoUrl || '#'}" target="_blank" style="background:#2e86c1;color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none;display:inline-block;font-weight:bold;font-size:.85rem">📸 Buka Foto Pekerja</a>
+         <button type="button" onclick="bukaFotoPekerja()" style="background:#2e86c1;color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none;display:inline-block;font-weight:bold;font-size:.85rem;border:none;cursor:pointer;">📸 Buka Foto Pekerja</button>
           <a href="${data.gps || '#'}" target="_blank" style="background:#10b981;color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none;display:inline-block;margin-left:5px;font-weight:bold;font-size:.85rem">📍 Buka Peta Lokasi</a>
         </div>
 
