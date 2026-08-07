@@ -1282,12 +1282,13 @@ async function doApprove(){
     signUrl: sign
   };
 
-  showProgress('📤 Mengirim Persetujuan...', 'Menyimpan data ke server');
+  showProgress('📤 Menyimpan ke Google Sheets...', 'Mohon tunggu');
   
- try{
-    const res = await postToGAS({
+  try{
+    // 1. Simpan dulu murni ke Google Apps Script tanpa gangguan
+    await postToGAS({
       action : 'respond',
-      rowId  : data.rowId,
+      rowId  : String(data.rowId).trim(),
       status : 'APPROVED',
       svname : svNama,
       svnote : svNote,
@@ -1297,18 +1298,16 @@ async function doApprove(){
 
     hideProgress();
 
-    if(res && res.ok === false){
-      throw new Error(res.error || 'Gagal merespon di server');
-    }
-
+    // 2. SETELAH BERHASIL, baru siapkan link WhatsApp untuk Pekerja & HSE
     kirimNotifikasiKeWorker(data);
+
+    // 3. Tampilkan halaman sukses
     const enc = LZ.compress(JSON.stringify(data));
     showDone(enc);
 
   }catch(e){
     hideProgress();
-    // Menampilkan pesan error yang lebih jelas ke layar HP Supervisor
-    showAlert('❌ Gagal memproses: ' + e.message + '<br><br>Periksa koneksi internet Anda atau pastikan link GAS valid.');
+    showAlert('❌ Gagal memproses: ' + e.message);
   }
 }
 window.doApprove = doApprove;
