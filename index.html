@@ -1691,7 +1691,7 @@ function buildSummaryHTML(d){
 }
 
 /* ============================================================
-   SUBMIT CHECKLIST (DENGAN TANDA TANGAN, FOTO, GPS)
+   SUBMIT CHECKLIST (UPGRADE DENGAN PENANGKAP ERROR)
    ============================================================ */
 async function submitChecklist(){
   // AMBIL TANDA TANGAN
@@ -1716,6 +1716,14 @@ async function submitChecklist(){
 
   try{
     const res = await postToGAS({ action:'submit', ...data });
+    
+    // 🚀 LOGIKA BARU: TANGKAP ERROR JIKA SERVER GAGAL
+    if(res && res.ok === false) {
+      hideProgress();
+      showAlert("❌ SERVER ERROR:<br>" + (res.error || "Gagal menyimpan data ke Spreadsheet."));
+      return; // STOP DISINI! Jangan buka WhatsApp jika data gagal masuk
+    }
+
     if(res && res.rowId) rowId = res.rowId;
     data.rowId = rowId;
   }catch(e){
@@ -1726,7 +1734,6 @@ async function submitChecklist(){
 
   const vUrl = `${CONFIG.BASE_URL}?id=${data.rowId}`;
 
-  /* SIMPAN LINK VERIFIKASI KE KOLOM S DI SPREADSHEET */
   try{
     await postToGAS({
       action: 'updateVerifyLink',
@@ -1740,13 +1747,8 @@ async function submitChecklist(){
   hideProgress();
 
   /* Buat pesan WA supervisor */
-  const hzText = data.hz.map(h =>
-    `• ${h.name}\n  🛡️ ${h.control}`
-  ).join('\n');
-
-  const ctText = data.ct.length > 0
-    ? data.ct.join(', ')
-    : 'Tidak ada';
+  const hzText = data.hz.map(h => `• ${h.name}\n  🛡️ ${h.control}`).join('\n');
+  const ctText = data.ct.length > 0 ? data.ct.join(', ') : 'Tidak ada';
 
   const msg =
     `🔔 *SAFETY CHECKLIST - MOHON VERIFIKASI*\n\n` +
@@ -1763,17 +1765,13 @@ async function submitChecklist(){
     `✅ *Klik link berikut untuk VERIFIKASI & CEK FOTO:*\n${vUrl}\n\n` +
     `_Powered by Pausbiru7_`;
 
-  /* Bersihkan draft */
   localStorage.removeItem('safetyDraft');
 
   /* Buka WA supervisor */
   const spvWA  = data.spv_wa.replace(/^0/, '62').replace(/[^0-9]/g, '');
   const waLink = `https://wa.me/${spvWA}?text=${encodeURIComponent(msg)}`;
 
-  /* Simpan link untuk fallback di Step 6 */
   window._waSPVLink = waLink;
-
-  /* Buka WA */
   window.open(waLink, '_blank');
 
   renderStep6(rowId, data.spv_name);
