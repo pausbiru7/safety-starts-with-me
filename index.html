@@ -1175,11 +1175,10 @@ async function showSupervisor(id){
 
     const data = res.data;
 
-    // JIKA STATUS SUDAH APPROVED / REJECTED, LANGSUNG TAMPILKAN HASILNYA
+   // JIKA STATUS SUDAH APPROVED / REJECTED, LANGSUNG TAMPILKAN HASILNYA
     if(data.sv && (data.sv.status === 'APPROVED' || data.sv.status === 'REJECTED')){
-      // Pastikan struktur data sv lengkap agar tidak error saat di-render
       const enc = LZ.compress(JSON.stringify(data));
-      showDone(enc);
+      showDone(enc, false); // <--- BERI FALSE AGAR TOMBOL SEMBUNYI UNTUK PEKERJA/HSE
       return; 
     }
 
@@ -1299,9 +1298,9 @@ async function doApprove(){
     // 2. SETELAH BERHASIL, baru siapkan link WhatsApp untuk Pekerja & HSE
     kirimNotifikasiKeWorker(data);
 
-    // 3. Tampilkan halaman sukses
+    // 3. Tampilkan halaman sukses (BERI NILAI TRUE AGAR TOMBOL MUNCUL UNTUK SPV)
     const enc = LZ.compress(JSON.stringify(data));
-    showDone(enc);
+    showDone(enc, true); // <--- Perubahan ada di sini
 
   }catch(e){
     hideProgress();
@@ -1354,8 +1353,10 @@ async function doReject(){
     }
 
     kirimNotifikasiKeWorker(data);
+    
+    // 3. Tampilkan halaman sukses (BERI NILAI TRUE AGAR TOMBOL MUNCUL UNTUK SPV)
     const enc = LZ.compress(JSON.stringify(data));
-    showDone(enc);
+    showDone(enc, true); // <--- Perubahan ada di sini
 
   }catch(e){
     hideProgress();
@@ -1463,9 +1464,9 @@ function kirimNotifikasiKeWorker(data){
 }
   
 /* ============================================================
-   DONE / RESULT VIEW (DIPERBAIKI)
+   DONE / RESULT VIEW (BEBAS TOMBOL UNTUK PEKERJA)
    ============================================================ */
-function showDone(enc){
+function showDone(enc, showNotifBtn = false){
   document.getElementById('WM').style.display = 'none';
   document.getElementById('SM').style.display = 'none';
   document.getElementById('SD').style.display = 'block';
@@ -1508,13 +1509,8 @@ function showDone(enc){
     infoClass   = 'rejected';
   }
 
-  // DETEKSI APAKAH INI DIBUKA OLEH SPV ATAU PEKERJA
-  // Jika parameter URL pakai ?id=... (berarti dibuka dari link verifikasi SPV), tampilkan tombol kirim notifikasi.
-  // Jika pakai ?d=... atau baru selesai submit dari worker, sembunyikan tombol kirim notifikasi.
-  const urlParams = new URLSearchParams(location.search);
-  const isOpenedBySPV = urlParams.has('id');
-
-  const notifSection = (hasSV && isOpenedBySPV)
+  // Tombol HANYA akan dirender jika showNotifBtn bernilai TRUE
+  const notifSection = (hasSV && showNotifBtn)
     ? `<div style="margin-top:20px;text-align:center">
          <button class="btn btn-wa" onclick="kirimSemuaNotif(this)"
            style="width:100%">
@@ -1546,9 +1542,9 @@ function showDone(enc){
       <button class="btn btn-primary" style="margin-top:24px"
         onclick="location.href='.'">🔄 Kembali ke Beranda</button>
     </div>`;
-    
-  // Generate link WA agar tombol siap digunakan jika dibuka oleh SPV
-  if(hasSV && isOpenedBySPV) {
+
+  // Pastikan URL WhatsApp digenerate jika tombol notif menyala
+  if(hasSV && showNotifBtn) {
     kirimNotifikasiKeWorker(data);
   }
 }
