@@ -420,27 +420,27 @@ async function postToGAS(payload){
 
   for(let attempt = 1; attempt <= MAX_RETRY; attempt++){
     try{
-      // 🚀 OPSI NUKLIR: Menggunakan mode 'no-cors' untuk menembus pemblokiran browser HP
+      // 🚀 Mode normal (tanpa no-cors) agar aplikasi BISA membaca data balasan dari server
       const res = await fetch(CONFIG.GAS_URL, {
         method : 'POST',
-        mode   : 'no-cors', 
-        headers: {
-          'Content-Type': 'text/plain;charset=utf-8'
-        },
         body   : JSON.stringify(payload)
       });
 
-      // Karena menggunakan 'no-cors', browser tidak diizinkan membaca balasan server.
-      // Selama tidak ada error jaringan, kita asumsikan data SUKSES masuk ke Google Sheets.
-      return { ok: true, rowId: payload.rowId || 'GAS' };
+      // Membaca balasan dari server (Sangat penting agar halaman Supervisor bisa memuat data)
+      const text = await res.text();
+      try { 
+        return JSON.parse(text); 
+      } catch(e) { 
+        return { ok: true, rowId: payload.rowId || 'GAS', raw: text }; 
+      }
 
     }catch(err){
       console.warn(`GAS attempt ${attempt} failed:`, err.message);
       if(attempt === MAX_RETRY) {
-        throw new Error("Gagal menembus server Google. Pastikan sinyal internet stabil dan Link GAS benar-benar valid.");
+        throw new Error("Gagal terhubung ke server. Pastikan sinyal internet stabil.");
       }
       // Tunggu sebentar lalu coba lagi
-      await sleep(1500 * attempt); 
+      await new Promise(resolve => setTimeout(resolve, 1500 * attempt));
     }
   }
 }
