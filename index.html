@@ -1,3 +1,126 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PAUSBIRU SAFETY</title>
+<meta name="theme-color" content="#1a5276">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Tahoma,sans-serif;background:#f0f4f8;min-height:100vh;padding:12px;line-height:1.5}
+.container{max-width:600px;margin:0 auto;background:#fff;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,.12);overflow:hidden}
+.header {background: linear-gradient(135deg, #1a5276 0%, #2e86c1 100%);color: #fff;padding: 32px 24px;position: relative;overflow: hidden;display: flex;flex-direction: column;align-items: center;justify-content: center;text-align: center;}
+.header::before {content: '';position: absolute;top: 0;left: 0;right: 0;height: 4px;background: linear-gradient(90deg, #f59e0b, #10b981, #ef4444, #8b5cf6);}
+.header h1 {font-size: 1.5rem;font-weight: 900;letter-spacing: .5px;text-shadow: 0 2px 4px rgba(0, 0, 0, .3);text-align: center;width: 100%;margin: 0 auto;}
+.header p {font-size: .85rem;opacity: .9;margin-top: 6px;text-align: center;width: 100%;}
+.badge {display: inline-flex;align-items: center;justify-content: center;background: #f59e0b;color: #fff;font-size: .7rem;padding: 6px 14px;border-radius: 20px;margin-top: 12px;font-weight: 700;animation: pulse 2s infinite;text-align: center;}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.section{padding:24px;border-bottom:1px solid #f1f5f9}
+.section:last-child{border-bottom:none}
+.section-title{font-size:1.1rem;font-weight:800;color:#1a5276;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.icon{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:bold;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.icon-blue{background:#dbeafe;color:#2563eb}
+.icon-red{background:#fee2e2;color:#dc2626}
+.icon-green{background:#d1fae5;color:#059669}
+.icon-orange{background:#ffedd5;color:#ea580c}
+.icon-purple{background:#ede9fe;color:#7c3aed}
+label{display:block;font-size:.88rem;color:#374151;margin-bottom:6px;font-weight:600}
+input,textarea,select{width:100%;padding:12px 16px;border:2px solid #e5e7eb;border-radius:12px;font-size:.92rem;margin-bottom:16px;transition:all .2s;font-family:inherit;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+input:focus,textarea:focus,select:focus{outline:none;border-color:#2e86c1;box-shadow:0 0 0 4px rgba(46,134,193,.15)}
+textarea{resize:vertical;min-height:80px}
+.row{display:flex;gap:12px}.row>div{flex:1}
+.check-group{margin-bottom:16px}
+.check-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border:2px solid #f3f4f6;border-radius:12px;margin-bottom:8px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.check-item::before{content:'';position:absolute;left:0;top:0;height:100%;width:4px;transform:scaleY(0);transition:transform .2s}
+.check-item:hover{border-color:#2e86c1;background:#f0f7ff;transform:translateX(2px)}
+.check-item.sel-g::before{transform:scaleY(1);background:#059669}
+.check-item.sel-b::before{transform:scaleY(1);background:#dc2626}
+.check-item input[type="radio"],.check-item input[type="checkbox"]{accent-color:#2e86c1;width:18px;height:18px;margin:0;flex-shrink:0}
+.check-item label{margin:0;cursor:pointer;font-weight:600;color:#1f2937;flex:1}
+.hazard-card{background:#f8fafc;border:2px solid #e2e8f0;border-radius:14px;padding:18px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.hazard-card .hazard-title{font-weight:800;color:#1a5276;margin-bottom:10px;font-size:1rem}
+.hazard-check{display:flex;align-items:flex-start;gap:10px;padding:10px;font-size:.88rem;color:#374151;cursor:pointer;border-radius:8px;transition:all .2s}
+.hazard-check:hover{background:#f1f5f9}
+.hazard-check input[type="checkbox"]{accent-color:#e74c3c;width:18px;height:18px;margin-top:2px;flex-shrink:0}
+.control-box{background:#fffbeb;border:2px solid #f59e0b;border-radius:10px;padding:14px;margin:6px 0 12px 40px;animation:slideIn .3s ease-out}
+.control-box label{color:#92400e;font-size:.85rem;font-weight:800;margin-bottom:6px}
+.control-box textarea{font-size:.85rem;border-color:#f59e0b;margin-bottom:0}
+.control-box textarea:focus{border-color:#d97706;box-shadow:0 0 0 3px rgba(245,158,11,.2)}
+@keyframes slideIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+.custom-hazard-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.custom-hazard-row input[type="text"]{margin-bottom:0;flex:1}
+.add-btn{background:linear-gradient(135deg,#7c3aed,#8b5cf6);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;box-shadow:0 2px 8px rgba(124,58,237,.3)}
+.add-btn:hover{background:linear-gradient(135deg,#6d28d9,#7c3aed);transform:translateY(-1px)}
+.remove-btn{background:#ef4444;color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:.8rem;cursor:pointer;font-weight:600}
+.remove-btn:hover{background:#dc2626}
+.btn{width:100%;padding:16px;border:none;border-radius:14px;font-size:1rem;font-weight:800;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:linear-gradient(135deg,#1a5276,#2e86c1);color:#fff}
+.btn-wa{background:linear-gradient(135deg,#25d366,#128c7e);color:#fff}
+.btn-approve{background:linear-gradient(135deg,#059669,#10b981);color:#fff}
+.btn-reject{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff}
+.btn-back{background:#f3f4f6;color:#6b7280;border:2px solid #e5e7eb}
+.step{display:none}.step.active{display:block;animation:fadeInUp .4s ease-out}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.dots{display:flex;justify-content:center;gap:8px;padding:20px;background:#f8fafc}
+.dot{width:12px;height:12px;border-radius:50%;background:#d1d5db;transition:all .3s ease}
+.dot.active{background:#2e86c1;width:32px;border-radius:16px;box-shadow:0 0 0 4px rgba(46,134,193,.3)}
+.sbox{background:#f8fafc;border-radius:14px;padding:20px;font-size:.86rem;line-height:1.8;border-left:4px solid #2e86c1;margin:16px 0}
+.sbox hr{border:none;border-top:1px dashed #d1d5db;margin:12px 0}
+.sv-banner{text-align:center;padding:28px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;margin:-24px -24px 20px;border-radius:0 0 16px 16px}
+.sv-banner h2{margin:12px 0 8px;font-size:1.4rem;font-weight:900}
+.result-card{text-align:center;padding:40px 24px}
+.result-card .big{font-size:5rem;margin-bottom:16px;line-height:1}
+.sent-info{background:#dbeafe;border-radius:12px;padding:16px;margin-top:16px;font-size:.85rem;color:#1e40af;border-left:4px solid #2563eb}
+.sent-info.approved{background:#d1fae5;color:#065f46;border-left-color:#059669}
+.sent-info.rejected{background:#fee2e2;color:#991b1b;border-left-color:#dc2626}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9998;align-items:center;justify-content:center}
+.overlay.show{display:flex}
+.progress-box{background:#fff;border-radius:20px;padding:32px 28px;text-align:center;max-width:320px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.progress-box .spinner{width:48px;height:48px;border:4px solid #e5e7eb;border-top-color:#2e86c1;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.footer{padding:20px;text-align:center;font-size:.78rem;color:#9ca3af;border-top:1px solid #f1f5f9}
+@media(max-width:480px){.container{margin:0;border-radius:0}.header{padding:20px 16px}.section{padding:16px}}
+.sig-container { border: 2px dashed #cbd5e1; border-radius: 12px; background: #fff; overflow: hidden; position: relative; margin-bottom: 8px; }
+.sig-pad { width: 100%; height: 180px; touch-action: none; display: block; }
+.clear-sig { background: #f1f5f9; color: #dc2626; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 12px; font-size: .8rem; font-weight: bold; cursor: pointer; display:block; margin-bottom:10px; }
+.photo-box { border: 2px dashed #cbd5e1; border-radius: 12px; background: #f8fafc; padding: 20px; text-align: center; margin-bottom: 15px; }
+#fotoPreview { display: none; width: 100%; max-height: 250px; object-fit: cover; border-radius: 8px; margin-top: 10px; border: 2px solid #e2e8f0; }
+.gps-box { background: #e0f2fe; color: #0369a1; padding: 12px; border-radius: 10px; font-size: 0.85rem; margin-top: 10px; display: flex; align-items: center; gap: 8px; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="container" id="app">
+  <div class="header">
+    <h1>⛑️ PAUSBIRU SAFETY</h1>
+    <p>Daily Pre-Work Safety Checklist v3.4</p>
+    <div class="badge" id="dateDisplay">Loading...</div>
+  </div>
+  <div class="overlay" id="overlay">
+    <div class="progress-box">
+      <div class="spinner"></div>
+      <p id="progressMsg">Memproses...</p>
+      <small id="progressSub">Mohon tunggu sebentar</small>
+    </div>
+  </div>
+  <div id="WM">
+    <div class="dots" id="dots"></div>
+    <div class="section step active" id="step1"></div>
+    <div class="section step" id="step2"></div>
+    <div class="section step" id="step3"></div>
+    <div class="section step" id="step4"></div>
+    <div class="section step" id="step5"></div>
+    <div class="section step" id="step6"></div>
+  </div>
+  <div id="SM" style="display:none"></div>
+  <div id="SD" style="display:none"></div>
+  <div class="footer">
+    Safety Starts With Me © 2026 | v3.4<br>
+    <small>Powered by Pausbiru7</small>
+  </div>
+</div>
+
+<script>
 /* ============================================================
    KONFIGURASI
    ============================================================ */
@@ -9,10 +132,10 @@ const CONFIG = {
 
 const SUPERVISORS = [
   { name:"Muharza",      title:"Project Manager",       wa:"628116923792",  dept:"Project"   },
-  { name:"Muji Agus",   title:"Electrical Supervisor", wa:"6281254346552", dept:"Electrical"},
+  { name:"Muji Agus",    title:"Electrical Supervisor", wa:"6281254346552", dept:"Electrical"},
   { name:"Safarudin",    title:"Mechanical Supervisor", wa:"6281315693779", dept:"Mechanical"},
   { name:"Muh Yusuf",    title:"Project Controller",    wa:"6285399450821", dept:"Project"   },
-  { name:"Adiyo A ", title:"QA/QC Officer",         wa:"6282257449322", dept:"Quality"   }
+  { name:"Adiyo A ",     title:"QA/QC Officer",         wa:"6282257449322", dept:"Quality"   }
 ];
 
 const HZDATA = [
@@ -58,10 +181,11 @@ const HC = {}; const HZ = {}; const CT = {};
 let customHazards = []; let curStep = 1; const TOTAL_STEPS = 6;
 
 /* ============================================================
-   INIT & ROUTING (SUDAH DIPERBAIKI)
+   INIT & ROUTING
    ============================================================ */
 function init(){
-  setDateTime(); // 🚀 Wajib dipanggil pertama agar tanggal tidak stuck "Loading..."
+  setDateTime(); // 🚀 Wajib dipanggil pertama agar tanggal langsung muncul
+  
   const params = new URLSearchParams(location.search);
   const idParam = params.get('id');   
   const modeParam = params.get('mode'); 
@@ -83,17 +207,14 @@ function setDateTime(){
 }
 
 /* ============================================================
-   FUNGSI UPGRADE: TANDA TANGAN (CANVAS)
+   FUNGSI UPGRADE: TANDA TANGAN & KAMERA
    ============================================================ */
 function initSignaturePad(canvasId) {
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.strokeStyle = '#1e3a5f';
-  ctx.lineWidth = 3;
-  ctx.lineCap = 'round';
+  ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = '#1e3a5f'; ctx.lineWidth = 3; ctx.lineCap = 'round';
   let drawing = false;
 
   const getPos = (e) => {
@@ -115,8 +236,7 @@ function clearSignature(canvasId) {
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
 function getSignatureBase64(canvasId) {
@@ -125,15 +245,11 @@ function getSignatureBase64(canvasId) {
   const blank = document.createElement('canvas');
   blank.width = canvas.width; blank.height = canvas.height;
   const bCtx = blank.getContext('2d'); 
-  bCtx.fillStyle = "#ffffff"; 
-  bCtx.fillRect(0,0,blank.width,blank.height);
+  bCtx.fillStyle = "#ffffff"; bCtx.fillRect(0,0,blank.width,blank.height);
   if(canvas.toDataURL() === blank.toDataURL()) return ''; 
   return canvas.toDataURL('image/jpeg', 0.5); 
 }
 
-/* ============================================================
-   FUNGSI UPGRADE: KAMERA (FOTO LAPANGAN)
-   ============================================================ */
 function handlePhotoUpload(event) {
   const file = event.target.files[0];
   if(!file) return;
@@ -144,10 +260,8 @@ function handlePhotoUpload(event) {
       const canvas = document.createElement('canvas');
       const MAX_WIDTH = 800;
       const scaleSize = MAX_WIDTH / img.width;
-      canvas.width = MAX_WIDTH;
-      canvas.height = img.height * scaleSize;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      canvas.width = MAX_WIDTH; canvas.height = img.height * scaleSize;
+      const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       S.photoBase64 = canvas.toDataURL('image/jpeg', 0.6); 
       document.getElementById('fotoPreview').src = S.photoBase64;
       document.getElementById('fotoPreview').style.display = 'block';
@@ -165,17 +279,9 @@ function bukaFotoPekerja() {
     return;
   }
   const win = window.open('');
-  win.document.write(`
-    <html><head><title>Foto Lapangan Pekerja</title></head>
-    <body style="margin:0; background:#000; display:flex; align-items:center; justify-content:center; height:100vh;">
-      <img src="${data.fotoUrl}" style="max-width:100%; max-height:100%; object-fit:contain;" />
-    </body></html>
-  `);
+  win.document.write(`<html><head><title>Foto Lapangan Pekerja</title></head><body style="margin:0; background:#000; display:flex; align-items:center; justify-content:center; height:100vh;"><img src="${data.fotoUrl}" style="max-width:100%; max-height:100%; object-fit:contain;" /></body></html>`);
 }
 
-/* ============================================================
-   FUNGSI UPGRADE: GPS GEOLOCATION
-   ============================================================ */
 function requestGPS() {
   const gpsBox = document.getElementById('gpsIndicator');
   if (navigator.geolocation) {
@@ -211,7 +317,7 @@ async function postToGAS(payload){
 function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
 
 /* ============================================================
-   OFFLINE QUEUE
+   OFFLINE QUEUE & PROGRESS
    ============================================================ */
 let offlineQueue = [];
 try{ offlineQueue = JSON.parse(localStorage.getItem('safetyQueue') || '[]'); }catch(e){ offlineQueue = []; }
@@ -221,15 +327,12 @@ async function processQueue(){
   const item = offlineQueue[0];
   try{
     const res = await postToGAS({ action:'submit', ...item });
-    if(res && res.ok){ offlineQueue.shift(); localStorage.setItem('safetyQueue', JSON.stringify(offlineQueue)); console.log('Queue synced:', res.rowId); }
-  }catch(e){ console.warn('Queue sync failed:', e.message); }
+    if(res && res.ok){ offlineQueue.shift(); localStorage.setItem('safetyQueue', JSON.stringify(offlineQueue)); }
+  }catch(e){}
 }
 window.addEventListener('online', processQueue);
 setInterval(processQueue, 15000);
 
-/* ============================================================
-   PROGRESS OVERLAY
-   ============================================================ */
 function showProgress(msg, sub){
   document.getElementById('progressMsg').textContent = msg || 'Memproses...';
   document.getElementById('progressSub').textContent = sub || 'Mohon tunggu sebentar';
@@ -244,7 +347,6 @@ function renderWorker(){
   renderStep1(); renderStep2(); renderStep3(); renderStep4(); renderStep5(); renderStep6('—','—'); renderDots();
 }
 
-/* --- STEP 1 --- */
 function renderStep1(){
   document.getElementById('step1').innerHTML = `
     <div class="section-title"><span class="icon icon-blue">👤</span>Data Diri Pekerja</div>
@@ -254,8 +356,7 @@ function renderStep1(){
     <label>Posisi / Jabatan *</label>
     <select id="posisi" onchange="togglePosisiLainnya(); autoSaveDraft()">
       <option value="">-- Pilih Posisi / Jabatan --</option>
-      ${["CREW","ELECTRICIAN","PLUMBER","LH ELECTRIC","FOREMAN ELECTRIC","LH MECHANICAL","FOREMAN MECHANICAL","DRIVER/OPERATOR","HSE","QA/QC","SUPERVISOR ELECTRIC","SUPERVISOR MECHANICAL","LAINNYA"]
-      .map(v => `<option value="${v}" ${(S.pt===v || (v==="LAINNYA" && S.pt && !["CREW","ELECTRICIAN","PLUMBER","LH ELECTRIC","FOREMAN ELECTRIC","LH MECHANICAL","FOREMAN MECHANICAL","DRIVER/OPERATOR","HSE","QA/QC","SUPERVISOR ELECTRIC","SUPERVISOR MECHANICAL"].includes(S.pt)))?'selected':''}>${v}</option>`).join('')}
+      ${["CREW","ELECTRICIAN","PLUMBER","LH ELECTRIC","FOREMAN ELECTRIC","LH MECHANICAL","FOREMAN MECHANICAL","DRIVER/OPERATOR","HSE","QA/QC","SUPERVISOR ELECTRIC","SUPERVISOR MECHANICAL","LAINNYA"].map(v => `<option value="${v}" ${(S.pt===v || (v==="LAINNYA" && S.pt && !["CREW","ELECTRICIAN","PLUMBER","LH ELECTRIC","FOREMAN ELECTRIC","LH MECHANICAL","FOREMAN MECHANICAL","DRIVER/OPERATOR","HSE","QA/QC","SUPERVISOR ELECTRIC","SUPERVISOR MECHANICAL"].includes(S.pt)))?'selected':''}>${v}</option>`).join('')}
     </select>
     <div id="posisiLainnyaWrap" style="display:${(S.pt && !["CREW","ELECTRICIAN","PLUMBER","LH ELECTRIC","FOREMAN ELECTRIC","LH MECHANICAL","FOREMAN MECHANICAL","DRIVER/OPERATOR","HSE","QA/QC","SUPERVISOR ELECTRIC","SUPERVISOR MECHANICAL"].includes(S.pt)) ? 'block' : 'none'}; margin-top: 10px; margin-bottom: 15px;">
       <label>Isi Posisi Lainnya *</label><input type="text" id="posisiLainnya" placeholder="Tulis posisi / jabatan" value="${(S.pt && !["CREW","ELECTRICIAN","PLUMBER","LH ELECTRIC","FOREMAN ELECTRIC","LH MECHANICAL","FOREMAN MECHANICAL","DRIVER/OPERATOR","HSE","QA/QC","SUPERVISOR ELECTRIC","SUPERVISOR MECHANICAL"].includes(S.pt)) ? escHtml(S.pt) : ''}" oninput="autoSaveDraft()">
@@ -263,8 +364,7 @@ function renderStep1(){
     <label>Lokasi Kerja Hari Ini *</label>
     <select id="lokasiSelect" onchange="toggleLokasiLainnya(); autoSaveDraft()">
       <option value="">-- Pilih Lokasi Kerja --</option>
-      ${['PAD 1','PAD 2','PAD 3','PAD 4','PAD 5','PAD 6','PAD 7','PAD 8','LAINNYA']
-      .map(v => `<option value="${v}" ${(S.l===v || (v==='LAINNYA' && S.l && !['PAD 1','PAD 2','PAD 3','PAD 4','PAD 5','PAD 6','PAD 7','PAD 8'].includes(S.l)))?'selected':''}>${v}</option>`).join('')}
+      ${['PAD 1','PAD 2','PAD 3','PAD 4','PAD 5','PAD 6','PAD 7','PAD 8','LAINNYA'].map(v => `<option value="${v}" ${(S.l===v || (v==='LAINNYA' && S.l && !['PAD 1','PAD 2','PAD 3','PAD 4','PAD 5','PAD 6','PAD 7','PAD 8'].includes(S.l)))?'selected':''}>${v}</option>`).join('')}
     </select>
     <div id="lokasiLainnyaWrap" style="display:${(S.l && !['PAD 1','PAD 2','PAD 3','PAD 4','PAD 5','PAD 6','PAD 7','PAD 8'].includes(S.l)) ? 'block' : 'none'}; margin-top: 10px; margin-bottom: 15px;">
       <label>Isi Lokasi Lainnya *</label><input type="text" id="lokasiLainnya" placeholder="Tulis lokasi kerja" value="${(S.l && !['PAD 1','PAD 2','PAD 3','PAD 4','PAD 5','PAD 6','PAD 7','PAD 8'].includes(S.l)) ? escHtml(S.l) : ''}" oninput="autoSaveDraft()">
@@ -283,7 +383,6 @@ function toggleLokasiLainnya(){ const l=document.getElementById('lokasiSelect'),
 function selectSPV(val){ S.spvIdx = val === '' ? null : parseInt(val); renderSPVDetail(S.spvIdx); autoSaveDraft(); }
 function renderSPVDetail(idx){ const el=document.getElementById('spvDetail'), spv=SUPERVISORS[idx]; if(!spv){ el.style.display='none'; return; } el.style.display='block'; el.innerHTML=`👨‍💼 <strong>${escHtml(spv.name)}</strong><br>💼 ${escHtml(spv.title)} &bull; ${escHtml(spv.dept)}<br>📱 <strong>+${spv.wa}</strong>`; }
 
-/* --- STEP 2 --- */
 function renderStep2(){
   document.getElementById('step2').innerHTML = `
     <div class="section-title"><span class="icon icon-red">❤️</span>Kondisi Kesehatan</div>
@@ -294,22 +393,12 @@ function renderStep2(){
     ${buildHCItem('hc4','Apakah Anda memahami pekerjaan dan risiko hari ini?')}
     <div class="row"><button class="btn btn-back" onclick="goStep(1)">← Kembali</button><button class="btn btn-primary" onclick="next2()">Lanjut ke Bahaya →</button></div>`;
   Object.entries(HC).forEach(([id, val]) => {
-    document.querySelectorAll(`[data-hc="${id}"]`).forEach(el => {
-      if(el.dataset.val === val){ el.classList.add(val === 'ya' ? 'sel-g' : 'sel-b'); const r = el.querySelector('input[type="radio"]'); if(r) r.checked = true; }
-    });
+    document.querySelectorAll(`[data-hc="${id}"]`).forEach(el => { if(el.dataset.val === val){ el.classList.add(val === 'ya' ? 'sel-g' : 'sel-b'); const r = el.querySelector('input[type="radio"]'); if(r) r.checked = true; } });
   });
 }
-function buildHCItem(id, q){
-  return `<div class="check-group"><p style="font-size:.92rem;font-weight:700;margin-bottom:10px;color:#1f2937">${q}</p>
-    <div class="check-item" data-hc="${id}" data-val="ya" onclick="selHC('${id}','ya',this)"><input type="radio" name="${id}"><label>✅ Ya, siap kerja</label></div>
-    <div class="check-item" data-hc="${id}" data-val="tidak" onclick="selHC('${id}','tidak',this)"><input type="radio" name="${id}"><label>❌ Tidak</label></div></div>`;
-}
-function selHC(id, val, el){
-  HC[id] = val; el.parentElement.querySelectorAll('.check-item').forEach(c => { c.classList.remove('sel-g','sel-b'); c.querySelector('input').checked = false; });
-  el.classList.add(val === 'ya' ? 'sel-g' : 'sel-b'); el.querySelector('input').checked = true; autoSaveDraft();
-}
+function buildHCItem(id, q){ return `<div class="check-group"><p style="font-size:.92rem;font-weight:700;margin-bottom:10px;color:#1f2937">${q}</p><div class="check-item" data-hc="${id}" data-val="ya" onclick="selHC('${id}','ya',this)"><input type="radio" name="${id}"><label>✅ Ya, siap kerja</label></div><div class="check-item" data-hc="${id}" data-val="tidak" onclick="selHC('${id}','tidak',this)"><input type="radio" name="${id}"><label>❌ Tidak</label></div></div>`; }
+function selHC(id, val, el){ HC[id] = val; el.parentElement.querySelectorAll('.check-item').forEach(c => { c.classList.remove('sel-g','sel-b'); c.querySelector('input').checked = false; }); el.classList.add(val === 'ya' ? 'sel-g' : 'sel-b'); el.querySelector('input').checked = true; autoSaveDraft(); }
 
-/* --- STEP 3 --- */
 function renderStep3(){
   document.getElementById('step3').innerHTML = `
     <div class="section-title"><span class="icon icon-orange">⚠️</span>Identifikasi Bahaya</div>
@@ -331,18 +420,10 @@ function renderHazardList(){
     html += `<div class="hazard-card"><div class="hazard-title">${cat.n}</div>`;
     cat.items.forEach((item, i) => {
       const key = `${cat.id}_${i}`; if(!HZ[key]) HZ[key] = { checked:false, control:'' }; const checked = HZ[key].checked;
-      html += `
-        <div class="hazard-check" onclick="toggleHZ('${key}',event)">
-          <input type="checkbox" id="${key}" ${checked ? 'checked' : ''} onchange="HZ['${key}'].checked=this.checked;updateHZBox('${key}');autoSaveDraft()" onclick="event.stopPropagation()">
-          <label for="${key}" onclick="event.stopPropagation()">${escHtml(item)}</label>
-        </div>
-        <div class="control-box" id="ctrl_${key}" style="display:${checked ? 'block' : 'none'}"><label>🛡️ Tindakan kontrol wajib:</label>
-          <textarea id="ctrltext_${key}" placeholder="Tuliskan langkah pengendalian risiko..." oninput="HZ['${key}'].control=this.value;autoSaveDraft()">${escHtml(HZ[key].control)}</textarea>
-        </div>`;
+      html += `<div class="hazard-check" onclick="toggleHZ('${key}',event)"><input type="checkbox" id="${key}" ${checked ? 'checked' : ''} onchange="HZ['${key}'].checked=this.checked;updateHZBox('${key}');autoSaveDraft()" onclick="event.stopPropagation()"><label for="${key}" onclick="event.stopPropagation()">${escHtml(item)}</label></div><div class="control-box" id="ctrl_${key}" style="display:${checked ? 'block' : 'none'}"><label>🛡️ Tindakan kontrol wajib:</label><textarea id="ctrltext_${key}" placeholder="Tuliskan langkah pengendalian risiko..." oninput="HZ['${key}'].control=this.value;autoSaveDraft()">${escHtml(HZ[key].control)}</textarea></div>`;
     });
     html += `</div>`;
-  });
-  el.innerHTML = html;
+  }); el.innerHTML = html;
 }
 function toggleHZ(key, event){ const cb = document.getElementById(key); if(!cb) return; if(event && event.target === cb){ setTimeout(() => { HZ[key].checked = cb.checked; updateHZBox(key); autoSaveDraft(); }, 0); } else { cb.checked = !cb.checked; HZ[key].checked = cb.checked; updateHZBox(key); autoSaveDraft(); } }
 function updateHZBox(key){ const box = document.getElementById('ctrl_' + key); if(!box) return; if(HZ[key].checked){ box.style.display = 'block'; setTimeout(() => { const ta = document.getElementById('ctrltext_' + key); if(ta) ta.focus(); }, 100); } else { box.style.display = 'none'; const ta = document.getElementById('ctrltext_' + key); if(ta) ta.value = ''; HZ[key].control = ''; } }
@@ -350,17 +431,13 @@ function renderCustomHazardList(){ const el = document.getElementById('customHaz
 function addCustomHazard(){ const inp = document.getElementById('customHazardInput'); if(!inp) return; const val = inp.value.trim(); if(!val){ showAlert('Masukkan nama bahaya terlebih dahulu'); return; } customHazards.push({ text: sanitize(val), control: '' }); inp.value = ''; renderCustomHazardList(); autoSaveDraft(); }
 function removeCustomHazard(i){ customHazards.splice(i, 1); renderCustomHazardList(); autoSaveDraft(); }
 
-/* --- STEP 4 --- */
 function renderStep4(){
   document.getElementById('step4').innerHTML = `
     <div class="section-title"><span class="icon icon-green">🛡️</span>Alat Pelindung Diri (APD)</div>
     <p style="font-size:.88rem;color:#6b7280;margin-bottom:16px">Pilih APD yang akan digunakan selama bekerja hari ini:</p>
     <div id="ctList"></div>
     <label style="margin-top:24px; padding-top:16px; border-top:1px dashed #cbd5e1; display:block;">📸 Foto Kondisi Lapangan / APD Lengkap *</label>
-    <div class="photo-box">
-      <input type="file" accept="image/*" capture="environment" id="fotoLap" onchange="handlePhotoUpload(event)">
-      <img id="fotoPreview" src="${S.photoBase64 || ''}" style="display:${S.photoBase64 ? 'block' : 'none'}">
-    </div>
+    <div class="photo-box"><input type="file" accept="image/*" capture="environment" id="fotoLap" onchange="handlePhotoUpload(event)"><img id="fotoPreview" src="${S.photoBase64 || ''}" style="display:${S.photoBase64 ? 'block' : 'none'}"></div>
     <div class="row" style="margin-top:20px"><button class="btn btn-back" onclick="goStep(3)">← Kembali</button><button class="btn btn-primary" onclick="next4()">Review & Kirim →</button></div>`;
   renderCTList();
 }
@@ -369,22 +446,9 @@ function renderCTList(){
   CTDATA.forEach((item, i) => {
     const key = 'ct' + i; const isChecked = !!CT[key];
     if (item === 'Lainnya') {
-      html += `
-        <div class="hazard-check" style="border:2px solid ${isChecked?'#059669':'#e5e7eb'};border-radius:10px;margin-bottom:8px;padding:12px;background:${isChecked?'#f0fdf4':'#fff'};transition:all .2s;display:block;">
-          <div style="display:flex; align-items:center; cursor:pointer;" onclick="toggleCT('${key}', event)">
-            <input type="checkbox" id="${key}" ${isChecked ? 'checked' : ''} onchange="CT['${key}'] = this.checked; updateCTBox('${key}', this); toggleApdLainnyaInput(); autoSaveDraft();" onclick="event.stopPropagation()">
-            <label for="${key}" onclick="event.stopPropagation()" style="font-weight:600;cursor:pointer;margin-left:8px;margin-bottom:0">Lainnya (Sebutkan)</label>
-          </div>
-          <div id="wrapperApdLainnya" style="display: ${isChecked ? 'block' : 'none'}; margin-top: 10px;">
-            <input type="text" id="inputApdLainnya" name="apd_lainnya" value="${escHtml(CT.apd_lainnya || '')}" placeholder="Tuliskan APD lainnya secara manual..." oninput="CT.apd_lainnya = this.value; autoSaveDraft();" style="width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 0; font-size: 0.9rem;" onclick="event.stopPropagation()">
-          </div>
-        </div>`;
+      html += `<div class="hazard-check" style="border:2px solid ${isChecked?'#059669':'#e5e7eb'};border-radius:10px;margin-bottom:8px;padding:12px;background:${isChecked?'#f0fdf4':'#fff'};transition:all .2s;display:block;"><div style="display:flex; align-items:center; cursor:pointer;" onclick="toggleCT('${key}', event)"><input type="checkbox" id="${key}" ${isChecked ? 'checked' : ''} onchange="CT['${key}'] = this.checked; updateCTBox('${key}', this); toggleApdLainnyaInput(); autoSaveDraft();" onclick="event.stopPropagation()"><label for="${key}" onclick="event.stopPropagation()" style="font-weight:600;cursor:pointer;margin-left:8px;margin-bottom:0">Lainnya (Sebutkan)</label></div><div id="wrapperApdLainnya" style="display: ${isChecked ? 'block' : 'none'}; margin-top: 10px;"><input type="text" id="inputApdLainnya" name="apd_lainnya" value="${escHtml(CT.apd_lainnya || '')}" placeholder="Tuliskan APD lainnya secara manual..." oninput="CT.apd_lainnya = this.value; autoSaveDraft();" style="width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 0; font-size: 0.9rem;" onclick="event.stopPropagation()"></div></div>`;
     } else {
-      html += `
-        <div class="hazard-check" onclick="toggleCT('${key}',event)" style="border:2px solid ${isChecked?'#059669':'#e5e7eb'};border-radius:10px;margin-bottom:8px;padding:12px;background:${isChecked?'#f0fdf4':'#fff'};transition:all .2s">
-          <input type="checkbox" id="${key}" ${isChecked ? 'checked' : ''} onchange="CT['${key}'] = this.checked; updateCTBox('${key}', this); autoSaveDraft();" onclick="event.stopPropagation()">
-          <label for="${key}" onclick="event.stopPropagation()" style="font-weight:600;cursor:pointer;margin-bottom:0">${escHtml(item)}</label>
-        </div>`;
+      html += `<div class="hazard-check" onclick="toggleCT('${key}',event)" style="border:2px solid ${isChecked?'#059669':'#e5e7eb'};border-radius:10px;margin-bottom:8px;padding:12px;background:${isChecked?'#f0fdf4':'#fff'};transition:all .2s"><input type="checkbox" id="${key}" ${isChecked ? 'checked' : ''} onchange="CT['${key}'] = this.checked; updateCTBox('${key}', this); autoSaveDraft();" onclick="event.stopPropagation()"><label for="${key}" onclick="event.stopPropagation()" style="font-weight:600;cursor:pointer;margin-bottom:0">${escHtml(item)}</label></div>`;
     }
   }); el.innerHTML = html;
 }
@@ -392,7 +456,6 @@ function toggleCT(key, event){ const cb = document.getElementById(key); if(!cb) 
 function updateCTBox(key, cb){ const parent = cb.closest('.hazard-check'); if(parent){ parent.style.borderColor = CT[key] ? '#059669' : '#e5e7eb'; parent.style.background  = CT[key] ? '#f0fdf4' : '#fff'; } }
 function toggleApdLainnyaInput(){ const lainIndex = CTDATA.indexOf('Lainnya'); if (lainIndex === -1) return; const key = 'ct' + lainIndex; const wrapper = document.getElementById('wrapperApdLainnya'); const inputField = document.getElementById('inputApdLainnya'); if(!wrapper) return; if(CT[key]) { wrapper.style.display = 'block'; if(inputField) inputField.focus(); } else { wrapper.style.display = 'none'; if(inputField) { inputField.value = ''; } CT.apd_lainnya = ''; } }
 
-/* --- STEP 5 --- */
 function renderStep5(){
   const data = buildData(); const spv = SUPERVISORS[S.spvIdx] || {};
   document.getElementById('step5').innerHTML = `
@@ -402,13 +465,10 @@ function renderStep5(){
     <label style="margin-top:20px; display:block;">✍️ Tanda Tangan Anda (Pekerja) *</label>
     <div class="sig-container"><canvas id="workerCanvas" class="sig-pad" width="400" height="180"></canvas></div>
     <button class="clear-sig" onclick="clearSignature('workerCanvas')">🗑️ Hapus Tanda Tangan</button>
-    <div style="background:#dbeafe;border-radius:12px;padding:16px;margin:16px 0;font-size:.86rem;color:#1e40af;border-left:4px solid #2563eb">
-      <strong>📤 Akan dikirim ke Supervisor:</strong><br>👨‍💼 ${escHtml(spv.name || '-')} — ${escHtml(spv.title || '-')}<br><small>Supervisor akan menerima link verifikasi via WhatsApp</small>
-    </div>
+    <div style="background:#dbeafe;border-radius:12px;padding:16px;margin:16px 0;font-size:.86rem;color:#1e40af;border-left:4px solid #2563eb"><strong>📤 Akan dikirim ke Supervisor:</strong><br>👨‍💼 ${escHtml(spv.name || '-')} — ${escHtml(spv.title || '-')}<br><small>Supervisor akan menerima link verifikasi via WhatsApp</small></div>
     <div class="row"><button class="btn btn-back" onclick="goStep(4)">← Edit</button><button class="btn btn-wa" onclick="submitChecklist()">📱 Kirim via WhatsApp</button></div>`;
 }
 
-/* --- STEP 6 --- */
 function renderStep6(rowId, spvName){
   document.getElementById('step6').innerHTML = `
     <div class="result-card"><div class="big">📨</div><h2 style="color:#059669;font-size:1.6rem;font-weight:900">Checklist Terkirim!</h2>
@@ -421,24 +481,18 @@ function renderStep6(rowId, spvName){
 }
 
 /* ============================================================
-   SUPERVISOR MODE (UPGRADE OPSI 2)
+   SUPERVISOR MODE (OPSI 2)
    ============================================================ */
 async function showSupervisor(id, mode){
-  document.getElementById('WM').style.display = 'none';
-  document.getElementById('SM').style.display = 'block';
-
+  document.getElementById('WM').style.display = 'none'; document.getElementById('SM').style.display = 'block';
   document.getElementById('SM').innerHTML = `<div class="sv-banner"><div style="font-size:2.8rem">🔍</div><h2>Memeriksa Data</h2></div><div class="section" style="text-align:center;padding:60px 24px"><div class="spinner" style="margin:0 auto 16px"></div><p style="color:#1a5276;font-weight:700">Mengambil data checklist...</p><small style="color:#6b7280">Mencari ID: ${escHtml(id)}</small></div>`;
-
   try {
     const res = await postToGAS({ action: 'get', rowId: id });
     if(!res || !res.ok || !res.data) throw new Error(res.error || 'Data tidak ditemukan di server.');
     const data = res.data;
 
-    // 🚀 OPSI 2: JIKA MODE = VIEW (Pekerja/HSE) ATAU SUDAH DISETUJUI, LANGSUNG BUKA LAPORAN FINAL
     if(mode === 'view' || (data.sv && (data.sv.status === 'APPROVED' || data.sv.status === 'REJECTED'))){
-      const enc = LZ.compress(JSON.stringify(data));
-      showDone(enc, false); 
-      return; 
+      const enc = LZ.compress(JSON.stringify(data)); showDone(enc, false); return; 
     }
 
     window.svData = data; window.svEnc = id;
@@ -499,14 +553,13 @@ async function doReject(){
   try{
     const res = await postToGAS({ action: 'respond', rowId: data.rowId, status: 'REJECTED', svname: svNama, svnote: svNote, svtime: data.sv.time, svsign: "" });
     hideProgress(); if(res && res.ok === false){ throw new Error(res.error || 'Gagal merespon di server'); }
-    kirimNotifikasiKeWorker(data);
-    const enc = LZ.compress(JSON.stringify(data)); showDone(enc, true);
+    kirimNotifikasiKeWorker(data); const enc = LZ.compress(JSON.stringify(data)); showDone(enc, true);
   }catch(e){ hideProgress(); showAlert('❌ Gagal memproses: ' + e.message); }
 }
 window.doReject = doReject;
 
 /* ============================================================
-   NOTIFIKASI KE WORKER & HSE (BERTAHAP & AMAN)
+   NOTIFIKASI WA (OPSI 2 DENGAN &MODE=VIEW)
    ============================================================ */
 let _notifStep = 1;
 function kirimSemuaNotif(btn){
@@ -524,7 +577,6 @@ function kirimSemuaNotif(btn){
 
 function kirimNotifikasiKeWorker(data){
   const isApproved = data.sv.status === 'APPROVED';
-  // 🚀 PERBAIKAN OPSI 2: Tambahkan &mode=view
   const shortUrl = `${CONFIG.BASE_URL}?id=${data.rowId || 'CHECKLIST'}&mode=view`;
   const workerWA = data.p.replace(/^0/, '62').replace(/[^0-9]/g, '');
 
@@ -547,11 +599,8 @@ function kirimNotifikasiKeWorker(data){
 function showDone(enc, showNotifBtn = false){
   document.getElementById('WM').style.display = 'none'; document.getElementById('SM').style.display = 'none'; document.getElementById('SD').style.display = 'block';
   let data;
-  try{
-    const decoded = LZ.decompress(enc); if(!decoded) throw new Error('Decode failed'); data = JSON.parse(decoded);
-  }catch(e){
-    document.getElementById('SD').innerHTML = `<div class="section" style="text-align:center;padding:60px 24px"><div style="font-size:3rem;margin-bottom:16px">❌</div><h3 style="color:#dc2626">Data Tidak Valid</h3><p style="color:#6b7280;margin-top:8px">Tidak dapat membaca data checklist.</p><button class="btn btn-primary" style="margin-top:24px" onclick="location.href='.'">🔄 Kembali ke Beranda</button></div>`; return;
-  }
+  try{ const decoded = LZ.decompress(enc); if(!decoded) throw new Error('Decode failed'); data = JSON.parse(decoded); }
+  catch(e){ document.getElementById('SD').innerHTML = `<div class="section" style="text-align:center;padding:60px 24px"><div style="font-size:3rem;margin-bottom:16px">❌</div><h3 style="color:#dc2626">Data Tidak Valid</h3><p style="color:#6b7280;margin-top:8px">Tidak dapat membaca data checklist.</p><button class="btn btn-primary" style="margin-top:24px" onclick="location.href='.'">🔄 Kembali ke Beranda</button></div>`; return; }
   
   const hasSV = !!data.sv; const isApproved = hasSV && data.sv.status === 'APPROVED'; const isRejected = hasSV && data.sv.status === 'REJECTED';
   let statusIcon = '📨'; let statusText = 'MENUNGGU VERIFIKASI'; let statusColor = '#2563eb'; let infoClass = '';
@@ -651,12 +700,6 @@ async function submitChecklist(){
 }
 
 /* ============================================================
-   DRAFT — AUTO SAVE & LOAD
-   ============================================================ */
-function autoSaveDraft(){ try{ const draft = { S: { ...S }, HC: { ...HC }, HZ: { ...HZ }, CT: { ...CT }, customHazards: [...customHazards] }; localStorage.setItem('safetyDraft', LZ.compress(JSON.stringify(draft))); }catch(e){} }
-function loadDraft(){ try{ const raw = localStorage.getItem('safetyDraft'); if(!raw) return; const decoded = LZ.decompress(raw); if(!decoded) return; const draft = JSON.parse(decoded); if(draft.S) Object.assign(S, draft.S); if(draft.HC) Object.assign(HC, draft.HC); if(draft.HZ) Object.assign(HZ, draft.HZ); if(draft.CT) Object.assign(CT, draft.CT); if(draft.customHazards) customHazards = draft.customHazards; }catch(e){ localStorage.removeItem('safetyDraft'); } }
-
-/* ============================================================
    UTILITY FUNCTIONS
    ============================================================ */
 function formatIDDateTime(d = new Date()) { const dd = String(d.getDate()).padStart(2, "0"); const mm = String(d.getMonth() + 1).padStart(2, "0"); const yyyy = d.getFullYear(); const hh = String(d.getHours()).padStart(2, "0"); const mi = String(d.getMinutes()).padStart(2, "0"); return `${dd}/${mm}/${yyyy} ${hh}:${mi}`; }
@@ -672,3 +715,6 @@ function checkSupervisorPin(inputVal) { const btnApprove = document.querySelecto
    ============================================================ */
 init();
 processQueue();
+</script>
+</body>
+</html>
