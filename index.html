@@ -1284,7 +1284,7 @@ async function doApprove(){
 
   showProgress('📤 Mengirim Persetujuan...', 'Menyimpan data ke server');
   
-  try{
+ try{
     const res = await postToGAS({
       action : 'respond',
       rowId  : data.rowId,
@@ -1307,7 +1307,8 @@ async function doApprove(){
 
   }catch(e){
     hideProgress();
-    showAlert('❌ Gagal memproses: ' + e.message);
+    // Menampilkan pesan error yang lebih jelas ke layar HP Supervisor
+    showAlert('❌ Gagal memproses: ' + e.message + '<br><br>Periksa koneksi internet Anda atau pastikan link GAS valid.');
   }
 }
 window.doApprove = doApprove;
