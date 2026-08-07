@@ -422,19 +422,28 @@ async function postToGAS(payload){
     try{
       const res = await fetch(CONFIG.GAS_URL, {
         method : 'POST',
+        redirect: 'follow', // Penting untuk Google Apps Script
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8' // Menghindari blokir CORS preflight
+        },
         body   : JSON.stringify(payload)
       });
 
-      if(!res.ok) throw new Error(`HTTP Error: ${res.status}`);
-
+      // Langsung baca balasan dari server
       const text = await res.text();
-      try{ return JSON.parse(text); }
-      catch(e){ return { ok:true, rowId:'GAS-'+Date.now(), raw:text }; }
+      try { 
+        return JSON.parse(text); 
+      } catch(e) { 
+        return { ok: true, rowId: payload.rowId || 'GAS', raw: text }; 
+      }
 
     }catch(err){
       console.warn(`GAS attempt ${attempt} failed:`, err.message);
-      if(attempt === MAX_RETRY) throw err;
-      await sleep(1500 * attempt); // Tunggu sebentar sebelum coba lagi
+      if(attempt === MAX_RETRY) {
+        throw new Error("Akses ke Google Sheets ditolak oleh server (Failed to fetch). Pastikan link GAS Anda valid (berakhiran /exec) dan izin di-set ke 'Anyone'.");
+      }
+      // Tunggu sebentar lalu coba lagi (Tanpa butuh fungsi sleep eksternal)
+      await new Promise(resolve => setTimeout(resolve, 1500 * attempt));
     }
   }
 }
