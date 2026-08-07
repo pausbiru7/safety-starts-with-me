@@ -1465,7 +1465,7 @@ function kirimNotifikasiKeWorker(data){
 }
   
 /* ============================================================
-   DONE / RESULT VIEW
+   DONE / RESULT VIEW (DIPERBAIKI)
    ============================================================ */
 function showDone(enc){
   document.getElementById('WM').style.display = 'none';
@@ -1489,6 +1489,7 @@ function showDone(enc){
       </div>`;
     return;
   }
+  
   const hasSV      = !!data.sv;
   const isApproved = hasSV && data.sv.status === 'APPROVED';
   const isRejected = hasSV && data.sv.status === 'REJECTED';
@@ -1496,6 +1497,7 @@ function showDone(enc){
   let statusText  = 'Menunggu Verifikasi';
   let statusColor = '#2563eb';
   let infoClass   = '';
+  
   if(isApproved){
     statusIcon  = '✅';
     statusText  = 'DISETUJUI';
@@ -1508,14 +1510,20 @@ function showDone(enc){
     infoClass   = 'rejected';
   }
 
- const notifSection = (hasSV)
+  // DETEKSI APAKAH INI DIBUKA OLEH SPV ATAU PEKERJA
+  // Jika parameter URL pakai ?id=... (berarti dibuka dari link verifikasi SPV), tampilkan tombol kirim notifikasi.
+  // Jika pakai ?d=... atau baru selesai submit dari worker, sembunyikan tombol kirim notifikasi.
+  const urlParams = new URLSearchParams(location.search);
+  const isOpenedBySPV = urlParams.has('id');
+
+  const notifSection = (hasSV && isOpenedBySPV)
     ? `<div style="margin-top:20px;text-align:center">
          <button class="btn btn-wa" onclick="kirimSemuaNotif(this)"
            style="width:100%">
            📱 Kirim Notifikasi ke Pekerja
          </button>
          <p id="notifHint" style="font-size:.82rem;color:#6b7280;margin-top:8px">
-           Klik tombol di atas untuk mengirim notifikasi bertahap
+           Klik tombol di atas untuk mengirim notifikasi bertahap (Pekerja & HSE)
          </p>
        </div>`
     : '';
@@ -1540,6 +1548,11 @@ function showDone(enc){
       <button class="btn btn-primary" style="margin-top:24px"
         onclick="location.href='.'">🔄 Kembali ke Beranda</button>
     </div>`;
+    
+  // Generate link WA agar tombol siap digunakan jika dibuka oleh SPV
+  if(hasSV && isOpenedBySPV) {
+    kirimNotifikasiKeWorker(data);
+  }
 }
 
 /* ============================================================
