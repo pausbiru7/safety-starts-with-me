@@ -17,9 +17,9 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:#f0f4f8;min-height:100v
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      align-items: center;       /* Memastikan item anak berada tepat di tengah horizontal */
-      justify-content: center;   /* Memusatkan secara vertikal jika ada sisa ruang */
-      text-align: center;        /* Memastikan teks rata tengah secara konsisten */
+      align-items: center;       
+      justify-content: center;   
+      text-align: center;        
     }
     .header::before {
       content: '';
@@ -47,7 +47,7 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:#f0f4f8;min-height:100v
       width: 100%;
     }
     .badge {
-      display: inline-flex;       /* Mengubah dari inline-block agar mudah disejajarkan flexbox */
+      display: inline-flex;       
       align-items: center;
       justify-content: center;
       background: #f59e0b;
@@ -258,18 +258,15 @@ const TOTAL_STEPS = 6;
    ============================================================ */
 function init(){
   const params = new URLSearchParams(location.search);
-  const idParam = params.get('id');   
-  const modeParam = params.get('mode'); // 🚀 Parameter Opsi 2
-  const dParam = params.get('d');   
+  const idParam = params.get('id'); // Parameter baru (Short Link)
+  const dParam = params.get('d');   // Parameter lama (Long Link)
 
-  // Teruskan parameter mode ke fungsi supervisor
-  if(idParam){ showSupervisor(idParam, modeParam); return; } 
+  if(idParam){ showSupervisor(idParam); return; }
   if(dParam){ showDone(dParam); return; } 
 
   loadDraft();
   setDateTime();
   renderWorker();
-}
 }
 
 function setDateTime(){
@@ -319,14 +316,7 @@ function clearSignature(canvasId) {
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
-/* ============================================================
-   FUNGSI UPGRADE: KAMERA (FOTO LAPANGAN)
-   ============================================================ */
-function handlePhotoUpload(event) {
-  // ... (kode upload foto yang sudah ada)
-}
 
-// ⬇️ TEMPATKAN FUNGSI INI DI SINI (DI LUAR FUNGSI LAIN) ⬇️
 function bukaFotoPekerja() {
   const data = window.svData;
   if (!data || !data.fotoUrl || data.fotoUrl === '-' || data.fotoUrl.length < 50) {
@@ -345,7 +335,6 @@ function bukaFotoPekerja() {
     </html>
   `);
 }
-
 
 function getSignatureBase64(canvasId) {
   const canvas = document.getElementById(canvasId);
@@ -766,7 +755,7 @@ function renderStep2(){
     ${buildHCItem('hc3','Apakah Anda bebas dari pengaruh obat-obatan/alkohol?')}
     ${buildHCItem('hc4','Apakah Anda memahami pekerjaan dan risiko hari ini?')}
     <div class="row">
-      <button class="btn btn-back" onclick="goStep(1)">← Kembali</button>
+      <button class="btn btn-back" onclick="goStep(2)">← Kembali</button>
       <button class="btn btn-primary" onclick="next2()">Lanjut ke Bahaya →</button>
     </div>`;
 
@@ -1177,7 +1166,7 @@ function renderStep6(rowId, spvName){
 /* ============================================================
    SUPERVISOR MODE (UPGRADE PENDEK + SIGNATURE)
    ============================================================ */
-async function showSupervisor(id, mode){
+async function showSupervisor(id){
   document.getElementById('WM').style.display = 'none';
   document.getElementById('SM').style.display = 'block';
 
@@ -1199,10 +1188,10 @@ async function showSupervisor(id, mode){
 
     const data = res.data;
 
-    // 🚀 OPSI 2: JIKA MODE = VIEW (Pekerja/HSE) ATAU SUDAH DISETUJUI, LANGSUNG BUKA LAPORAN FINAL
-    if(mode === 'view' || (data.sv && (data.sv.status === 'APPROVED' || data.sv.status === 'REJECTED'))){
+   // JIKA STATUS SUDAH APPROVED / REJECTED, LANGSUNG TAMPILKAN HASILNYA
+    if(data.sv && (data.sv.status === 'APPROVED' || data.sv.status === 'REJECTED')){
       const enc = LZ.compress(JSON.stringify(data));
-      showDone(enc, false); 
+      showDone(enc, false); // <--- BERI FALSE AGAR TOMBOL SEMBUNYI UNTUK PEKERJA/HSE
       return; 
     }
 
@@ -1219,6 +1208,7 @@ async function showSupervisor(id, mode){
       <div class="section">
         <div class="sbox">${buildSummaryHTML(data)}</div>
         
+        <!-- UPGRADE: TOMBOL LIHAT FOTO & LOKASI -->
         <div style="text-align:center; margin-bottom:20px;">
          <button type="button" onclick="bukaFotoPekerja()" style="background:#2e86c1;color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none;display:inline-block;font-weight:bold;font-size:.85rem;border:none;cursor:pointer;">📸 Buka Foto Pekerja</button>
           <a href="${data.gps || '#'}" target="_blank" style="background:#10b981;color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none;display:inline-block;margin-left:5px;font-weight:bold;font-size:.85rem">📍 Buka Peta Lokasi</a>
@@ -1239,6 +1229,7 @@ async function showSupervisor(id, mode){
         <label>Catatan (opsional)</label>
         <textarea id="svNote" rows="3" placeholder="Catatan persetujuan atau alasan penolakan..."></textarea>
 
+        <!-- UPGRADE: TANDA TANGAN SPV -->
         <label style="margin-top:15px; display:block;">✍️ Tanda Tangan Supervisor *</label>
         <div class="sig-container">
           <canvas id="spvCanvas" class="sig-pad" width="400" height="180"></canvas>
@@ -1251,21 +1242,6 @@ async function showSupervisor(id, mode){
         </div>
         <button type="button" class="btn btn-back" onclick="history.back()">← Kembali</button>
       </div>`;
-      
-      setTimeout(() => initSignaturePad('spvCanvas'), 200);
-
-  } catch(e) {
-    document.getElementById('SM').innerHTML = `
-      <div class="section" style="text-align:center;padding:60px 24px">
-        <div style="font-size:3rem;margin-bottom:16px">❌</div>
-        <h3 style="color:#dc2626">Gagal Memuat Data</h3>
-        <p style="color:#6b7280;margin-top:8px">
-          ${escHtml(e.message)}<br>Pastikan link valid atau minta pekerja mengirim ulang link.
-        </p>
-        <button class="btn btn-primary" style="margin-top:24px" onclick="location.href='.'">🔄 Ke Halaman Utama</button>
-      </div>`;
-  }
-}
       
       setTimeout(() => initSignaturePad('spvCanvas'), 200);
 
@@ -1443,8 +1419,8 @@ function kirimSemuaNotif(btn){
 function kirimNotifikasiKeWorker(data){
   const isApproved = data.sv.status === 'APPROVED';
   
-  // 🚀 PERBAIKAN OPSI 2: Tambahkan &mode=view pada link
-  const shortUrl   = `${CONFIG.BASE_URL}?id=${data.rowId || 'CHECKLIST'}&mode=view`;
+  // 🚀 PERBAIKAN: Wajib pakai ?id= agar URL WA sangat pendek dan tidak bikin HP lag/error
+  const shortUrl   = `${CONFIG.BASE_URL}?id=${data.rowId || 'CHECKLIST'}`;
   const workerWA   = data.p.replace(/^0/, '62').replace(/[^0-9]/g, '');
 
   const workerMsg = isApproved
@@ -1455,7 +1431,7 @@ function kirimNotifikasiKeWorker(data){
       `🕐 Waktu      : ${data.sv.time}\n` +
       `${data.sv.note ? `📝 Catatan    : ${data.sv.note}\n` : ''}` +
       `\n✅ Anda diizinkan memulai pekerjaan.\n` +
-      `\n🔗 Buka Laporan Final:\n${shortUrl}\n\n_Powered by Pausbiru7_`
+      `\n🔗 Detail Laporan:\n${shortUrl}\n\n_Powered by Pausbiru7_`
     : `❌ *SAFETY CHECKLIST DITOLAK*\n\n` +
       `Halo *${data.n}*,\n\n` +
       `Checklist safety Anda *DITOLAK* oleh supervisor.\n\n` +
@@ -1463,7 +1439,7 @@ function kirimNotifikasiKeWorker(data){
       `📝 Alasan     : ${data.sv.note}\n` +
       `🕐 Waktu      : ${data.sv.time}\n` +
       `\n⚠️ Selesaikan perbaikan dan kirim ulang checklist.\n` +
-      `\n🔗 Buka Laporan Final:\n${shortUrl}\n\n_Powered by Pausbiru7_`;
+      `\n🔗 Detail Laporan:\n${shortUrl}\n\n_Powered by Pausbiru7_`;
 
   const hzText = (data.hz || []).map(h => `• ${h.name}\n  🛡️ ${h.control}`).join('\n');
   const ctText = (data.ct || []).length > 0 ? data.ct.join(', ') : 'Tidak ada';
@@ -1494,7 +1470,7 @@ function kirimNotifikasiKeWorker(data){
     `Status   : ${isApproved ? '✅ DISETUJUI' : '❌ DITOLAK'}\n` +
     `${data.sv.note ? `Catatan  : ${data.sv.note}\n` : ''}` +
     `Waktu    : ${data.sv.time}\n\n` +
-    `🔗 Buka Laporan Final:\n${shortUrl}\n\n_Powered by Pausbiru7_`;
+    `🔗 Detail Laporan:\n${shortUrl}\n\n_Powered by Pausbiru7_`;
 
   window._waWorkerLink = `https://wa.me/${workerWA}?text=${encodeURIComponent(workerMsg)}`;
   window._waHSELink    = `https://wa.me/${CONFIG.HSE_WA}?text=${encodeURIComponent(hseMsg)}`;
@@ -1517,8 +1493,11 @@ function showDone(enc, showNotifBtn = false){
       <div class="section" style="text-align:center;padding:60px 24px">
         <div style="font-size:3rem;margin-bottom:16px">❌</div>
         <h3 style="color:#dc2626">Data Tidak Valid</h3>
-        <p style="color:#6b7280;margin-top:8px">Tidak dapat membaca data checklist.</p>
-        <button class="btn btn-primary" style="margin-top:24px" onclick="location.href='.'">🔄 Kembali ke Beranda</button>
+        <p style="color:#6b7280;margin-top:8px">
+          Tidak dapat membaca data checklist.
+        </p>
+        <button class="btn btn-primary" style="margin-top:24px"
+          onclick="location.href='.'">🔄 Kembali ke Beranda</button>
       </div>`;
     return;
   }
@@ -1527,80 +1506,57 @@ function showDone(enc, showNotifBtn = false){
   const isApproved = hasSV && data.sv.status === 'APPROVED';
   const isRejected = hasSV && data.sv.status === 'REJECTED';
   let statusIcon  = '📨';
-  let statusText  = 'MENUNGGU VERIFIKASI';
+  let statusText  = 'Menunggu Verifikasi';
   let statusColor = '#2563eb';
   let infoClass   = '';
   
   if(isApproved){
     statusIcon  = '✅';
-    statusText  = 'PAUSBIRU SAFETY<br>TELAH DISETUJUI';
+    statusText  = 'DISETUJUI';
     statusColor = '#059669';
     infoClass   = 'approved';
   } else if(isRejected){
     statusIcon  = '❌';
-    statusText  = 'PAUSBIRU SAFETY<br>DITOLAK';
+    statusText  = 'DITOLAK';
     statusColor = '#dc2626';
     infoClass   = 'rejected';
   }
 
+  // Tombol HANYA akan dirender jika showNotifBtn bernilai TRUE
   const notifSection = (hasSV && showNotifBtn)
     ? `<div style="margin-top:20px;text-align:center">
-         <button class="btn btn-wa" onclick="kirimSemuaNotif(this)" style="width:100%">
-           📱 Kirim Notifikasi ke Pekerja & HSE
+         <button class="btn btn-wa" onclick="kirimSemuaNotif(this)"
+           style="width:100%">
+           📱 Kirim Notifikasi ke Pekerja
          </button>
          <p id="notifHint" style="font-size:.82rem;color:#6b7280;margin-top:8px">
-           Klik tombol di atas untuk mengirim notifikasi secara bertahap.
+           Klik tombol di atas untuk mengirim notifikasi bertahap (Pekerja & HSE)
          </p>
        </div>`
     : '';
 
-  // 🚀 Tampilkan Foto & Tanda Tangan Secara Profesional
-  const sigWorker = (data.ttdUrl && data.ttdUrl.length > 50) ? `<img src="${data.ttdUrl}" style="max-height:60px; margin-top:5px; border-bottom:1px solid #111;">` : `<br><br>(Ttd Pekerja)`;
-  const sigSpv = (data.sv && data.sv.signUrl && data.sv.signUrl.length > 50) ? `<img src="${data.sv.signUrl}" style="max-height:60px; margin-top:5px; border-bottom:1px solid #111;">` : `<br><br>(Ttd SPV)`;
-  const fotoLapangan = (data.fotoUrl && data.fotoUrl.length > 50) ? `<div style="margin-top:16px;text-align:center"><div style="font-weight:bold;margin-bottom:8px;color:#374151;">📸 Kondisi Lapangan / APD:</div><img src="${data.fotoUrl}" style="max-width:100%; max-height:300px; border-radius:8px; border:2px solid #cbd5e1; box-shadow:0 2px 8px rgba(0,0,0,0.1);"></div>` : '';
-
   document.getElementById('SD').innerHTML = `
     <div class="section">
-      <div class="result-card" style="padding: 10px 10px 20px;">
-        <div class="big" style="font-size:3.5rem;">${statusIcon}</div>
-        <h2 style="color:${statusColor};font-size:1.4rem;font-weight:900;line-height:1.3;margin-top:10px;">
+      <div class="result-card">
+        <div class="big">${statusIcon}</div>
+        <h2 style="color:${statusColor};font-size:1.6rem;font-weight:900">
           ${statusText}
         </h2>
       </div>
-
-      <div class="sbox" style="background:#fff; border:1px solid #e5e7eb; box-shadow:0 4px 6px rgba(0,0,0,0.05); margin-top:0;">
-        ${buildSummaryHTML(data)}
-        ${fotoLapangan}
-
-        <hr style="border:none;border-top:1px dashed #d1d5db;margin:20px 0">
-
-        <!-- Kolom Tanda Tangan Bersebelahan -->
-        <div style="display:flex; justify-content:space-between; text-align:center; font-size:0.85rem; margin-top:10px;">
-          <div style="flex:1;">
-            <strong>Dibuat Oleh:</strong><br>
-            ${sigWorker}<br>
-            ${escHtml(data.n)}
-          </div>
-          <div style="flex:1;">
-            <strong>Disetujui Oleh:</strong><br>
-            ${sigSpv}<br>
-            ${data.sv ? escHtml(data.sv.nama) : '-'}
-          </div>
-        </div>
-      </div>
-
+      <div class="sbox">${buildSummaryHTML(data)}</div>
       ${hasSV ? `
-        <div class="sent-info ${infoClass}" style="text-align:center;">
-          <strong>STEMPEL SISTEM:</strong><br>
-          Dokumen ini diverifikasi pada:<br>
-          <strong>${escHtml(data.sv.time)}</strong>
-          ${data.sv.note ? `<br><br>📝 Catatan SPV:<br>"${escHtml(data.sv.note)}"` : ''}
+        <div class="sent-info ${infoClass}">
+          <strong>👨‍💼 Supervisor: ${escHtml(data.sv.nama)}</strong><br>
+          Status: <strong>${escHtml(data.sv.status)}</strong><br>
+          ${data.sv.note ? `📝 Catatan: ${escHtml(data.sv.note)}<br>` : ''}
+          🕐 Waktu: ${escHtml(data.sv.time)}
         </div>` : ''}
-
       ${notifSection}
-      <button class="btn btn-primary" style="margin-top:24px" onclick="location.href='.'">🔄 Buat Checklist Baru</button>
+      <button class="btn btn-primary" style="margin-top:24px"
+        onclick="location.href='.'">🔄 Kembali ke Beranda</button>
     </div>`;
 
+  // Pastikan URL WhatsApp digenerate jika tombol notif menyala
   if(hasSV && showNotifBtn) {
     kirimNotifikasiKeWorker(data);
   }
