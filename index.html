@@ -1152,6 +1152,7 @@ async function showSupervisor(id){
 
     // JIKA STATUS SUDAH APPROVED / REJECTED, LANGSUNG TAMPILKAN HASILNYA
     if(data.sv && (data.sv.status === 'APPROVED' || data.sv.status === 'REJECTED')){
+      // Pastikan struktur data sv lengkap agar tidak error saat di-render
       const enc = LZ.compress(JSON.stringify(data));
       showDone(enc);
       return; 
@@ -1237,23 +1238,27 @@ async function doApprove(){
     return;
   }
 
-  // VALIDASI TANDA TANGAN
   const sign = getSignatureBase64('spvCanvas');
   if(!sign){ showAlert("⚠️ Supervisor wajib menandatangani approval ini!"); return; }
 
   const data = window.svData;
-  if(!data){ showAlert('Data supervisor tidak ditemukan. Buka ulang link verifikasi.'); return; }
+  if(!data || !data.rowId){ 
+    showAlert('Data supervisor tidak ditemukan atau ID rusak. Buka ulang link verifikasi.'); 
+    return; 
+  }
 
   data.sv = {
     nama   : svNama,
     status : 'APPROVED',
     note   : svNote,
-    time   : formatIDDateTime(new Date())
+    time   : formatIDDateTime(new Date()),
+    signUrl: sign
   };
 
-  showProgress('📤 Menyimpan ke Google Sheets...', 'Mohon tunggu');
+  showProgress('📤 Mengirim Persetujuan...', 'Menyimpan data ke server');
+  
   try{
-    await postToGAS({
+    const res = await postToGAS({
       action : 'respond',
       rowId  : data.rowId,
       status : 'APPROVED',
@@ -1262,12 +1267,21 @@ async function doApprove(){
       svtime : data.sv.time,
       svsign : sign 
     });
-  }catch(e){ console.warn('GAS respond failed:', e.message); }
-  
-  hideProgress();
-  kirimNotifikasiKeWorker(data);
-  const enc = LZ.compress(JSON.stringify(data));
-  showDone(enc);
+
+    hideProgress();
+
+    if(res && res.ok === false){
+      throw new Error(res.error || 'Gagal merespon di server');
+    }
+
+    kirimNotifikasiKeWorker(data);
+    const enc = LZ.compress(JSON.stringify(data));
+    showDone(enc);
+
+  }catch(e){
+    hideProgress();
+    showAlert('❌ Gagal memproses: ' + e.message);
+  }
 }
 window.doApprove = doApprove;
 
@@ -1282,33 +1296,46 @@ async function doReject(){
   if(!svNote){ showAlert('Berikan alasan penolakan terlebih dahulu'); return; }
 
   const data = window.svData;
-  if(!data){ showAlert('Data supervisor tidak ditemukan. Buka ulang link verifikasi.'); return; }
+  if(!data || !data.rowId){ 
+    showAlert('Data supervisor tidak ditemukan atau ID rusak. Buka ulang link verifikasi.'); 
+    return; 
+  }
 
   data.sv = {
     nama   : svNama,
     status : 'REJECTED',
     note   : svNote,
-    time   : formatIDDateTime(new Date())
+    time   : formatIDDateTime(new Date()),
+    signUrl: ""
   };
 
-  showProgress('📤 Menyimpan ke Google Sheets...', 'Mohon tunggu');
+  showProgress('📤 Mengirim Penolakan...', 'Menyimpan data ke server');
+  
   try{
-    await postToGAS({
+    const res = await postToGAS({
       action : 'respond',
       rowId  : data.rowId,
       status : 'REJECTED',
       svname : svNama,
       svnote : svNote,
       svtime : data.sv.time,
-      svsign : "" // Karena ditolak, ttd tidak wajib
+      svsign : ""
     });
-  }catch(e){ console.warn('GAS respond failed:', e.message); }
 
-  hideProgress();
-  kirimNotifikasiKeWorker(data);
+    hideProgress();
 
-  const enc = LZ.compress(JSON.stringify(data));
-  showDone(enc);
+    if(res && res.ok === false){
+      throw new Error(res.error || 'Gagal merespon di server');
+    }
+
+    kirimNotifikasiKeWorker(data);
+    const enc = LZ.compress(JSON.stringify(data));
+    showDone(enc);
+
+  }catch(e){
+    hideProgress();
+    showAlert('❌ Gagal memproses: ' + e.message);
+  }
 }
 window.doReject = doReject;
 
