@@ -258,10 +258,16 @@ const TOTAL_STEPS = 6;
    ============================================================ */
 function init(){
   const params = new URLSearchParams(location.search);
-  const idParam = params.get('id'); // Parameter baru (Short Link)
-  const dParam = params.get('d');   // Parameter lama (Long Link)
+  const idParam = params.get('id'); 
+  const dParam = params.get('d');   
 
-  if(idParam){ showSupervisor(idParam); return; }
+  // Parameter cerdas untuk mengatasi bug server Google
+  const modeParam = params.get('mode');
+  const stParam   = params.get('st');
+  const svParam   = params.get('sv');
+  const timeParam = params.get('time');
+
+  if(idParam){ showSupervisor(idParam, modeParam, stParam, svParam, timeParam); return; }
   if(dParam){ showDone(dParam); return; } 
 
   loadDraft();
@@ -1166,7 +1172,7 @@ function renderStep6(rowId, spvName){
 /* ============================================================
    SUPERVISOR MODE (UPGRADE PENDEK + SIGNATURE)
    ============================================================ */
-async function showSupervisor(id){
+async function showSupervisor(id, mode, st, svName, time){
   document.getElementById('WM').style.display = 'none';
   document.getElementById('SM').style.display = 'block';
 
@@ -1188,14 +1194,25 @@ async function showSupervisor(id){
 
     const data = res.data;
 
-   // JIKA STATUS SUDAH APPROVED / REJECTED, LANGSUNG TAMPILKAN HASILNYA
-    if(data.sv && (data.sv.status === 'APPROVED' || data.sv.status === 'REJECTED')){
+    // 🚀 LOGIKA PINTAR: Jika Google gagal kirim data SPV, kita buat ulang dari Link WhatsApp
+    if(!data.sv && st){
+       data.sv = {
+          nama   : svName || '',
+          status : st === 'app' ? 'APPROVED' : 'REJECTED',
+          time   : time || '',
+          note   : '',
+          signUrl: ''
+       };
+    }
+
+    // JIKA STATUS SUDAH APPROVED / REJECTED ATAU DARI LINK PEKERJA, LANGSUNG TAMPILKAN HASILNYA
+    if(mode === 'view' || (data.sv && (data.sv.status === 'APPROVED' || data.sv.status === 'REJECTED'))){
       const enc = LZ.compress(JSON.stringify(data));
-      showDone(enc, false); // <--- BERI FALSE AGAR TOMBOL SEMBUNYI UNTUK PEKERJA/HSE
+      showDone(enc, false); 
       return; 
     }
 
-    // Jika belum di-approve, tampilkan halaman Supervisor
+    // Jika belum di-approve (Buka link normal Supervisor), tampilkan form SPV
     window.svData = data; 
     window.svEnc = id;
 
@@ -1208,7 +1225,6 @@ async function showSupervisor(id){
       <div class="section">
         <div class="sbox">${buildSummaryHTML(data)}</div>
         
-        <!-- UPGRADE: TOMBOL LIHAT FOTO & LOKASI -->
         <div style="text-align:center; margin-bottom:20px;">
          <button type="button" onclick="bukaFotoPekerja()" style="background:#2e86c1;color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none;display:inline-block;font-weight:bold;font-size:.85rem;border:none;cursor:pointer;">📸 Buka Foto Pekerja</button>
           <a href="${data.gps || '#'}" target="_blank" style="background:#10b981;color:#fff;padding:10px 14px;border-radius:8px;text-decoration:none;display:inline-block;margin-left:5px;font-weight:bold;font-size:.85rem">📍 Buka Peta Lokasi</a>
@@ -1229,7 +1245,6 @@ async function showSupervisor(id){
         <label>Catatan (opsional)</label>
         <textarea id="svNote" rows="3" placeholder="Catatan persetujuan atau alasan penolakan..."></textarea>
 
-        <!-- UPGRADE: TANDA TANGAN SPV -->
         <label style="margin-top:15px; display:block;">✍️ Tanda Tangan Supervisor *</label>
         <div class="sig-container">
           <canvas id="spvCanvas" class="sig-pad" width="400" height="180"></canvas>
@@ -1419,8 +1434,9 @@ function kirimSemuaNotif(btn){
 function kirimNotifikasiKeWorker(data){
   const isApproved = data.sv.status === 'APPROVED';
   
-  // 🚀 PERBAIKAN: Wajib pakai ?id= agar URL WA sangat pendek dan tidak bikin HP lag/error
-  const shortUrl   = `${CONFIG.BASE_URL}?id=${data.rowId || 'CHECKLIST'}`;
+  // 🚀 KUNCI PERBAIKAN: Menyisipkan status langsung ke dalam link
+  const st = isApproved ? 'app' : 'rej';
+  const shortUrl   = `${CONFIG.BASE_URL}?id=${data.rowId || 'CHECKLIST'}&mode=view&st=${st}&sv=${encodeURIComponent(data.sv.nama)}&time=${encodeURIComponent(data.sv.time)}`;
   const workerWA   = data.p.replace(/^0/, '62').replace(/[^0-9]/g, '');
 
   const workerMsg = isApproved
