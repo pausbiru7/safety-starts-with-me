@@ -1751,6 +1751,7 @@ function buildSummaryHTML(d){
   const hcIcons = Object.entries(d.hc || {})
     .map(([k,v]) => `${v === 'ya' ? '✅' : '❌'} ${HC_LABELS[k] || k}`)
     .join('<br>');
+    
   const hzHTML = (d.hz || []).map(h => `
     <div style="margin:6px 0;padding:8px;background:#fff;
       border-radius:8px;border-left:3px solid #ef4444">
@@ -1759,9 +1760,22 @@ function buildSummaryHTML(d){
         🛡️ ${escHtml(h.control)}
       </span>
     </div>`).join('');
+    
   const ctText = (d.ct || []).length > 0
     ? d.ct.map(c => escHtml(c)).join(', ')
     : '<em style="color:#9ca3af">Tidak ada APD dipilih</em>';
+
+  // --- KODE BARU: MENGAMBIL FOTO & TTD ---
+  const fotoImg = (d.fotoUrl && d.fotoUrl.length > 50) ? `<img src="${d.fotoUrl}" style="width:100%; max-height:250px; object-fit:cover; border-radius:8px; margin-top:8px; border:2px solid #e5e7eb;">` : '<em style="color:#9ca3af">Tidak ada foto</em>';
+  
+  const wSign = (d.ttdUrl && d.ttdUrl.length > 50) ? `<img src="${d.ttdUrl}" style="width:100%; height:80px; object-fit:contain; border-bottom:1px solid #1f2937;">` : '<em style="color:#9ca3af">Tanpa TTD</em>';
+  
+  let svSign = '<em style="color:#9ca3af; font-size:0.85rem; margin-top:30px; display:block;">Belum Verifikasi</em>';
+  if (d.sv && d.sv.signUrl && d.sv.signUrl.length > 50) {
+    svSign = `<img src="${d.sv.signUrl}" style="width:100%; height:80px; object-fit:contain; border-bottom:1px solid #1f2937;">`;
+  }
+  // ----------------------------------------
+
   return `
     <strong>👤 ${escHtml(d.n)}</strong>
     &nbsp;|&nbsp; 🪪 ${escHtml(d.nid)}
@@ -1779,7 +1793,24 @@ function buildSummaryHTML(d){
       ${hzHTML || '<em style="color:#9ca3af">Tidak ada</em>'}
     </div>
     <hr>
-    <strong>🛡️ APD:</strong> ${ctText}`;
+    <strong>🛡️ APD:</strong> ${ctText}
+    <hr>
+    
+    <!-- TAMPILAN FOTO DAN TANDA TANGAN -->
+    <strong>📸 Foto Lapangan:</strong><br>
+    ${fotoImg}
+    <div style="display:flex; justify-content:space-between; margin-top:20px; gap:10px;">
+        <div style="flex:1; text-align:center; background:#fff; padding:10px; border-radius:8px; border:1px solid #e5e7eb;">
+            <p style="font-size:0.75rem; color:#6b7280; margin-bottom:4px; font-weight:bold;">PEKERJA</p>
+            ${wSign}
+            <p style="font-weight:800; font-size:0.9rem; margin-top:4px; color:#1f2937;">${escHtml(d.n)}</p>
+        </div>
+        <div style="flex:1; text-align:center; background:#fff; padding:10px; border-radius:8px; border:1px solid #e5e7eb;">
+            <p style="font-size:0.75rem; color:#6b7280; margin-bottom:4px; font-weight:bold;">SUPERVISOR</p>
+            ${svSign}
+            <p style="font-weight:800; font-size:0.9rem; margin-top:4px; color:#1f2937;">${d.sv ? escHtml(d.sv.nama) : '-'}</p>
+        </div>
+    </div>`;
 }
 
 /* ============================================================
