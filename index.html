@@ -1205,11 +1205,16 @@ async function showSupervisor(id, mode, st, svName, time){
        };
     }
 
-  // JIKA STATUS SUDAH APPROVED / REJECTED ATAU DARI LINK PEKERJA, LANGSUNG TAMPILKAN HASILNYA
-    // 🛡️ PERBAIKAN: Paksa baca status APPROVED jika st=app ada di link email
+ // JIKA STATUS SUDAH APPROVED / REJECTED ATAU DARI LINK PEKERJA, LANGSUNG TAMPILKAN HASILNYA
     if(mode === 'view' || st === 'app' || (data.sv && (data.sv.status === 'APPROVED' || data.sv.status === 'REJECTED'))){
-      if(st === 'app' && (!data.sv || !data.sv.status)) {
-        data.sv = { nama: svName || 'Supervisor', status: 'APPROVED', time: time || '', note: '', signUrl: data.sv ? data.sv.signUrl : '' };
+      if(st === 'app' && (!data.sv || !data.sv.status || data.sv.status !== 'APPROVED')) {
+        data.sv = { 
+          nama: svName || 'Supervisor', 
+          status: 'APPROVED', 
+          time: time || formatIDDateTime(new Date()), 
+          note: '', 
+          signUrl: data.sv ? data.sv.signUrl : '' 
+        };
       }
       const enc = LZ.compress(JSON.stringify(data));
       showDone(enc, false); 
