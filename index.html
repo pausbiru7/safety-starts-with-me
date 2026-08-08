@@ -1205,12 +1205,16 @@ async function showSupervisor(id, mode, st, svName, time){
        };
     }
 
-    // JIKA STATUS SUDAH APPROVED / REJECTED ATAU DARI LINK PEKERJA, LANGSUNG TAMPILKAN HASILNYA
-    if(mode === 'view' || (data.sv && (data.sv.status === 'APPROVED' || data.sv.status === 'REJECTED'))){
-      const enc = LZ.compress(JSON.stringify(data));
-      showDone(enc, false); 
-      return; 
+   // JIKA STATUS SUDAH APPROVED / REJECTED ATAU DARI LINK PEKERJA, LANGSUNG TAMPILKAN HASILNYA
+  // 🛡️ PERBAIKAN: Paksa baca status APPROVED jika st=app ada di link email
+  if(mode === 'view' || st === 'app' || (data.sv && (data.sv.status === 'APPROVED' || data.sv.status === 'REJECTED'))){
+    if(st === 'app' && (!data.sv || !data.sv.status)) {
+      data.sv = { nama: svName || 'Supervisor', status: 'APPROVED', time: time || '', note: '', signUrl: data.sv ? data.sv.signUrl : '' };
     }
+    const enc = LZ.compress(JSON.stringify(data));
+    showDone(enc, false); 
+    return; 
+  }
 
     // Jika belum di-approve (Buka link normal Supervisor), tampilkan form SPV
     window.svData = data; 
