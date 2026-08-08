@@ -1205,16 +1205,16 @@ async function showSupervisor(id, mode, st, svName, time){
        };
     }
 
-   // JIKA STATUS SUDAH APPROVED / REJECTED ATAU DARI LINK PEKERJA, LANGSUNG TAMPILKAN HASILNYA
-  // 🛡️ PERBAIKAN: Paksa baca status APPROVED jika st=app ada di link email
-  if(mode === 'view' || st === 'app' || (data.sv && (data.sv.status === 'APPROVED' || data.sv.status === 'REJECTED'))){
-    if(st === 'app' && (!data.sv || !data.sv.status)) {
-      data.sv = { nama: svName || 'Supervisor', status: 'APPROVED', time: time || '', note: '', signUrl: data.sv ? data.sv.signUrl : '' };
+  // JIKA STATUS SUDAH APPROVED / REJECTED ATAU DARI LINK PEKERJA, LANGSUNG TAMPILKAN HASILNYA
+    // 🛡️ PERBAIKAN: Paksa baca status APPROVED jika st=app ada di link email
+    if(mode === 'view' || st === 'app' || (data.sv && (data.sv.status === 'APPROVED' || data.sv.status === 'REJECTED'))){
+      if(st === 'app' && (!data.sv || !data.sv.status)) {
+        data.sv = { nama: svName || 'Supervisor', status: 'APPROVED', time: time || '', note: '', signUrl: data.sv ? data.sv.signUrl : '' };
+      }
+      const enc = LZ.compress(JSON.stringify(data));
+      showDone(enc, false); 
+      return; 
     }
-    const enc = LZ.compress(JSON.stringify(data));
-    showDone(enc, false); 
-    return; 
-  }
 
     // Jika belum di-approve (Buka link normal Supervisor), tampilkan form SPV
     window.svData = data; 
@@ -1774,9 +1774,12 @@ function buildSummaryHTML(d){
   
   const wSign = (d.ttdUrl && d.ttdUrl.length > 50) ? `<img src="${d.ttdUrl}" style="width:100%; height:80px; object-fit:contain; border-bottom:1px solid #1f2937;">` : '<em style="color:#9ca3af">Tanpa TTD</em>';
   
-  let svSign = '<em style="color:#9ca3af; font-size:0.85rem; margin-top:30px; display:block;">Belum Verifikasi</em>';
-  if (d.sv && d.sv.signUrl && d.sv.signUrl.length > 50) {
-    svSign = `<img src="${d.sv.signUrl}" style="width:100%; height:80px; object-fit:contain; border-bottom:1px solid #1f2937;">`;
+ let svSign = '<em style="color:#9ca3af; font-size:0.85rem; margin-top:30px; display:block;">Belum Verifikasi</em>';
+  const spvSignData = (d.sv && d.sv.signUrl) ? d.sv.signUrl : (d.ttdSpvUrl || '');
+  if (spvSignData && spvSignData.length > 50 && spvSignData !== '(TTD SPV Tersimpan)') {
+    svSign = `<img src="${spvSignData}" style="width:100%; height:80px; object-fit:contain; border-bottom:1px solid #1f2937;">`;
+  } else if (d.sv && d.sv.status === 'APPROVED') {
+    svSign = '<em style="color:#059669; font-weight:bold; font-size:0.85rem; display:block; margin-top:20px;">✅ Telah Disetujui</em>';
   }
   // ----------------------------------------
 
