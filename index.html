@@ -1188,20 +1188,19 @@ async function showSupervisor(id, mode, st, svName, time){
     </div>
   `;
 
-  try {
+ try {
     const res = await postToGAS({ action: 'get', rowId: id });
     if(!res || !res.ok || !res.data) throw new Error(res.error || 'Data tidak ditemukan di server.');
+    const data = res.data; 
 
-    const data = res.data;
-
-   // 🚀 AUTO-DETEKSI STATUS DARI DATABASE (TANPA PERLU PARAMETER LINK)
-    if (data.sv && data.sv.status) {
+    // 🚀 1. AUTO-DETEKSI MUTLAK: JIKA DI DATABASE SUDAH ADA STATUS, LANGSUNG TAMPILKAN!
+    if (data.sv && (data.sv.status === 'APPROVED' || data.sv.status === 'REJECTED')) {
       const enc = LZ.compress(JSON.stringify(data));
       showDone(enc, false); 
       return; 
     }
 
-// JIKA STATUS SUDAH APPROVED / REJECTED ATAU DARI LINK PEKERJA, LANGSUNG TAMPILKAN HASILNYA
+    // 2. JIKA DARI LINK EMAIL DENGAN ST=APP
     if(mode === 'view' || st === 'app' || (data.sv && (data.sv.status === 'APPROVED' || data.sv.status === 'REJECTED'))){
       if(st === 'app' && (!data.sv || !data.sv.status || data.sv.status !== 'APPROVED')) {
         data.sv = { 
