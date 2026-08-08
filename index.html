@@ -1188,32 +1188,16 @@ async function showSupervisor(id, mode, st, svName, time){
     </div>
   `;
 
- try {
+  try {
     const res = await postToGAS({ action: 'get', rowId: id });
     if(!res || !res.ok || !res.data) throw new Error(res.error || 'Data tidak ditemukan di server.');
     const data = res.data; 
 
-    // 🚀 MUTLAK & PERMANEN: JIKA DI DATABASE DATA.SV SUDAH APPROVED / REJECTED, ATAU ADA ST=APP DI URL, LANGSUNG TAMPILKAN!
-    if (st === 'app' || st === 'rej' || (data.sv && (data.sv.status === 'APPROVED' || data.sv.status === 'REJECTED'))) {
+    // 🚀 SATU KONDISI MUTLAK & PERMANEN: JIKA SUDAH APPROVED/REJECTED ATAU DARI LINK TERTENTU
+    if (st === 'app' || st === 'rej' || mode === 'view' || (data.sv && (data.sv.status === 'APPROVED' || data.sv.status === 'REJECTED'))) {
       if (st === 'app' && (!data.sv || data.sv.status !== 'APPROVED')) {
         data.sv = { 
           nama: svName || (data.spv_name ? data.spv_name : 'Supervisor'), 
-          status: 'APPROVED', 
-          time: time || formatIDDateTime(new Date()), 
-          note: '', 
-          signUrl: data.sv ? data.sv.signUrl : '' 
-        };
-      }
-      const enc = LZ.compress(JSON.stringify(data));
-      showDone(enc, false); 
-      return; 
-    }
-
-    // 2. JIKA DARI LINK EMAIL DENGAN ST=APP
-    if(mode === 'view' || st === 'app' || (data.sv && (data.sv.status === 'APPROVED' || data.sv.status === 'REJECTED'))){
-      if(st === 'app' && (!data.sv || !data.sv.status || data.sv.status !== 'APPROVED')) {
-        data.sv = { 
-          nama: svName || 'Supervisor', 
           status: 'APPROVED', 
           time: time || formatIDDateTime(new Date()), 
           note: '', 
