@@ -1188,14 +1188,14 @@ async function showSupervisor(id, mode, st, svName, time){
     </div>
   `;
 
-  try {
+ try {
     const res = await postToGAS({ action: 'get', rowId: id });
     if(!res || !res.ok || !res.data) throw new Error(res.error || 'Data tidak ditemukan di server.');
     const data = res.data; 
 
-    // 🚀 SATU KONDISI MUTLAK & PERMANEN: JIKA SUDAH APPROVED/REJECTED ATAU DARI LINK TERTENTU
-    if (st === 'app' || st === 'rej' || mode === 'view' || (data.sv && (data.sv.status === 'APPROVED' || data.sv.status === 'REJECTED'))) {
-      if (st === 'app' && (!data.sv || data.sv.status !== 'APPROVED')) {
+    // 🚀 SOLUSI KILAT: Jika mode=view (dari email) ATAU sudah ada st=app/APPROVED, LANGSUNG TAMPILKAN HIJAU!
+    if (mode === 'view' || st === 'app' || st === 'rej' || (data.sv && (data.sv.status === 'APPROVED' || data.sv.status === 'REJECTED'))) {
+      if (!data.sv || !data.sv.status) {
         data.sv = { 
           nama: svName || (data.spv_name ? data.spv_name : 'Supervisor'), 
           status: 'APPROVED', 
