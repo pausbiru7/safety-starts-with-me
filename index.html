@@ -1201,7 +1201,7 @@ async function showSupervisor(id, mode, st, svName, time){
       return; 
     }
 
-    // JIKA STATUS SUDAH APPROVED / REJECTED ATAU DARI LINK PEKERJA, LANGSUNG TAMPILKAN HASILNYA
+// JIKA STATUS SUDAH APPROVED / REJECTED ATAU DARI LINK PEKERJA, LANGSUNG TAMPILKAN HASILNYA
     if(mode === 'view' || st === 'app' || (data.sv && (data.sv.status === 'APPROVED' || data.sv.status === 'REJECTED'))){
       if(st === 'app' && (!data.sv || !data.sv.status || data.sv.status !== 'APPROVED')) {
         data.sv = { 
