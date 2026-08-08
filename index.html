@@ -1192,7 +1192,7 @@ async function showSupervisor(id, mode, st, svName, time){
     const res = await postToGAS({ action: 'get', rowId: id });
     if(!res || !res.ok || !res.data) throw new Error(res.error || 'Data tidak ditemukan di server.');
     const data = res.data; 
-
+       
     // 🚀 SOLUSI KILAT: Jika mode=view (dari email) ATAU sudah ada st=app/APPROVED, LANGSUNG TAMPILKAN HIJAU!
     if (mode === 'view' || st === 'app' || st === 'rej' || (data.sv && (data.sv.status === 'APPROVED' || data.sv.status === 'REJECTED'))) {
       if (!data.sv || !data.sv.status) {
