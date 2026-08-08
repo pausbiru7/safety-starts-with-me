@@ -1194,18 +1194,14 @@ async function showSupervisor(id, mode, st, svName, time){
 
     const data = res.data;
 
-    // 🚀 LOGIKA PINTAR: Jika Google gagal kirim data SPV, kita buat ulang dari Link WhatsApp
-    if(!data.sv && st){
-       data.sv = {
-          nama   : svName || '',
-          status : st === 'app' ? 'APPROVED' : 'REJECTED',
-          time   : time || '',
-          note   : '',
-          signUrl: ''
-       };
+   // 🚀 AUTO-DETEKSI STATUS DARI DATABASE (TANPA PERLU PARAMETER LINK)
+    if (data.sv && data.sv.status) {
+      const enc = LZ.compress(JSON.stringify(data));
+      showDone(enc, false); 
+      return; 
     }
 
- // JIKA STATUS SUDAH APPROVED / REJECTED ATAU DARI LINK PEKERJA, LANGSUNG TAMPILKAN HASILNYA
+    // JIKA STATUS SUDAH APPROVED / REJECTED ATAU DARI LINK PEKERJA, LANGSUNG TAMPILKAN HASILNYA
     if(mode === 'view' || st === 'app' || (data.sv && (data.sv.status === 'APPROVED' || data.sv.status === 'REJECTED'))){
       if(st === 'app' && (!data.sv || !data.sv.status || data.sv.status !== 'APPROVED')) {
         data.sv = { 
