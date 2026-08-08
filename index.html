@@ -1193,8 +1193,17 @@ async function showSupervisor(id, mode, st, svName, time){
     if(!res || !res.ok || !res.data) throw new Error(res.error || 'Data tidak ditemukan di server.');
     const data = res.data; 
 
-    // 🚀 1. AUTO-DETEKSI MUTLAK: JIKA DI DATABASE SUDAH ADA STATUS, LANGSUNG TAMPILKAN!
-    if (data.sv && (data.sv.status === 'APPROVED' || data.sv.status === 'REJECTED')) {
+    // 🚀 MUTLAK & PERMANEN: JIKA DI DATABASE DATA.SV SUDAH APPROVED / REJECTED, ATAU ADA ST=APP DI URL, LANGSUNG TAMPILKAN!
+    if (st === 'app' || st === 'rej' || (data.sv && (data.sv.status === 'APPROVED' || data.sv.status === 'REJECTED'))) {
+      if (st === 'app' && (!data.sv || data.sv.status !== 'APPROVED')) {
+        data.sv = { 
+          nama: svName || (data.spv_name ? data.spv_name : 'Supervisor'), 
+          status: 'APPROVED', 
+          time: time || formatIDDateTime(new Date()), 
+          note: '', 
+          signUrl: data.sv ? data.sv.signUrl : '' 
+        };
+      }
       const enc = LZ.compress(JSON.stringify(data));
       showDone(enc, false); 
       return; 
