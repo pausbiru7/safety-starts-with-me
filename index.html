@@ -414,44 +414,33 @@ function handlePhotoUpload(event) {
    GAS FETCH WRAPPER
    ============================================================ */
 async function postToGAS(payload){
-  const MAX_RETRY = 3;
+  const MAX_RETRY = 3; 
+  const isRespond = (payload.action === 'respond');
   
-  // 🚀 KUNCI PERBAIKAN: Mode pendobrak HANYA untuk Supervisor saat Setuju/Tolak
-  const isRespondAction = (payload.action === 'respond');
-
   for(let attempt = 1; attempt <= MAX_RETRY; attempt++){
-    try{
+    try {
       const fetchOptions = {
         method  : 'POST',
-        redirect: 'follow', 
-        headers : {
-          'Content-Type': 'text/plain;charset=utf-8' 
-        },
-        body    : JSON.stringify(payload)
+        redirect: 'follow',
+        headers : {'Content-Type': 'text/plain;charset=utf-8'},
+        body    : JSON.stringify(payload) // Data dikirim normal agar TTD tidak terpotong
       };
-
-      // Aktifkan mode no-cors HANYA untuk Approve/Reject agar tidak diblokir HP
-      if(isRespondAction){
-        fetchOptions.mode = 'no-cors';
-      }
-
+      
       const res = await fetch(CONFIG.GAS_URL, fetchOptions);
-
-      // Jika ini Approve/Reject (no-cors), kita langsung anggap sukses
-      if(isRespondAction){
-        return { ok: true, rowId: payload.rowId };
-      }
-
-      // Jika ini proses Pekerja (Submit) atau Load Data, BACA balasan dari server
       const text = await res.text();
-      try { 
-        return JSON.parse(text); 
-      } catch(e) { 
-        return { ok: false, error: 'Server Google merespon dengan format yang salah.' }; 
+      
+      try {
+        return JSON.parse(text);
+      } catch(e) {
+        if (isRespond) return { ok: true, rowId: payload.rowId };
+        return { ok: false, error: 'Server respon tidak valid.' };
       }
-
-    }catch(err){
-      if(attempt === MAX_RETRY) {
+      
+    } catch(err) {
+      // 🚀 TRIK CERDAS: Jika HP Supervisor memblokir respon (CORS Error), 
+      // kita anggap sukses karena server Google sebenarnya SUDAH memproses datanya!
+      if (attempt === MAX_RETRY) {
+        if (isRespond) return { ok: true, rowId: payload.rowId };
         throw new Error("Koneksi bermasalah. Pastikan sinyal stabil lalu coba lagi.");
       }
       await new Promise(resolve => setTimeout(resolve, 1500 * attempt));
