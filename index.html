@@ -1193,17 +1193,19 @@ async function showSupervisor(id, mode, st, svName, time){
     if(!res || !res.ok || !res.data) throw new Error(res.error || 'Data tidak ditemukan di server.');
     const data = res.data; 
        
-    // 🚀 SOLUSI KILAT: Jika mode=view (dari email) ATAU sudah ada st=app/APPROVED, LANGSUNG TAMPILKAN HIJAU!
+    // 🚀 SOLUSI KILAT + AMBIL Tanda Tangan SPV
     if (mode === 'view' || st === 'app' || st === 'rej' || (data.sv && (data.sv.status === 'APPROVED' || data.sv.status === 'REJECTED'))) {
       if (!data.sv || !data.sv.status) {
-        data.sv = { 
-          nama: svName || (data.spv_name ? data.spv_name : 'Supervisor'), 
-          status: 'APPROVED', 
-          time: time || formatIDDateTime(new Date()), 
-          note: '', 
-          signUrl: data.sv ? data.sv.signUrl : '' 
-        };
+        data.sv = {};
       }
+      
+      data.sv.nama = svName || data.sv.nama || (data.spv_name ? data.spv_name : 'Supervisor');
+      data.sv.status = 'APPROVED';
+      data.sv.time = time || data.sv.time || formatIDDateTime(new Date());
+      data.sv.note = data.sv.note || '';
+      // 👈 KUNCI: Tarik TTD dari data.sv.signUrl ATAU dari ttdSpvUrl database
+      data.sv.signUrl = data.sv.signUrl || data.ttdSpvUrl || '';
+
       const enc = LZ.compress(JSON.stringify(data));
       showDone(enc, false); 
       return; 
