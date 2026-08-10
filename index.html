@@ -1193,7 +1193,7 @@ async function showSupervisor(id, mode, st, svName, time){
     if(!res || !res.ok || !res.data) throw new Error(res.error || 'Data tidak ditemukan di server.');
     const data = res.data; 
        
-    // 🚀 SOLUSI KILAT + AMBIL Tanda Tangan SPV
+   // 🚀 SOLUSI KILAT + AMBIL Tanda Tangan SPV YANG AKURAT
     if (mode === 'view' || st === 'app' || st === 'rej' || (data.sv && (data.sv.status === 'APPROVED' || data.sv.status === 'REJECTED'))) {
       if (!data.sv || !data.sv.status) {
         data.sv = {};
@@ -1203,8 +1203,11 @@ async function showSupervisor(id, mode, st, svName, time){
       data.sv.status = 'APPROVED';
       data.sv.time = time || data.sv.time || formatIDDateTime(new Date());
       data.sv.note = data.sv.note || '';
-      // 👈 KUNCI: Tarik TTD dari data.sv.signUrl ATAU dari ttdSpvUrl database
-      data.sv.signUrl = data.sv.signUrl || data.ttdSpvUrl || '';
+      
+      // 👈 KUNCI PERBAIKAN: Paksa ambil signUrl dari data.sv atau fallback ke kolom database ttdSpvUrl
+      data.sv.signUrl = (data.sv && data.sv.signUrl && data.sv.signUrl.length > 50) 
+                          ? data.sv.signUrl 
+                          : (data.ttdSpvUrl || '');
 
       const enc = LZ.compress(JSON.stringify(data));
       showDone(enc, false); 
