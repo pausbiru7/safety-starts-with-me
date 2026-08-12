@@ -437,7 +437,7 @@ function handlePhotoUpload(event) {
 }
 
 /* ============================================================
-   GAS FETCH WRAPPER
+   GAS FETCH WRAPPER (UPGRADE RETRY FIX)
    ============================================================ */
 async function postToGAS(payload){
   const MAX_RETRY = 3; 
@@ -449,7 +449,7 @@ async function postToGAS(payload){
         method  : 'POST',
         redirect: 'follow',
         headers : {'Content-Type': 'text/plain;charset=utf-8'},
-        body    : JSON.stringify(payload) // Data dikirim normal agar TTD tidak terpotong
+        body    : JSON.stringify(payload) 
       };
       
       const res = await fetch(CONFIG.GAS_URL, fetchOptions);
@@ -459,17 +459,19 @@ async function postToGAS(payload){
         return JSON.parse(text);
       } catch(e) {
         if (isRespond) return { ok: true, rowId: payload.rowId };
-        return { ok: false, error: 'Server respon tidak valid.' };
+        
+        // 🚀 PERBAIKAN: Jika respon bukan JSON, lempar error agar sistem mencoba ulang (RETRY)
+        throw new Error("Respon server bukan data JSON. Google mungkin sedang sibuk.");
       }
       
     } catch(err) {
-      // 🚀 TRIK CERDAS: Jika HP Supervisor memblokir respon (CORS Error), 
-      // kita anggap sukses karena server Google sebenarnya SUDAH memproses datanya!
       if (attempt === MAX_RETRY) {
         if (isRespond) return { ok: true, rowId: payload.rowId };
-        throw new Error("Koneksi bermasalah. Pastikan sinyal stabil lalu coba lagi.");
+        // Tampilkan pesan error yang lebih jelas jika sudah gagal 3 kali
+        throw new Error("Koneksi ditolak / sinyal tidak stabil. Harap klik titik 3 di pojok kanan atas, lalu pilih 'Buka di Chrome'.");
       }
-      await new Promise(resolve => setTimeout(resolve, 1500 * attempt));
+      // Tunggu jeda sebelum mencoba menarik data lagi (1.5 detik, lalu 3 detik)
+      await sleep(1500 * attempt);
     }
   }
 }
