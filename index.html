@@ -1812,8 +1812,7 @@ function buildSummaryHTML(d){
     : '<em style="color:#9ca3af">Tidak ada APD dipilih</em>';
 
   // --- KODE BARU: MENGAMBIL FOTO & TTD ---
-  const fotoImg = (d.fotoUrl && d.fotoUrl.length > 50) ? `<img src="${d.fotoUrl}" style="width:100%; max-height:250px; object-fit:cover; border-radius:8px; margin-top:8px; border:2px solid #e5e7eb;">` : '<em style="color:#9ca3af">Tidak ada foto</em>';
-  
+  const fotoImg = (d.fotoUrl && d.fotoUrl.length > 50) ? `<img src="${d.fotoUrl}" style="width:100%; max-height:400px; object-fit:contain; border-radius:8px; margin-top:8px; border:2px solid #e5e7eb; background:#f8fafc;">` : '<em style="color:#9ca3af">Tidak ada foto</em>';
   const wSign = (d.ttdUrl && d.ttdUrl.length > 50) ? `<img src="${d.ttdUrl}" style="width:100%; height:80px; object-fit:contain; border-bottom:1px solid #1f2937;">` : '<em style="color:#9ca3af">Tanpa TTD</em>';
   
  let svSign = '<em style="color:#9ca3af; font-size:0.85rem; margin-top:30px; display:block;">Belum Verifikasi</em>';
