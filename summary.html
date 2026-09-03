@@ -66,7 +66,7 @@
 <div class="container">
   <div class="header">
     <h1>📊 Pausbiru Safety Summary</h1>
-    <p>Laporan Analitik Daily Pre-Work Safety Checklist</p>
+    <p>Rekapitulasi Daily Pre-Work Safety Checklist</p>
   </div>
 
   <div id="loading">🔄 Mengambil data dari server... Mohon tunggu.</div>
@@ -127,11 +127,11 @@
 </div>
 
 <script>
-  // ⚠️ GANTI DENGAN LINK GAS ANDA
-  const GAS_URL = "GAS_URL_ANDA_DISINI";
+  // URL Apps Script Anda yang sudah terintegrasi
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbyhqzWgXnC46vs0VnEdvRG52afyV4IQtN2FDqxHB_XbQ7vcVKrDPrNHo3IzHyZU62mI7Q/exec";
 
   let globalData = [];
-  let chartInstances = {}; // Untuk menyimpan dan menghapus grafik lama saat filter jalan
+  let chartInstances = {};
 
   async function fetchSummaryData() {
     try {
@@ -142,10 +142,10 @@
       const responseData = await res.json();
       
       if(responseData.ok) {
-        globalData = responseData.data; // Simpan data mentah
+        globalData = responseData.data;
         document.getElementById('loading').style.display = 'none';
         document.getElementById('dashboardContent').style.display = 'block';
-        renderDashboard(globalData); // Render tanpa filter awal
+        renderDashboard(globalData);
       } else {
         document.getElementById('loading').innerHTML = "⚠️ Gagal memuat data: " + responseData.error;
       }
@@ -164,7 +164,7 @@
     if (startVal || endVal) {
       filteredData = globalData.filter(item => {
         let dItem = new Date(item.tgl);
-        dItem.setHours(0,0,0,0); // Normalisasi jam
+        dItem.setHours(0,0,0,0);
         
         let isValid = true;
         if (startVal) {
@@ -221,17 +221,14 @@
       }
     });
 
-    // Update Text HTML
     document.getElementById('totChecklist').textContent = summary.total;
     document.getElementById('totApproved').textContent = summary.approved;
     document.getElementById('totRejected').textContent = summary.rejected;
 
-    // Memproses Data Top 5 Bahaya
     var bahayaArr = Object.keys(summary.bahaya).map(key => ({ name: key, count: summary.bahaya[key] }));
     bahayaArr.sort((a, b) => b.count - a.count);
     var top5Bahaya = bahayaArr.slice(0, 5);
 
-    // Render Charts (Destroy yang lama agar tidak menumpuk)
     if(chartInstances.bahaya) chartInstances.bahaya.destroy();
     chartInstances.bahaya = new Chart(document.getElementById('bahayaChart'), {
       type: 'bar',
@@ -261,7 +258,6 @@
     });
   }
 
-  // Tarik data saat pertama kali dibuka
   fetchSummaryData();
 </script>
 </body>
