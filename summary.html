@@ -13,6 +13,17 @@
     .header h1 { font-size: 1.8rem; font-weight: 900; }
     .header p { font-size: 0.9rem; opacity: 0.9; margin-top: 5px; }
     
+    /* Style Filter & Print */
+    .controls { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 16px; border-radius: 16px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); flex-wrap: wrap; gap: 15px; }
+    .filter-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .filter-group label { font-weight: bold; color: #1a5276; }
+    .filter-group input { padding: 8px; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; }
+    .btn { padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; display: flex; align-items: center; gap: 5px; }
+    .btn-primary { background: #2e86c1; color: white; }
+    .btn-primary:hover { background: #1a5276; }
+    .btn-print { background: #10b981; color: white; }
+    .btn-print:hover { background: #059669; }
+
     .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
     .metric-card { background: #fff; padding: 20px; border-radius: 16px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-bottom: 4px solid #2e86c1; }
     .metric-card h3 { font-size: 0.9rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -26,10 +37,27 @@
     .chart-container { background: #fff; padding: 20px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
     .chart-container h2 { font-size: 1.1rem; color: #1a5276; margin-bottom: 16px; text-align: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
     
+    .footer { text-align: center; padding: 30px 20px; font-size: 0.9rem; color: #6b7280; font-weight: 500; }
     #loading { text-align: center; padding: 40px; font-weight: bold; color: #2e86c1; }
     
     @media (max-width: 600px) {
       .charts-grid { grid-template-columns: 1fr; }
+      .controls { flex-direction: column; align-items: stretch; }
+      .filter-group { flex-direction: column; align-items: stretch; }
+    }
+
+    /* CSS KHUSUS PRINT */
+    @media print {
+      body { background: white; padding: 0; }
+      .no-print { display: none !important; }
+      .header { background: transparent; color: #1a5276; box-shadow: none; border-bottom: 2px solid #1a5276; padding: 10px 0; margin-bottom: 15px;}
+      .header h1 { color: #1a5276; }
+      .header p { color: #333; }
+      .metric-card { box-shadow: none; border: 1px solid #cbd5e1; border-bottom: 4px solid #cbd5e1; padding: 15px;}
+      .metric-card.approved { border-bottom-color: #059669; }
+      .metric-card.rejected { border-bottom-color: #dc2626; }
+      .chart-container { box-shadow: none; border: 1px solid #cbd5e1; page-break-inside: avoid; margin-bottom: 15px; padding: 15px;}
+      .footer { margin-top: 10px; padding: 10px; border-top: 1px solid #eee; }
     }
   </style>
 </head>
@@ -38,17 +66,31 @@
 <div class="container">
   <div class="header">
     <h1>📊 Pausbiru Safety Summary</h1>
-    <p>Rekapitulasi Daily Pre-Work Safety Checklist</p>
+    <p>Laporan Analitik Daily Pre-Work Safety Checklist</p>
   </div>
 
   <div id="loading">🔄 Mengambil data dari server... Mohon tunggu.</div>
 
   <div id="dashboardContent" style="display: none;">
+    <!-- Bagian Kontrol (Disembunyikan saat di-print) -->
+    <div class="controls no-print">
+      <div class="filter-group">
+        <label>📅 Filter Tanggal:</label>
+        <input type="date" id="startDate" title="Tanggal Mulai">
+        <span>s/d</span>
+        <input type="date" id="endDate" title="Tanggal Akhir">
+        <button class="btn btn-primary" onclick="applyFilter()">Terapkan</button>
+        <button class="btn" style="background:#e2e8f0; color:#334155" onclick="resetFilter()">Reset</button>
+      </div>
+      <button class="btn btn-print" onclick="window.print()">🖨️ Cetak Laporan</button>
+    </div>
+
+    <!-- Metrik Utama -->
     <div class="metrics-grid">
       <div class="metric-card">
         <h3>Total Checklist</h3>
         <div class="value" id="totChecklist">0</div>
-        <small>Bulan ini</small>
+        <small id="periodeTeks">Semua Waktu</small>
       </div>
       <div class="metric-card approved">
         <h3>Disetujui (Approved)</h3>
@@ -63,7 +105,6 @@
     </div>
 
     <div class="charts-grid">
-      <!-- Grafik Bahaya (Menggantikan Lokasi) -->
       <div class="chart-container">
         <h2>Top 5 Potensi Bahaya</h2>
         <canvas id="bahayaChart"></canvas>
@@ -74,97 +115,153 @@
       </div>
     </div>
     
-    <div class="chart-container" style="margin-bottom: 40px;">
+    <div class="chart-container">
         <h2>Penggunaan APD Terbanyak</h2>
         <canvas id="apdChart" height="100"></canvas>
+    </div>
+    
+    <div class="footer">
+      Powered by <b>Pausbiru7</b>
     </div>
   </div>
 </div>
 
 <script>
-  // ⚠️ PASTIKAN MENGGANTI URL DI BAWAH INI DENGAN GAS URL ASLI ANDA
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbyhqzWgXnC46vs0VnEdvRG52afyV4IQtN2FDqxHB_XbQ7vcVKrDPrNHo3IzHyZU62mI7Q/exec";
+  // ⚠️ GANTI DENGAN LINK GAS ANDA
+  const GAS_URL = "GAS_URL_ANDA_DISINI";
+
+  let globalData = [];
+  let chartInstances = {}; // Untuk menyimpan dan menghapus grafik lama saat filter jalan
 
   async function fetchSummaryData() {
     try {
       const res = await fetch(GAS_URL, {
-        method: 'POST',
-        redirect: 'follow',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ action: 'getSummary' }) 
       });
       const responseData = await res.json();
       
       if(responseData.ok) {
+        globalData = responseData.data; // Simpan data mentah
         document.getElementById('loading').style.display = 'none';
         document.getElementById('dashboardContent').style.display = 'block';
-        renderDashboard(responseData.data);
+        renderDashboard(globalData); // Render tanpa filter awal
       } else {
         document.getElementById('loading').innerHTML = "⚠️ Gagal memuat data: " + responseData.error;
       }
     } catch (e) {
-      document.getElementById('loading').innerHTML = "⚠️ Terjadi kesalahan koneksi. Pastikan script GAS sudah diupdate.";
+      document.getElementById('loading').innerHTML = "⚠️ Terjadi kesalahan koneksi.";
     }
   }
 
-  function renderDashboard(data) {
-    document.getElementById('totChecklist').textContent = data.total;
-    document.getElementById('totApproved').textContent = data.approved;
-    document.getElementById('totRejected').textContent = data.rejected;
+  function applyFilter() {
+    let startVal = document.getElementById('startDate').value;
+    let endVal = document.getElementById('endDate').value;
+    
+    let filteredData = globalData;
+    let textPeriode = "Semua Waktu";
 
-    // 1. Memproses Data Top 5 Bahaya
-    var bahayaArray = Object.keys(data.bahaya).map(function(key) {
-      return { name: key, count: data.bahaya[key] };
-    });
-    // Urutkan dari yang terbanyak
-    bahayaArray.sort(function(a, b) { return b.count - a.count; });
-    // Ambil 5 Teratas
-    var top5Bahaya = bahayaArray.slice(0, 5);
+    if (startVal || endVal) {
+      filteredData = globalData.filter(item => {
+        let dItem = new Date(item.tgl);
+        dItem.setHours(0,0,0,0); // Normalisasi jam
+        
+        let isValid = true;
+        if (startVal) {
+          let dStart = new Date(startVal);
+          dStart.setHours(0,0,0,0);
+          if (dItem < dStart) isValid = false;
+        }
+        if (endVal) {
+          let dEnd = new Date(endVal);
+          dEnd.setHours(0,0,0,0);
+          if (dItem > dEnd) isValid = false;
+        }
+        return isValid;
+      });
+      
+      if(startVal && endVal) textPeriode = startVal + " s/d " + endVal;
+      else if(startVal) textPeriode = "Mulai " + startVal;
+      else if(endVal) textPeriode = "Hingga " + endVal;
+    }
+    
+    document.getElementById('periodeTeks').innerText = textPeriode;
+    renderDashboard(filteredData);
+  }
 
-    new Chart(document.getElementById('bahayaChart'), {
-      type: 'bar',
-      data: {
-        labels: top5Bahaya.map(function(item) { return item.name; }),
-        datasets: [{
-          label: 'Jumlah Temuan',
-          data: top5Bahaya.map(function(item) { return item.count; }),
-          backgroundColor: '#e3342f', // Warna merah peringatan
-          borderRadius: 6
-        }]
-      },
-      options: {
-        indexAxis: 'y', // Dibuat menyamping agar teks bahaya mudah dibaca
-        plugins: { legend: { display: false } }
+  function resetFilter() {
+    document.getElementById('startDate').value = '';
+    document.getElementById('endDate').value = '';
+    document.getElementById('periodeTeks').innerText = "Semua Waktu";
+    renderDashboard(globalData);
+  }
+
+  function renderDashboard(dataArray) {
+    let summary = { total: 0, approved: 0, rejected: 0, apd: {}, bahaya: {} };
+
+    dataArray.forEach(row => {
+      summary.total++;
+      if (row.status === 'APPROVED') summary.approved++;
+      else if (row.status === 'REJECTED') summary.rejected++;
+
+      if (row.bahaya) {
+        let bList = row.bahaya.split('\n');
+        bList.forEach(bItem => {
+          let bClean = bItem.split(' (')[0].trim();
+          if (bClean) summary.bahaya[bClean] = (summary.bahaya[bClean] || 0) + 1;
+        });
+      }
+
+      if (row.apd) {
+        let aList = row.apd.split(',');
+        aList.forEach(aItem => {
+          let aClean = aItem.trim();
+          if (aClean) summary.apd[aClean] = (summary.apd[aClean] || 0) + 1;
+        });
       }
     });
 
-    // 2. Render Chart Status
-    new Chart(document.getElementById('statusChart'), {
+    // Update Text HTML
+    document.getElementById('totChecklist').textContent = summary.total;
+    document.getElementById('totApproved').textContent = summary.approved;
+    document.getElementById('totRejected').textContent = summary.rejected;
+
+    // Memproses Data Top 5 Bahaya
+    var bahayaArr = Object.keys(summary.bahaya).map(key => ({ name: key, count: summary.bahaya[key] }));
+    bahayaArr.sort((a, b) => b.count - a.count);
+    var top5Bahaya = bahayaArr.slice(0, 5);
+
+    // Render Charts (Destroy yang lama agar tidak menumpuk)
+    if(chartInstances.bahaya) chartInstances.bahaya.destroy();
+    chartInstances.bahaya = new Chart(document.getElementById('bahayaChart'), {
+      type: 'bar',
+      data: {
+        labels: top5Bahaya.map(item => item.name),
+        datasets: [{ label: 'Temuan', data: top5Bahaya.map(item => item.count), backgroundColor: '#e3342f', borderRadius: 4 }]
+      },
+      options: { indexAxis: 'y', plugins: { legend: { display: false } } }
+    });
+
+    if(chartInstances.status) chartInstances.status.destroy();
+    chartInstances.status = new Chart(document.getElementById('statusChart'), {
       type: 'doughnut',
       data: {
         labels: ['Approved', 'Rejected', 'Pending'],
-        datasets: [{
-          data: [data.approved, data.rejected, data.total - data.approved - data.rejected],
-          backgroundColor: ['#10b981', '#ef4444', '#f59e0b']
-        }]
+        datasets: [{ data: [summary.approved, summary.rejected, summary.total - summary.approved - summary.rejected], backgroundColor: ['#10b981', '#ef4444', '#f59e0b'] }]
       }
     });
 
-    // 3. Render Chart APD
-    new Chart(document.getElementById('apdChart'), {
+    if(chartInstances.apd) chartInstances.apd.destroy();
+    chartInstances.apd = new Chart(document.getElementById('apdChart'), {
       type: 'bar',
       data: {
-        labels: Object.keys(data.apd),
-        datasets: [{
-          label: 'Jumlah Penggunaan',
-          data: Object.values(data.apd),
-          backgroundColor: '#3b82f6',
-          borderRadius: 6
-        }]
+        labels: Object.keys(summary.apd),
+        datasets: [{ label: 'Penggunaan', data: Object.values(summary.apd), backgroundColor: '#3b82f6', borderRadius: 4 }]
       }
     });
   }
 
+  // Tarik data saat pertama kali dibuka
   fetchSummaryData();
 </script>
 </body>
