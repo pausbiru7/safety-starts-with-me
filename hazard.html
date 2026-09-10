@@ -44,7 +44,8 @@
     .badge-risk { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; color: white; }
     .risk-HIGH { background: #dc2626; } .risk-MEDIUM { background: #f59e0b; } .risk-LOW { background: #10b981; }
 
-    .footer-credit { text-align: center; padding: 15px; font-size: 0.8rem; color: #94a3b8; font-weight: 500; border-top: 1px solid #f1f5f9; margin-top: 10px; }
+    /* FOOTER */
+    .footer { text-align: center; padding: 20px; font-size: 0.85rem; color: #64748b; border-top: 1px solid #e2e8f0; margin-top: 20px; line-height: 1.6; }
   </style>
 </head>
 <body>
@@ -87,7 +88,6 @@
         <input type="text" id="pLokasi" placeholder="Contoh: Depan pintu masuk, Blok A, dll">
       </div>
       
-      <!-- KATEGORI TEMUAN -->
       <label>Kategori Temuan *</label>
       <select id="pKategori" onchange="togglePositiveFinding()">
         <option value="">-- Pilih Kategori --</option>
@@ -96,7 +96,6 @@
         <option value="Positive Finding" style="color:#16a34a; font-weight:bold;">🌟 Positive Finding (Kondisi/Tindakan Aman)</option>
       </select>
 
-      <!-- KLASIFIKASI BAHAYA (DISAMAKAN DENGAN CHECKLIST) -->
       <label>Klasifikasi / Jenis *</label>
       <select id="pJenisBahaya">
         <option value="">-- Pilih Jenis --</option>
@@ -115,7 +114,6 @@
         <option value="🚧 Lainnya">🚧 Lainnya</option>
       </select>
 
-      <!-- WRAPPER UNTUK OPSI YANG AKAN DISEMBUNYIKAN SAAT POSITIVE FINDING -->
       <div id="wrapRisikoSaran">
         <label>Tingkat Risiko *</label>
         <select id="pRisiko" onchange="updateTargetDateRange()" style="font-weight: bold;">
@@ -171,6 +169,7 @@
     <div class="header" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);">
       <h1>⛑️ PAUSBIRU SAFETY</h1>
       <p>Hazard Report - Supervisor Panel</p>
+      <div class="badge" id="dateDisplaySPV">Loading...</div>
     </div>
     
     <div class="section" id="spvContent" style="display:none;">
@@ -223,6 +222,7 @@
     <div class="header" style="background: linear-gradient(135deg, #0f172a 0%, #334155 100%);">
       <h1>⛑️ PAUSBIRU SAFETY</h1>
       <p>Hazard Report - Verifikasi HSE</p>
+      <div class="badge" id="dateDisplayHSE">Loading...</div>
     </div>
     
     <div class="section" id="hseContent" style="display:none;">
@@ -264,12 +264,15 @@
   <div id="viewSuksesHSE" style="display:none; text-align:center; padding: 40px 20px;">
     <div style="font-size: 4rem;">🔒</div>
     <h2 style="color: #0f172a; margin: 15px 0;">Verifikasi Disimpan!</h2>
-    <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 25px;">Keputusan Anda telah tercatat di sistem pusat.</p>
+    <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 25px;">Keputusan Anda telah tercatat dan Anda dapat memberitahu SPV terkait hasilnya.</p>
+    <button class="btn btn-wa" id="btnKirimWaHse" style="margin-bottom: 10px;">Kirim Notifikasi WA ke SPV 💬</button>
     <button class="btn btn-back" onclick="window.close()">Tutup Halaman</button>
   </div>
 
-  <div class="footer-credit">
-    Powered by <b>Pausbiru7</b>
+  <!-- FOOTER BARU -->
+  <div class="footer">
+    Safety Starts With Me © 2026 | v3.8<br>
+    <small>Powered by Pausbiru7</small>
   </div>
 
 </div>
@@ -279,6 +282,7 @@
   const BASE_URL = "https://pausbiru7.github.io/safety-starts-with-me/";
 
   let currentHzId = "";
+  let loadedHazardData = null; // Menyimpan data sementara untuk fungsi kirim WA HSE
 
   const SUPERVISORS = [
     { name:"Muharza", title:"Project Manager", wa:"628116923792" },
@@ -289,14 +293,14 @@
   ];
 
   document.addEventListener("DOMContentLoaded", () => {
-    // 1. SET DATE BADGE
+    // TAMPILKAN TANGGAL DI SEMUA HEADER
     const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const dateDisplay = document.getElementById('dateDisplay');
-    if(dateDisplay) {
-      dateDisplay.innerText = new Date().toLocaleDateString('id-ID', dateOptions);
-    }
+    const todayStr = new Date().toLocaleDateString('id-ID', dateOptions);
+    ['dateDisplay', 'dateDisplaySPV', 'dateDisplayHSE'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.innerText = todayStr;
+    });
 
-    // 2. ISI DROPDOWN SPV
     const spvSelect = document.getElementById('pSpv');
     SUPERVISORS.forEach(s => {
       let opt = document.createElement('option');
@@ -305,7 +309,6 @@
       spvSelect.appendChild(opt);
     });
 
-    // 3. CEK PARAMETER URL
     const params = new URLSearchParams(window.location.search);
     currentHzId = params.get('id');
     const mode = params.get('mode');
@@ -482,6 +485,7 @@
 
       if(resData.ok) {
         const d = resData.data;
+        loadedHazardData = d; // Simpan ke variabel global untuk notifikasi verifikasi
         const klasifikasiFull = (d.kategori || "-") + " - " + (d.jenisBahaya || "-");
 
         if(mode === 'spv') {
@@ -544,15 +548,45 @@
     }
     const d = new Date();
     const payload = { action: 'verifyHazard', rowId: currentHzId, status: keputusan, catatan: catatan, waktu: d.toLocaleDateString('id-ID') + ' ' + d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}) };
+    
     document.getElementById('loading').style.display = 'flex';
     document.getElementById('loadMsg').innerText = "Menyimpan Verifikasi...";
+    
     try {
       const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) });
       const resData = await res.json();
       document.getElementById('loading').style.display = 'none';
+      
       if(resData.ok) {
         document.getElementById('viewHSE').style.display = 'none';
         document.getElementById('viewSuksesHSE').style.display = 'block';
+
+        // SIAPKAN NOTIFIKASI WA UNTUK SPV
+        if(loadedHazardData) {
+          const spvWa = loadedHazardData.spvWa;
+          const spvNama = loadedHazardData.spvNama || "Supervisor";
+          const lokasi = loadedHazardData.lokasi || "-";
+          let msgWA = "";
+
+          if(keputusan === 'CLOSED') {
+            msgWA = `✅ *VERIFIKASI HSE - APPROVED*\n\nHalo Bapak *${spvNama}*,\nTerima kasih, perbaikan hazard di *${lokasi}* telah kami verifikasi dan dinyatakan *SELESAI (CLOSED)*.\n\nCatatan HSE: ${catatan}\n\n_Pausbiru Safety System_`;
+          } else {
+            const linkSPV = BASE_URL + "hazard.html?id=" + currentHzId + "&mode=spv";
+            msgWA = `❌ *VERIFIKASI HSE - REJECTED*\n\nHalo Bapak *${spvNama}*,\nMohon maaf, perbaikan hazard di *${lokasi}* *DITOLAK* oleh HSE dan memerlukan perbaikan ulang.\n\nAlasan/Catatan HSE: ${catatan}\n\nMohon segera ditindaklanjuti kembali (Upload Ulang) pada link berikut:\n🔗 ${linkSPV}\n\n_Pausbiru Safety System_`;
+          }
+
+          if(spvWa && spvWa.length > 5) {
+            const waUrl = `https://wa.me/${spvWa}?text=${encodeURIComponent(msgWA)}`;
+            const btnWaHse = document.getElementById('btnKirimWaHse');
+            btnWaHse.onclick = function() { window.open(waUrl, '_blank'); this.innerHTML = "✅ Pesan Terbuka"; this.style.background = "#94a3b8"; };
+            
+            // Auto open trigger (Jika diblokir browser, pengguna bisa klik tombol manual)
+            window.open(waUrl, '_blank');
+          } else {
+            document.getElementById('btnKirimWaHse').style.display = 'none';
+          }
+        }
+
       } else { alert("Gagal: " + resData.error); }
     } catch(err) { document.getElementById('loading').style.display = 'none'; alert("Gagal koneksi. Konfirmasi ulang jaringan internet Anda."); }
   }
