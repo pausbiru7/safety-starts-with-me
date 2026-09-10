@@ -18,6 +18,11 @@
     input, textarea, select { width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; font-family: inherit; }
     input:focus, textarea:focus, select:focus { outline: none; border-color: #ea580c; }
     
+    /* PEWARNAAN DROPDOWN RISIKO */
+    select#pRisiko option[value="LOW"] { color: #10b981; font-weight: bold; }
+    select#pRisiko option[value="MEDIUM"] { color: #f59e0b; font-weight: bold; }
+    select#pRisiko option[value="HIGH"] { color: #dc2626; font-weight: bold; }
+
     .photo-box { border: 2px dashed #cbd5e1; border-radius: 10px; background: #f8fafc; padding: 20px; text-align: center; margin-top: 10px; }
     #fotoPreview, #fotoPerbaikanPreview { display: none; width: 100%; max-height: 300px; object-fit: contain; border-radius: 8px; margin-top: 10px; border: 2px solid #e2e8f0; }
     
@@ -60,15 +65,29 @@
       <label>Nama Pelapor *</label>
       <input type="text" id="pNama" placeholder="Nama lengkap Anda">
       
-      <label>Lokasi Spesifik *</label>
-      <input type="text" id="pLokasi" placeholder="Contoh: PAD 1 (Dekat Genset)">
+      <label>Area Lokasi *</label>
+      <select id="pArea" onchange="showDetailArea()">
+        <option value="">-- Pilih Area --</option>
+        <option value="New Camp">New Camp</option>
+        <option value="Workshop">Workshop</option>
+        <option value="Office">Office</option>
+        <option value="STP">STP</option>
+        <option value="WTP">WTP</option>
+        <option value="Water Intake">Water Intake</option>
+        <option value="Lainnya">Lainnya</option>
+      </select>
+
+      <div id="detailAreaBox" style="display: none;">
+        <label style="color: #1e40af;">Detail Area / Lokasi Spesifik *</label>
+        <input type="text" id="pLokasi" placeholder="Contoh: Depan pintu masuk, Blok A, dll">
+      </div>
       
       <label>Tingkat Risiko *</label>
-      <select id="pRisiko" onchange="updateTargetDateRange()">
+      <select id="pRisiko" onchange="updateTargetDateRange()" style="font-weight: bold;">
         <option value="">-- Pilih Tingkat Risiko --</option>
-        <option value="LOW">LOW</option>
-        <option value="MEDIUM">MEDIUM</option>
-        <option value="HIGH">HIGH</option>
+        <option value="LOW" style="color: #10b981;">🟢 LOW (Rendah)</option>
+        <option value="MEDIUM" style="color: #f59e0b;">🟡 MEDIUM (Sedang)</option>
+        <option value="HIGH" style="color: #dc2626;">🔴 HIGH (Tinggi)</option>
       </select>
       
       <div id="targetBox" style="display: none; background: #fffbeb; border: 1px solid #f59e0b; padding: 15px; border-radius: 10px; margin-top: 15px;">
@@ -79,6 +98,10 @@
       
       <label>Deskripsi Bahaya *</label>
       <textarea id="pDeskripsi" rows="3" placeholder="Apa bahayanya? (Contoh: Kabel terkelupas di genangan air)"></textarea>
+
+      <!-- FIELD SARAN PERBAIKAN (BARU) -->
+      <label style="color: #16a34a;">💡 Saran Perbaikan dari Pelapor (Opsional)</label>
+      <textarea id="pSaran" rows="2" placeholder="Saran tindakan perbaikan menurut Anda (Contoh: Segera matikan sekring & bungkus isolasi)"></textarea>
       
       <label>📸 Foto Kondisi Bahaya *</label>
       <div class="photo-box">
@@ -122,8 +145,15 @@
         <p style="font-size:0.85rem; color:#64748b; margin-bottom:5px;"><strong>📍 Lokasi:</strong> <span id="lblLokasi"></span></p>
         <p style="font-size:0.85rem; color:#64748b; margin-bottom:5px;"><strong>👷 Pelapor:</strong> <span id="lblPelapor"></span></p>
         <p style="font-size:0.85rem; color:#64748b; margin-bottom:10px;"><strong>🎯 Target Selesai:</strong> <span id="lblTarget" style="color:#b45309; font-weight:bold;"></span></p>
+        
         <p style="font-size:0.9rem; font-weight:600; color:#333;">Deskripsi Bahaya:</p>
         <p style="font-size:0.9rem; color:#475569; background:#fff; padding:10px; border-radius:8px; border:1px solid #cbd5e1; margin-top:5px;" id="lblDesc"></p>
+        
+        <div id="lblSaranBox" style="display:none; margin-top:10px;">
+          <p style="font-size:0.9rem; font-weight:600; color:#16a34a;">💡 Saran Perbaikan dari Pelapor:</p>
+          <p style="font-size:0.90rem; color:#15803d; background:#f0fdf4; padding:10px; border-radius:8px; border:1px solid #bbf7d0; margin-top:5px;" id="lblSaran"></p>
+        </div>
+
         <p style="font-size:0.9rem; font-weight:600; color:#333; margin-top:10px;">Foto Awal:</p>
         <img id="imgAwal" src="" style="width:100%; border-radius:8px; margin-top:5px; border:1px solid #cbd5e1;">
       </div>
@@ -170,7 +200,10 @@
         <p style="font-size:0.85rem; color:#475569;"><strong>Pelapor:</strong> <span id="hPelapor"></span></p>
         <p style="font-size:0.85rem; color:#475569;"><strong>Lokasi:</strong> <span id="hLokasi"></span></p>
         <p style="font-size:0.85rem; color:#475569; margin-bottom:5px;"><strong>Deskripsi:</strong> <span id="hDesc"></span></p>
-        <img id="hImgAwal" src="" style="width:100%; border-radius:8px; border:1px solid #f87171;">
+        <div id="hSaranBox" style="display:none; margin-top:5px;">
+          <p style="font-size:0.85rem; color:#15803d;"><strong>Saran Pelapor:</strong> <span id="hSaran"></span></p>
+        </div>
+        <img id="hImgAwal" src="" style="width:100%; border-radius:8px; border:1px solid #f87171; margin-top:8px;">
       </div>
 
       <!-- KARTU 2: PERBAIKAN SPV -->
@@ -237,6 +270,13 @@
     }
   });
 
+  function showDetailArea() {
+    const areaVal = document.getElementById('pArea').value;
+    const detailBox = document.getElementById('detailAreaBox');
+    if(areaVal !== "") { detailBox.style.display = 'block'; } 
+    else { detailBox.style.display = 'none'; }
+  }
+
   function formatLocalDate(d) {
     let month = '' + (d.getMonth() + 1), day = '' + d.getDate(), year = d.getFullYear();
     if (month.length < 2) month = '0' + month; if (day.length < 2) day = '0' + day;
@@ -289,19 +329,37 @@
   // ================= 1. SUBMIT PELAPOR =================
   async function submitHazard() {
     const pelapor = document.getElementById('pNama').value.trim();
-    const lokasi = document.getElementById('pLokasi').value.trim();
+    const area = document.getElementById('pArea').value;
+    const detailLokasi = document.getElementById('pLokasi').value.trim();
     const risiko = document.getElementById('pRisiko').value;
     const targetDate = document.getElementById('pTarget').value;
     const deskripsi = document.getElementById('pDeskripsi').value.trim();
+    const saran = document.getElementById('pSaran').value.trim();
     const spvRaw = document.getElementById('pSpv').value;
     const foto = document.getElementById('fotoBase64').value;
 
-    if(!pelapor || !lokasi || !risiko || !targetDate || !deskripsi || !spvRaw || !foto) { alert("⚠️ Lengkapi semua kolom!"); return; }
+    if(!pelapor || !area || !detailLokasi || !risiko || !targetDate || !deskripsi || !spvRaw || !foto) { 
+      alert("⚠️ Lengkapi semua kolom wajib!"); return; 
+    }
 
+    const lokasiFull = area + " - " + detailLokasi;
     const spvData = spvRaw.split('|'); const d = new Date(); const tParts = targetDate.split('-');
     const formatTargetWA = `${tParts[2]}/${tParts[1]}/${tParts[0]}`;
     
-    const payload = { action: 'submitHazard', pelapor: pelapor, lokasi: lokasi, risiko: risiko, targetDate: formatTargetWA, deskripsi: deskripsi, fotoBase64: foto, spvNama: spvData[0], spvWa: spvData[1], tgl: d.toLocaleDateString('id-ID'), jam: d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}) };
+    const payload = { 
+      action: 'submitHazard', 
+      pelapor: pelapor, 
+      lokasi: lokasiFull, 
+      risiko: risiko, 
+      targetDate: formatTargetWA, 
+      deskripsi: deskripsi, 
+      saran: saran, 
+      fotoBase64: foto, 
+      spvNama: spvData[0], 
+      spvWa: spvData[1], 
+      tgl: d.toLocaleDateString('id-ID'), 
+      jam: d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}) 
+    };
 
     document.getElementById('loading').style.display = 'flex';
     document.getElementById('loadMsg').innerText = "Menyimpan...";
@@ -313,8 +371,11 @@
       if(resData.ok) {
         document.getElementById('viewPelapor').style.display = 'none';
         document.getElementById('viewSukses').style.display = 'block';
+        
         const linkSPV = BASE_URL + "hazard.html?id=" + resData.rowId + "&mode=spv";
-        const msg = `⚠️ *LAPORAN BAHAYA (HAZARD)* ⚠️\n\nBapak *${spvData[0]}*,\nSaya menemukan kondisi tidak aman di lapangan.\n\n📍 Lokasi: ${lokasi}\n❗ Risiko: *${risiko}*\n⏰ *Target Selesai: ${formatTargetWA}*\n📋 Detail: ${deskripsi}\n\nMohon segera ditindaklanjuti. Klik link di bawah ini untuk mengunggah foto bukti perbaikan:\n🔗 ${linkSPV}\n\n_Pausbiru Safety System_`;
+        let msgSaran = saran ? `\n💡 Saran: ${saran}` : "";
+        const msg = `⚠️ *LAPORAN BAHAYA (HAZARD)* ⚠️\n\nBapak *${spvData[0]}*,\nSaya menemukan kondisi tidak aman di lapangan.\n\n📍 Lokasi: ${lokasiFull}\n❗ Risiko: *${risiko}*\n⏰ *Target Selesai: ${formatTargetWA}*\n📋 Detail: ${deskripsi}${msgSaran}\n\nMohon segera ditindaklanjuti. Klik link di bawah ini untuk mengunggah foto bukti perbaikan:\n🔗 ${linkSPV}\n\n_Pausbiru Safety System_`;
+        
         const waUrl = `https://wa.me/${spvData[1]}?text=${encodeURIComponent(msg)}`;
         const btnWa = document.getElementById('btnKirimWA');
         btnWa.onclick = function() { window.open(waUrl, '_blank'); this.innerHTML = "✅ Pesan Terbuka"; this.style.background = "#94a3b8"; };
@@ -342,6 +403,12 @@
           document.getElementById('lblPelapor').innerText = d.pelapor;
           document.getElementById('lblTarget').innerText = d.targetDate || '-';
           document.getElementById('lblDesc').innerText = d.deskripsi;
+          
+          if(d.saran) {
+            document.getElementById('lblSaran').innerText = d.saran;
+            document.getElementById('lblSaranBox').style.display = 'block';
+          }
+
           document.getElementById('imgAwal').src = d.fotoUrl;
           document.getElementById('spvContent').style.display = 'block';
         } else if (mode === 'hse') {
@@ -351,6 +418,12 @@
           document.getElementById('hPelapor').innerText = d.pelapor;
           document.getElementById('hLokasi').innerText = d.lokasi;
           document.getElementById('hDesc').innerText = d.deskripsi;
+          
+          if(d.saran) {
+            document.getElementById('hSaran').innerText = d.saran;
+            document.getElementById('hSaranBox').style.display = 'block';
+          }
+
           document.getElementById('hImgAwal').src = d.fotoUrl;
           document.getElementById('hSpv').innerText = d.spvNama;
           document.getElementById('hCatatanSPV').innerText = d.perbaikan ? d.perbaikan.catatan : "-";
