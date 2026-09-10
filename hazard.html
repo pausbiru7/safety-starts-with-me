@@ -25,9 +25,9 @@
     .btn-primary { background: #ea580c; color: #fff; }
     .btn-spv { background: #2563eb; color: #fff; }
     .btn-wa { background: #25d366; color: #fff; }
+    .btn-hse-ok { background: #16a34a; color: #fff; }
+    .btn-hse-reject { background: #dc2626; color: #fff; }
     .btn-back { background: #f1f5f9; color: #475569; margin-top: 10px; }
-    
-    .hazard-card { background: #fef2f2; border: 2px solid #fecaca; padding: 15px; border-radius: 12px; margin-bottom: 20px; }
     
     .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 999; align-items: center; justify-content: center; }
     .spinner { width: 40px; height: 40px; border: 4px solid #fff; border-top-color: #ea580c; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 10px; }
@@ -55,7 +55,6 @@
       <h1>⚠️ LAPOR HAZARD</h1>
       <p>Hazard Observation / Unsafe Condition</p>
     </div>
-    
     <div class="section">
       <label>Nama Pelapor *</label>
       <input type="text" id="pNama" placeholder="Nama lengkap Anda">
@@ -101,9 +100,7 @@
   <div id="viewSukses" style="display:none; text-align:center; padding: 40px 20px;">
     <div style="font-size: 4rem;">📨</div>
     <h2 style="color: #ea580c; margin: 15px 0;">Laporan Tersimpan!</h2>
-    <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 25px;">
-      Sistem mencatat laporan Anda. Silakan klik tombol di bawah untuk meneruskan detail ke WhatsApp Supervisor agar segera diperbaiki.
-    </p>
+    <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 25px;">Sistem mencatat laporan Anda. Klik tombol di bawah untuk meneruskan detail ke WhatsApp Supervisor.</p>
     <button class="btn btn-wa" id="btnKirimWA">Kirim Pesan WA ke SPV 💬</button>
     <button class="btn btn-back" onclick="location.href='index.html'">Kembali ke Menu Utama</button>
   </div>
@@ -116,24 +113,20 @@
     </div>
     
     <div class="section" id="spvContent" style="display:none;">
-      <!-- Kartu Info Awal Hazard -->
       <div style="background:#f8fafc; border:2px solid #e2e8f0; padding:15px; border-radius:12px; margin-bottom:20px;">
         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-          <span style="font-weight:bold; color:#1e40af;" id="lblIdHz">HZD-XXX</span>
-          <span class="badge-risk" id="lblRisk">RISK</span>
+          <span style="font-weight:bold; color:#1e40af;" id="lblIdHz"></span>
+          <span class="badge-risk" id="lblRisk"></span>
         </div>
         <p style="font-size:0.85rem; color:#64748b; margin-bottom:5px;"><strong>📍 Lokasi:</strong> <span id="lblLokasi"></span></p>
         <p style="font-size:0.85rem; color:#64748b; margin-bottom:5px;"><strong>👷 Pelapor:</strong> <span id="lblPelapor"></span></p>
         <p style="font-size:0.85rem; color:#64748b; margin-bottom:10px;"><strong>🎯 Target Selesai:</strong> <span id="lblTarget" style="color:#b45309; font-weight:bold;"></span></p>
-        
         <p style="font-size:0.9rem; font-weight:600; color:#333;">Deskripsi Bahaya:</p>
         <p style="font-size:0.9rem; color:#475569; background:#fff; padding:10px; border-radius:8px; border:1px solid #cbd5e1; margin-top:5px;" id="lblDesc"></p>
-        
         <p style="font-size:0.9rem; font-weight:600; color:#333; margin-top:10px;">Foto Awal:</p>
         <img id="imgAwal" src="" style="width:100%; border-radius:8px; margin-top:5px; border:1px solid #cbd5e1;">
       </div>
 
-      <!-- Form Input SPV -->
       <label style="color:#1e40af;">📸 Foto Bukti Perbaikan *</label>
       <div class="photo-box">
         <input type="file" accept="image/*" capture="environment" onchange="compressImage(event, 'fotoPerbaikanPreview', 'fotoPerbaikanBase64')">
@@ -152,9 +145,54 @@
   <div id="viewSuksesSPV" style="display:none; text-align:center; padding: 40px 20px;">
     <div style="font-size: 4rem;">✅</div>
     <h2 style="color: #2563eb; margin: 15px 0;">Perbaikan Terkirim!</h2>
-    <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 25px;">
-      Terima kasih. Laporan bukti perbaikan telah dikirim ke Tim HSE (Safety Personnel) untuk proses verifikasi akhir.
-    </p>
+    <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 25px;">Terima kasih. Laporan bukti perbaikan telah dikirim ke Tim HSE untuk proses verifikasi akhir.</p>
+    <button class="btn btn-back" onclick="window.close()">Tutup Halaman</button>
+  </div>
+
+  <!-- ================= VIEW 5: VERIFIKASI HSE ================= -->
+  <div id="viewHSE" style="display:none;">
+    <div class="header" style="background: linear-gradient(135deg, #0f172a 0%, #334155 100%);">
+      <h1>🕵️‍♂️ VERIFIKASI HSE</h1>
+      <p>Quality Control & Close Out</p>
+    </div>
+    
+    <div class="section" id="hseContent" style="display:none;">
+      
+      <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+          <span style="font-weight:bold; color:#0f172a;" id="hLblId"></span>
+          <span class="badge-risk" id="hLblRisk"></span>
+      </div>
+
+      <!-- KARTU 1: TEMUAN AWAL -->
+      <div style="background:#fef2f2; border:2px solid #fecaca; padding:15px; border-radius:12px; margin-bottom:15px;">
+        <h3 style="font-size:1rem; color:#991b1b; margin-bottom:10px;">🚨 KONDISI AWAL (Dari Pekerja)</h3>
+        <p style="font-size:0.85rem; color:#475569;"><strong>Pelapor:</strong> <span id="hPelapor"></span></p>
+        <p style="font-size:0.85rem; color:#475569;"><strong>Lokasi:</strong> <span id="hLokasi"></span></p>
+        <p style="font-size:0.85rem; color:#475569; margin-bottom:5px;"><strong>Deskripsi:</strong> <span id="hDesc"></span></p>
+        <img id="hImgAwal" src="" style="width:100%; border-radius:8px; border:1px solid #f87171;">
+      </div>
+
+      <!-- KARTU 2: PERBAIKAN SPV -->
+      <div style="background:#f0fdf4; border:2px solid #bbf7d0; padding:15px; border-radius:12px; margin-bottom:20px;">
+        <h3 style="font-size:1rem; color:#166534; margin-bottom:10px;">🛠️ TINDAKAN SUPERVISOR</h3>
+        <p style="font-size:0.85rem; color:#475569;"><strong>SPV PIC:</strong> <span id="hSpv"></span></p>
+        <p style="font-size:0.85rem; color:#475569; margin-bottom:5px;"><strong>Catatan SPV:</strong> <span id="hCatatanSPV"></span></p>
+        <img id="hImgFix" src="" style="width:100%; border-radius:8px; border:1px solid #4ade80;">
+      </div>
+
+      <label style="color:#0f172a;">Catatan Verifikasi (HSE) *</label>
+      <textarea id="hseCatatan" rows="2" placeholder="Ketik alasan jika direject, atau catatan closing..."></textarea>
+      
+      <button class="btn btn-hse-ok" style="margin-bottom:10px;" onclick="submitVerify('CLOSED')">✅ APPROVE (Selesai & Tutup Kasus)</button>
+      <button class="btn btn-hse-reject" onclick="submitVerify('REJECTED')">❌ REJECT (Tolak Perbaikan)</button>
+    </div>
+  </div>
+
+  <!-- ================= VIEW 6: SUKSES (HSE) ================= -->
+  <div id="viewSuksesHSE" style="display:none; text-align:center; padding: 40px 20px;">
+    <div style="font-size: 4rem;">🔒</div>
+    <h2 style="color: #0f172a; margin: 15px 0;">Verifikasi Disimpan!</h2>
+    <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 25px;">Keputusan Anda telah tercatat di sistem pusat.</p>
     <button class="btn btn-back" onclick="window.close()">Tutup Halaman</button>
   </div>
 
@@ -175,7 +213,6 @@
   ];
 
   window.onload = () => {
-    // Isi Dropdown SPV
     const spvSelect = document.getElementById('pSpv');
     SUPERVISORS.forEach(s => {
       let opt = document.createElement('option');
@@ -184,17 +221,21 @@
       spvSelect.appendChild(opt);
     });
 
-    // Routing Mode
     const params = new URLSearchParams(window.location.search);
-    if(params.get('mode') === 'spv' && params.get('id')) {
-      currentHzId = params.get('id');
+    currentHzId = params.get('id');
+    const mode = params.get('mode');
+
+    if(mode === 'spv' && currentHzId) {
       document.getElementById('viewPelapor').style.display = 'none';
       document.getElementById('viewSPV').style.display = 'block';
-      loadHazardDataSPV(currentHzId);
+      loadHazardData(currentHzId, 'spv');
+    } else if(mode === 'hse' && currentHzId) {
+      document.getElementById('viewPelapor').style.display = 'none';
+      document.getElementById('viewHSE').style.display = 'block';
+      loadHazardData(currentHzId, 'hse');
     }
   };
 
-  // FORMATTER TANGGAL
   function formatLocalDate(d) {
     let month = '' + (d.getMonth() + 1), day = '' + d.getDate(), year = d.getFullYear();
     if (month.length < 2) month = '0' + month; if (day.length < 2) day = '0' + day;
@@ -206,61 +247,37 @@
     const targetBox = document.getElementById('targetBox');
     const targetInput = document.getElementById('pTarget');
     const hint = document.getElementById('targetHint');
-
     if (!risiko) { targetBox.style.display = 'none'; targetInput.value = ''; return; }
     targetBox.style.display = 'block';
 
     let today = new Date(); let maxDate = new Date(); let pesanHint = "";
-    if (risiko === 'HIGH') {
-      maxDate.setDate(today.getDate() + 2); pesanHint = "Maks. 3 hari (Termasuk hari ini).";
-    } else if (risiko === 'MEDIUM') {
-      maxDate.setDate(today.getDate() + 6); pesanHint = "Maks. 7 hari (Termasuk hari ini).";
-    } else if (risiko === 'LOW') {
-      maxDate.setDate(today.getDate() + 13); pesanHint = "Maks. 14 hari (Termasuk hari ini).";
-    }
+    if (risiko === 'HIGH') { maxDate.setDate(today.getDate() + 2); pesanHint = "Maks. 3 hari (Termasuk hari ini)."; } 
+    else if (risiko === 'MEDIUM') { maxDate.setDate(today.getDate() + 6); pesanHint = "Maks. 7 hari (Termasuk hari ini)."; } 
+    else if (risiko === 'LOW') { maxDate.setDate(today.getDate() + 13); pesanHint = "Maks. 14 hari (Termasuk hari ini)."; }
 
     targetInput.min = formatLocalDate(today); targetInput.max = formatLocalDate(maxDate);
     targetInput.value = ''; hint.innerHTML = `⏳ SLA Risiko ${risiko}: <b>${pesanHint}</b>`;
   }
 
-  // FUNGSI KOMPRESI FOTO (DIPERBAIKI)
   function compressImage(event, previewId, hiddenId) {
     const file = event.target.files[0];
     if(!file) return;
-
-    // Munculkan loading agar user tidak langsung memencet tombol
     document.getElementById('loading').style.display = 'flex';
     document.getElementById('loadMsg').innerText = "Memproses Foto...";
-
     const reader = new FileReader();
     reader.onload = (e) => {
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        
-        // LIMIT EKSTREM UNTUK SHEETS (Max Width 400px)
-        const MAX_WIDTH = 400; 
-        let scale = MAX_WIDTH / img.width;
-        if (scale > 1) scale = 1; // Jangan perbesar gambar kecil
-
-        canvas.width = img.width * scale;
-        canvas.height = img.height * scale;
+        const MAX_WIDTH = 400; let scale = MAX_WIDTH / img.width; if (scale > 1) scale = 1; 
+        canvas.width = img.width * scale; canvas.height = img.height * scale;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        
-        // KOMPRESI KUALITAS (0.5 cukup untuk HP)
         let base64Str = canvas.toDataURL('image/jpeg', 0.5);
-        
-        // SAFETY NET: Jika masih di atas 45.000 karakter, kompres paksa lagi
-        if(base64Str.length > 45000) {
-           base64Str = canvas.toDataURL('image/jpeg', 0.3);
-        }
-
+        if(base64Str.length > 45000) { base64Str = canvas.toDataURL('image/jpeg', 0.3); }
         document.getElementById(previewId).src = base64Str;
         document.getElementById(previewId).style.display = 'block';
         document.getElementById(hiddenId).value = base64Str;
-        
-        // Tutup loading
         document.getElementById('loading').style.display = 'none';
       }
       img.src = e.target.result;
@@ -268,7 +285,7 @@
     reader.readAsDataURL(file);
   }
 
-  // ================= 1. FUNGSI PELAPOR (PEKERJA) =================
+  // ================= 1. SUBMIT PELAPOR =================
   async function submitHazard() {
     const pelapor = document.getElementById('pNama').value.trim();
     const lokasi = document.getElementById('pLokasi').value.trim();
@@ -278,53 +295,37 @@
     const spvRaw = document.getElementById('pSpv').value;
     const foto = document.getElementById('fotoBase64').value;
 
-    if(!pelapor || !lokasi || !risiko || !targetDate || !deskripsi || !spvRaw || !foto) {
-      alert("⚠️ Lengkapi semua kolom dan wajib sertakan foto bahaya!"); return;
-    }
+    if(!pelapor || !lokasi || !risiko || !targetDate || !deskripsi || !spvRaw || !foto) { alert("⚠️ Lengkapi semua kolom!"); return; }
 
-    const spvData = spvRaw.split('|');
-    const d = new Date();
-    const tParts = targetDate.split('-');
+    const spvData = spvRaw.split('|'); const d = new Date(); const tParts = targetDate.split('-');
     const formatTargetWA = `${tParts[2]}/${tParts[1]}/${tParts[0]}`;
     
-    const payload = {
-      action: 'submitHazard',
-      pelapor: pelapor, lokasi: lokasi, risiko: risiko, targetDate: formatTargetWA,
-      deskripsi: deskripsi, fotoBase64: foto, spvNama: spvData[0], spvWa: spvData[1],
-      tgl: d.toLocaleDateString('id-ID'), jam: d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})
-    };
+    const payload = { action: 'submitHazard', pelapor: pelapor, lokasi: lokasi, risiko: risiko, targetDate: formatTargetWA, deskripsi: deskripsi, fotoBase64: foto, spvNama: spvData[0], spvWa: spvData[1], tgl: d.toLocaleDateString('id-ID'), jam: d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}) };
 
     document.getElementById('loading').style.display = 'flex';
-    document.getElementById('loadMsg').innerText = "Menyimpan Laporan...";
+    document.getElementById('loadMsg').innerText = "Menyimpan...";
 
     try {
       const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) });
       const resData = await res.json();
       document.getElementById('loading').style.display = 'none';
-
       if(resData.ok) {
         document.getElementById('viewPelapor').style.display = 'none';
         document.getElementById('viewSukses').style.display = 'block';
-        
         const linkSPV = BASE_URL + "hazard.html?id=" + resData.rowId + "&mode=spv";
         const msg = `⚠️ *LAPORAN BAHAYA (HAZARD)* ⚠️\n\nBapak *${spvData[0]}*,\nSaya menemukan kondisi tidak aman di lapangan.\n\n📍 Lokasi: ${lokasi}\n🚨 Risiko: *${risiko}*\n🎯 *Target Selesai: ${formatTargetWA}*\n📝 Detail: ${deskripsi}\n\nMohon segera ditindaklanjuti. Klik link di bawah ini untuk mengunggah foto bukti perbaikan:\n${linkSPV}\n\n_Pausbiru Safety System_`;
-        
         const waUrl = `https://wa.me/${spvData[1]}?text=${encodeURIComponent(msg)}`;
         const btnWa = document.getElementById('btnKirimWA');
         btnWa.onclick = function() { window.open(waUrl, '_blank'); this.innerHTML = "✅ Pesan Terbuka"; this.style.background = "#94a3b8"; };
         window.open(waUrl, '_blank');
       } else { alert("Gagal: " + resData.error); }
-    } catch(err) {
-      document.getElementById('loading').style.display = 'none';
-      alert("Terjadi kesalahan koneksi jaringan.");
-    }
+    } catch(err) { document.getElementById('loading').style.display = 'none'; alert("Gagal koneksi."); }
   }
 
-  // ================= 2. FUNGSI MENGAMBIL DATA UNTUK SPV =================
-  async function loadHazardDataSPV(id) {
+  // ================= 2. AMBIL DATA UNTUK SPV & HSE =================
+  async function loadHazardData(id, mode) {
     document.getElementById('loading').style.display = 'flex';
-    document.getElementById('loadMsg').innerText = "Mencari Data Hazard...";
-
+    document.getElementById('loadMsg').innerText = "Mencari Data...";
     try {
       const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'getHazard', rowId: id }) });
       const resData = await res.json();
@@ -332,61 +333,81 @@
 
       if(resData.ok) {
         const d = resData.data;
-        document.getElementById('lblIdHz').innerText = id;
-        document.getElementById('lblRisk').innerText = d.risiko;
-        document.getElementById('lblRisk').className = 'badge-risk risk-' + d.risiko;
-        document.getElementById('lblLokasi').innerText = d.lokasi;
-        document.getElementById('lblPelapor').innerText = d.pelapor;
-        document.getElementById('lblTarget').innerText = d.targetDate || '-';
-        document.getElementById('lblDesc').innerText = d.deskripsi;
-        document.getElementById('imgAwal').src = d.fotoUrl;
-        
-        document.getElementById('spvContent').style.display = 'block';
-      } else {
-        alert("⚠️ Data tidak ditemukan: " + resData.error);
-      }
-    } catch(err) {
-      document.getElementById('loading').style.display = 'none';
-      alert("Gagal menarik data dari server.");
-    }
+        if(mode === 'spv') {
+          document.getElementById('lblIdHz').innerText = id;
+          document.getElementById('lblRisk').innerText = d.risiko;
+          document.getElementById('lblRisk').className = 'badge-risk risk-' + d.risiko;
+          document.getElementById('lblLokasi').innerText = d.lokasi;
+          document.getElementById('lblPelapor').innerText = d.pelapor;
+          document.getElementById('lblTarget').innerText = d.targetDate || '-';
+          document.getElementById('lblDesc').innerText = d.deskripsi;
+          document.getElementById('imgAwal').src = d.fotoUrl;
+          document.getElementById('spvContent').style.display = 'block';
+        } else if (mode === 'hse') {
+          document.getElementById('hLblId').innerText = id;
+          document.getElementById('hLblRisk').innerText = d.risiko;
+          document.getElementById('hLblRisk').className = 'badge-risk risk-' + d.risiko;
+          document.getElementById('hPelapor').innerText = d.pelapor;
+          document.getElementById('hLokasi').innerText = d.lokasi;
+          document.getElementById('hDesc').innerText = d.deskripsi;
+          document.getElementById('hImgAwal').src = d.fotoUrl;
+          document.getElementById('hSpv').innerText = d.spvNama;
+          document.getElementById('hCatatanSPV').innerText = d.perbaikan ? d.perbaikan.catatan : "-";
+          document.getElementById('hImgFix').src = d.fotoPerbaikanUrl;
+          document.getElementById('hseContent').style.display = 'block';
+        }
+      } else { alert("⚠️ Data tidak ditemukan."); }
+    } catch(err) { document.getElementById('loading').style.display = 'none'; alert("Gagal menarik data."); }
   }
 
-  // ================= 3. FUNGSI SUBMIT PERBAIKAN OLEH SPV =================
+  // ================= 3. SUBMIT SPV =================
   async function submitPerbaikan() {
     const fotoFix = document.getElementById('fotoPerbaikanBase64').value;
     const catatan = document.getElementById('spvCatatan').value.trim();
-
-    if(!fotoFix || !catatan) {
-      alert("⚠️ Foto bukti dan catatan perbaikan WAJIB diisi!"); return;
-    }
-
+    if(!fotoFix || !catatan) { alert("⚠️ Foto & catatan WAJIB diisi!"); return; }
+    
     const d = new Date();
-    const payload = {
-      action: 'resolveHazard',
-      rowId: currentHzId,
-      fotoPerbaikan: fotoFix,
-      catatan: catatan,
-      waktu: d.toLocaleDateString('id-ID') + ' ' + d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})
-    };
-
+    const payload = { action: 'resolveHazard', rowId: currentHzId, fotoPerbaikan: fotoFix, catatan: catatan, waktu: d.toLocaleDateString('id-ID') + ' ' + d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}) };
     document.getElementById('loading').style.display = 'flex';
-    document.getElementById('loadMsg').innerText = "Mengirim Bukti...";
-
+    document.getElementById('loadMsg').innerText = "Mengirim...";
     try {
       const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) });
       const resData = await res.json();
       document.getElementById('loading').style.display = 'none';
-
       if(resData.ok) {
         document.getElementById('viewSPV').style.display = 'none';
         document.getElementById('viewSuksesSPV').style.display = 'block';
-      } else {
-        alert("Gagal: " + resData.error);
-      }
-    } catch(err) {
-      document.getElementById('loading').style.display = 'none';
-      alert("Terjadi kesalahan koneksi.");
+      } else { alert("Gagal: " + resData.error); }
+    } catch(err) { document.getElementById('loading').style.display = 'none'; alert("Gagal koneksi."); }
+  }
+
+  // ================= 4. SUBMIT VERIFIKASI HSE =================
+  async function submitVerify(keputusan) {
+    const catatan = document.getElementById('hseCatatan').value.trim();
+    if (keputusan === 'REJECTED' && !catatan) {
+      alert("⚠️ Anda menolak perbaikan ini. Wajib mengisi alasan di kolom catatan!"); return;
     }
+    const d = new Date();
+    const payload = { 
+      action: 'verifyHazard', 
+      rowId: currentHzId, 
+      status: keputusan, 
+      catatan: catatan,
+      waktu: d.toLocaleDateString('id-ID') + ' ' + d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})
+    };
+    
+    document.getElementById('loading').style.display = 'flex';
+    document.getElementById('loadMsg').innerText = "Menyimpan Verifikasi...";
+    
+    try {
+      const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) });
+      const resData = await res.json();
+      document.getElementById('loading').style.display = 'none';
+      if(resData.ok) {
+        document.getElementById('viewHSE').style.display = 'none';
+        document.getElementById('viewSuksesHSE').style.display = 'block';
+      } else { alert("Gagal: " + resData.error); }
+    } catch(err) { document.getElementById('loading').style.display = 'none'; alert("Gagal koneksi."); }
   }
 </script>
 </body>
