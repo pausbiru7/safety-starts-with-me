@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lapor Hazard - Pausbiru Safety</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f4f8; min-height: 100vh; padding: 12px; }
+    .container { max-width: 600px; margin: 0 auto; background: #fff; border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,.12); overflow: hidden; padding-bottom: 20px; }
+    
+    .header { background: linear-gradient(135deg, #ea580c 0%, #dc2626 100%); color: #fff; padding: 24px; text-align: center; }
+    .header h1 { font-size: 1.5rem; font-weight: 900; }
+    .header p { font-size: 0.85rem; opacity: 0.9; margin-top: 5px; }
+    
+    .section { padding: 20px; }
+    label { display: block; font-size: 0.88rem; color: #374151; margin-bottom: 6px; font-weight: 600; margin-top: 15px; }
+    input, textarea, select { width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; font-family: inherit; }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: #ea580c; }
+    
+    .photo-box { border: 2px dashed #cbd5e1; border-radius: 10px; background: #f8fafc; padding: 20px; text-align: center; margin-top: 10px; }
+    #fotoPreview, #fotoPerbaikanPreview { display: none; width: 100%; max-height: 300px; object-fit: contain; border-radius: 8px; margin-top: 10px; border: 2px solid #e2e8f0; }
+    
+    .btn { width: 100%; padding: 14px; border: none; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 20px; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;}
+    .btn-primary { background: #ea580c; color: #fff; }
+    .btn-spv { background: #2563eb; color: #fff; }
+    .btn-wa { background: #25d366; color: #fff; }
+    .btn-back { background: #f1f5f9; color: #475569; margin-top: 10px; }
+    
+    .hazard-card { background: #fef2f2; border: 2px solid #fecaca; padding: 15px; border-radius: 12px; margin-bottom: 20px; }
+    
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 999; align-items: center; justify-content: center; }
+    .spinner { width: 40px; height: 40px; border: 4px solid #fff; border-top-color: #ea580c; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 10px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .target-info { font-size: 0.8rem; color: #64748b; margin-top: 5px; font-weight: 500; }
+    .badge-risk { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; color: white; }
+    .risk-HIGH { background: #dc2626; } .risk-MEDIUM { background: #f59e0b; } .risk-LOW { background: #10b981; }
+  </style>
+</head>
+<body>
+
+<div class="overlay" id="loading">
+  <div style="text-align:center; color:white; font-weight:bold;">
+    <div class="spinner" id="spinIcon"></div>
+    <p id="loadMsg">Memproses...</p>
+  </div>
+</div>
+
+<div class="container">
+  
+  <!-- ================= VIEW 1: PEKERJA MELAPOR ================= -->
+  <div id="viewPelapor">
+    <div class="header">
+      <h1>⚠️ LAPOR HAZARD</h1>
+      <p>Hazard Observation / Unsafe Condition</p>
+    </div>
+    
+    <div class="section">
+      <label>Nama Pelapor *</label>
+      <input type="text" id="pNama" placeholder="Nama lengkap Anda">
+      
+      <label>Lokasi Spesifik *</label>
+      <input type="text" id="pLokasi" placeholder="Contoh: PAD 1 (Dekat Genset)">
+      
+      <label>Tingkat Risiko *</label>
+      <select id="pRisiko" onchange="updateTargetDateRange()">
+        <option value="">-- Pilih Tingkat Risiko --</option>
+        <option value="LOW">🟢 RENDAH (Bisa ditunda, tidak mematikan)</option>
+        <option value="MEDIUM">🟡 SEDANG (Berpotensi cedera sedang)</option>
+        <option value="HIGH">🔴 TINGGI (Fatal / Kritis, harus STOP KERJA)</option>
+      </select>
+      
+      <div id="targetBox" style="display: none; background: #fffbeb; border: 1px solid #f59e0b; padding: 15px; border-radius: 10px; margin-top: 15px;">
+        <label style="margin-top: 0; color: #b45309;">🎯 Target Tanggal Selesai *</label>
+        <input type="date" id="pTarget">
+        <div class="target-info" id="targetHint"></div>
+      </div>
+      
+      <label>Deskripsi Bahaya *</label>
+      <textarea id="pDeskripsi" rows="3" placeholder="Apa bahayanya? (Contoh: Kabel terkelupas di genangan air)"></textarea>
+      
+      <label>📸 Foto Kondisi Bahaya *</label>
+      <div class="photo-box">
+        <input type="file" accept="image/*" capture="environment" onchange="compressImage(event, 'fotoPreview', 'fotoBase64')">
+        <img id="fotoPreview">
+        <input type="hidden" id="fotoBase64">
+      </div>
+      
+      <label>Lapor Kepada (Supervisor) *</label>
+      <select id="pSpv">
+        <option value="">-- Pilih Supervisor Terkait --</option>
+      </select>
+      
+      <button class="btn btn-primary" onclick="submitHazard()">Kirim & Lapor via WA 📱</button>
+      <button class="btn btn-back" onclick="location.href='index.html'">Batal & Kembali</button>
+    </div>
+  </div>
+
+  <!-- ================= VIEW 2: SUKSES (PEKERJA) ================= -->
+  <div id="viewSukses" style="display:none; text-align:center; padding: 40px 20px;">
+    <div style="font-size: 4rem;">📨</div>
+    <h2 style="color: #ea580c; margin: 15px 0;">Laporan Tersimpan!</h2>
+    <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 25px;">
+      Sistem mencatat laporan Anda. Silakan klik tombol di bawah untuk meneruskan detail ke WhatsApp Supervisor agar segera diperbaiki.
+    </p>
+    <button class="btn btn-wa" id="btnKirimWA">Kirim Pesan WA ke SPV 💬</button>
+    <button class="btn btn-back" onclick="location.href='index.html'">Kembali ke Menu Utama</button>
+  </div>
+
+  <!-- ================= VIEW 3: SPV MERESPONS ================= -->
+  <div id="viewSPV" style="display:none;">
+    <div class="header" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);">
+      <h1>🛠️ TINDAK LANJUT HAZARD</h1>
+      <p>Supervisor Response Panel</p>
+    </div>
+    
+    <div class="section" id="spvContent" style="display:none;">
+      <!-- Kartu Info Awal Hazard -->
+      <div style="background:#f8fafc; border:2px solid #e2e8f0; padding:15px; border-radius:12px; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+          <span style="font-weight:bold; color:#1e40af;" id="lblIdHz">HZD-XXX</span>
+          <span class="badge-risk" id="lblRisk">RISK</span>
+        </div>
+        <p style="font-size:0.85rem; color:#64748b; margin-bottom:5px;"><strong>📍 Lokasi:</strong> <span id="lblLokasi"></span></p>
+        <p style="font-size:0.85rem; color:#64748b; margin-bottom:5px;"><strong>👷 Pelapor:</strong> <span id="lblPelapor"></span></p>
+        <p style="font-size:0.85rem; color:#64748b; margin-bottom:10px;"><strong>🎯 Target Selesai:</strong> <span id="lblTarget" style="color:#b45309; font-weight:bold;"></span></p>
+        
+        <p style="font-size:0.9rem; font-weight:600; color:#333;">Deskripsi Bahaya:</p>
+        <p style="font-size:0.9rem; color:#475569; background:#fff; padding:10px; border-radius:8px; border:1px solid #cbd5e1; margin-top:5px;" id="lblDesc"></p>
+        
+        <p style="font-size:0.9rem; font-weight:600; color:#333; margin-top:10px;">Foto Awal:</p>
+        <img id="imgAwal" src="" style="width:100%; border-radius:8px; margin-top:5px; border:1px solid #cbd5e1;">
+      </div>
+
+      <!-- Form Input SPV -->
+      <label style="color:#1e40af;">📸 Foto Bukti Perbaikan *</label>
+      <div class="photo-box">
+        <input type="file" accept="image/*" capture="environment" onchange="compressImage(event, 'fotoPerbaikanPreview', 'fotoPerbaikanBase64')">
+        <img id="fotoPerbaikanPreview">
+        <input type="hidden" id="fotoPerbaikanBase64">
+      </div>
+      
+      <label style="color:#1e40af;">📝 Catatan Tindakan Perbaikan *</label>
+      <textarea id="spvCatatan" rows="3" placeholder="Jelaskan apa saja yang telah Anda lakukan untuk menghilangkan bahaya ini..."></textarea>
+      
+      <button class="btn btn-spv" onclick="submitPerbaikan()">Submit Perbaikan 📤</button>
+    </div>
+  </div>
+
+  <!-- ================= VIEW 4: SUKSES (SPV) ================= -->
+  <div id="viewSuksesSPV" style="display:none; text-align:center; padding: 40px 20px;">
+    <div style="font-size: 4rem;">✅</div>
+    <h2 style="color: #2563eb; margin: 15px 0;">Perbaikan Terkirim!</h2>
+    <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 25px;">
+      Terima kasih. Laporan bukti perbaikan telah dikirim ke Tim HSE (Safety Personnel) untuk proses verifikasi akhir.
+    </p>
+    <button class="btn btn-back" onclick="window.close()">Tutup Halaman</button>
+  </div>
+
+</div>
+
+<script>
+  // ⚠️ GANTI GAS_URL DENGAN MILIK ANDA
+  const GAS_URL = "GAS_URL_ANDA_DISINI"; 
+  const BASE_URL = "https://pausbiru7.github.io/safety-starts-with-me/";
+
+  let currentHzId = "";
+
+  const SUPERVISORS = [
+    { name:"Muharza", title:"Project Manager", wa:"628116923792" },
+    { name:"Muji Agus", title:"Electrical Supervisor", wa:"6281254346552" },
+    { name:"Safarudin", title:"Mechanical Supervisor", wa:"6281315693779" },
+    { name:"Muh Yusuf", title:"Project Controller", wa:"6285399450821" },
+    { name:"Adiyo A", title:"QA/QC Officer", wa:"6282257449322" }
+  ];
+
+  window.onload = () => {
+    // Isi Dropdown SPV
+    const spvSelect = document.getElementById('pSpv');
+    SUPERVISORS.forEach(s => {
+      let opt = document.createElement('option');
+      opt.value = s.name + "|" + s.wa;
+      opt.text = s.name + " (" + s.title + ")";
+      spvSelect.appendChild(opt);
+    });
+
+    // Routing Mode
+    const params = new URLSearchParams(window.location.search);
+    if(params.get('mode') === 'spv' && params.get('id')) {
+      currentHzId = params.get('id');
+      document.getElementById('viewPelapor').style.display = 'none';
+      document.getElementById('viewSPV').style.display = 'block';
+      loadHazardDataSPV(currentHzId);
+    }
+  };
+
+  // FORMATTER TANGGAL
+  function formatLocalDate(d) {
+    let month = '' + (d.getMonth() + 1), day = '' + d.getDate(), year = d.getFullYear();
+    if (month.length < 2) month = '0' + month; if (day.length < 2) day = '0' + day;
+    return [year, month, day].join('-');
+  }
+
+  function updateTargetDateRange() {
+    const risiko = document.getElementById('pRisiko').value;
+    const targetBox = document.getElementById('targetBox');
+    const targetInput = document.getElementById('pTarget');
+    const hint = document.getElementById('targetHint');
+
+    if (!risiko) { targetBox.style.display = 'none'; targetInput.value = ''; return; }
+    targetBox.style.display = 'block';
+
+    let today = new Date(); let maxDate = new Date(); let pesanHint = "";
+    if (risiko === 'HIGH') {
+      maxDate.setDate(today.getDate() + 3); pesanHint = "Maks. 3 hari (Harus segera).";
+    } else if (risiko === 'MEDIUM') {
+      maxDate.setDate(today.getDate() + 7); pesanHint = "Maks. 7 hari dari laporan.";
+    } else if (risiko === 'LOW') {
+      maxDate.setDate(today.getDate() + 14); pesanHint = "Maks. 14 hari dari laporan.";
+    }
+
+    targetInput.min = formatLocalDate(today); targetInput.max = formatLocalDate(maxDate);
+    targetInput.value = ''; hint.innerHTML = `⏳ SLA Risiko ${risiko}: <b>${pesanHint}</b>`;
+  }
+
+  function compressImage(event, previewId, hiddenId) {
+    const file = event.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 800; const scale = MAX_WIDTH / img.width;
+        canvas.width = MAX_WIDTH; canvas.height = img.height * scale;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        
+        const base64Str = canvas.toDataURL('image/jpeg', 0.6);
+        document.getElementById(previewId).src = base64Str;
+        document.getElementById(previewId).style.display = 'block';
+        document.getElementById(hiddenId).value = base64Str;
+      }
+      img.src = e.target.result;
+    }
+    reader.readAsDataURL(file);
+  }
+
+  // ================= 1. FUNGSI PELAPOR (PEKERJA) =================
+  async function submitHazard() {
+    const pelapor = document.getElementById('pNama').value.trim();
+    const lokasi = document.getElementById('pLokasi').value.trim();
+    const risiko = document.getElementById('pRisiko').value;
+    const targetDate = document.getElementById('pTarget').value;
+    const deskripsi = document.getElementById('pDeskripsi').value.trim();
+    const spvRaw = document.getElementById('pSpv').value;
+    const foto = document.getElementById('fotoBase64').value;
+
+    if(!pelapor || !lokasi || !risiko || !targetDate || !deskripsi || !spvRaw || !foto) {
+      alert("⚠️ Lengkapi semua kolom dan wajib sertakan foto bahaya!"); return;
+    }
+
+    const spvData = spvRaw.split('|');
+    const d = new Date();
+    const tParts = targetDate.split('-');
+    const formatTargetWA = `${tParts[2]}/${tParts[1]}/${tParts[0]}`;
+    
+    const payload = {
+      action: 'submitHazard',
+      pelapor: pelapor, lokasi: lokasi, risiko: risiko, targetDate: formatTargetWA,
+      deskripsi: deskripsi, fotoBase64: foto, spvNama: spvData[0], spvWa: spvData[1],
+      tgl: d.toLocaleDateString('id-ID'), jam: d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})
+    };
+
+    document.getElementById('loading').style.display = 'flex';
+    document.getElementById('loadMsg').innerText = "Menyimpan Laporan...";
+
+    try {
+      const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) });
+      const resData = await res.json();
+      document.getElementById('loading').style.display = 'none';
+
+      if(resData.ok) {
+        document.getElementById('viewPelapor').style.display = 'none';
+        document.getElementById('viewSukses').style.display = 'block';
+        
+        const linkSPV = BASE_URL + "hazard.html?id=" + resData.rowId + "&mode=spv";
+        const msg = `⚠️ *LAPORAN BAHAYA (HAZARD)* ⚠️\n\nBapak *${spvData[0]}*,\nSaya menemukan kondisi tidak aman di lapangan.\n\n📍 Lokasi: ${lokasi}\n🚨 Risiko: *${risiko}*\n🎯 *Target Selesai: ${formatTargetWA}*\n📝 Detail: ${deskripsi}\n\nMohon segera ditindaklanjuti. Klik link di bawah ini untuk mengunggah foto bukti perbaikan:\n${linkSPV}\n\n_Pausbiru Safety System_`;
+        
+        const waUrl = `https://wa.me/${spvData[1]}?text=${encodeURIComponent(msg)}`;
+        const btnWa = document.getElementById('btnKirimWA');
+        btnWa.onclick = function() { window.open(waUrl, '_blank'); this.innerHTML = "✅ Pesan Terbuka"; this.style.background = "#94a3b8"; };
+        window.open(waUrl, '_blank');
+      } else { alert("Gagal: " + resData.error); }
+    } catch(err) {
+      document.getElementById('loading').style.display = 'none';
+      alert("Terjadi kesalahan koneksi jaringan.");
+    }
+  }
+
+  // ================= 2. FUNGSI MENGAMBIL DATA UNTUK SPV =================
+  async function loadHazardDataSPV(id) {
+    document.getElementById('loading').style.display = 'flex';
+    document.getElementById('loadMsg').innerText = "Mencari Data Hazard...";
+
+    try {
+      const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'getHazard', rowId: id }) });
+      const resData = await res.json();
+      document.getElementById('loading').style.display = 'none';
+
+      if(resData.ok) {
+        const d = resData.data;
+        document.getElementById('lblIdHz').innerText = id;
+        document.getElementById('lblRisk').innerText = d.risiko;
+        document.getElementById('lblRisk').className = 'badge-risk risk-' + d.risiko;
+        document.getElementById('lblLokasi').innerText = d.lokasi;
+        document.getElementById('lblPelapor').innerText = d.pelapor;
+        document.getElementById('lblTarget').innerText = d.targetDate || '-';
+        document.getElementById('lblDesc').innerText = d.deskripsi;
+        document.getElementById('imgAwal').src = d.fotoUrl;
+        
+        document.getElementById('spvContent').style.display = 'block';
+      } else {
+        alert("⚠️ Data tidak ditemukan: " + resData.error);
+      }
+    } catch(err) {
+      document.getElementById('loading').style.display = 'none';
+      alert("Gagal menarik data dari server.");
+    }
+  }
+
+  // ================= 3. FUNGSI SUBMIT PERBAIKAN OLEH SPV =================
+  async function submitPerbaikan() {
+    const fotoFix = document.getElementById('fotoPerbaikanBase64').value;
+    const catatan = document.getElementById('spvCatatan').value.trim();
+
+    if(!fotoFix || !catatan) {
+      alert("⚠️ Foto bukti dan catatan perbaikan WAJIB diisi!"); return;
+    }
+
+    const d = new Date();
+    const payload = {
+      action: 'resolveHazard',
+      rowId: currentHzId,
+      fotoPerbaikan: fotoFix,
+      catatan: catatan,
+      waktu: d.toLocaleDateString('id-ID') + ' ' + d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})
+    };
+
+    document.getElementById('loading').style.display = 'flex';
+    document.getElementById('loadMsg').innerText = "Mengirim Bukti...";
+
+    try {
+      const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) });
+      const resData = await res.json();
+      document.getElementById('loading').style.display = 'none';
+
+      if(resData.ok) {
+        document.getElementById('viewSPV').style.display = 'none';
+        document.getElementById('viewSuksesSPV').style.display = 'block';
+      } else {
+        alert("Gagal: " + resData.error);
+      }
+    } catch(err) {
+      document.getElementById('loading').style.display = 'none';
+      alert("Terjadi kesalahan koneksi.");
+    }
+  }
+</script>
+</body>
+</html>
