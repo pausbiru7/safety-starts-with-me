@@ -20,7 +20,6 @@
     input, textarea, select { width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; font-family: inherit; }
     input:focus, textarea:focus, select:focus { outline: none; border-color: #ea580c; }
     
-    /* PEWARNAAN DROPDOWN RISIKO */
     select#pRisiko option[value="LOW"] { color: #10b981; font-weight: bold; }
     select#pRisiko option[value="MEDIUM"] { color: #f59e0b; font-weight: bold; }
     select#pRisiko option[value="HIGH"] { color: #dc2626; font-weight: bold; }
@@ -44,7 +43,6 @@
     .badge-risk { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; color: white; }
     .risk-HIGH { background: #dc2626; } .risk-MEDIUM { background: #f59e0b; } .risk-LOW { background: #10b981; }
 
-    /* FOOTER */
     .footer { text-align: center; padding: 20px; font-size: 0.85rem; color: #64748b; border-top: 1px solid #e2e8f0; margin-top: 20px; line-height: 1.6; }
   </style>
 </head>
@@ -125,7 +123,8 @@
         
         <div id="targetBox" style="display: none; background: #fffbeb; border: 1px solid #f59e0b; padding: 15px; border-radius: 10px; margin-top: 15px;">
           <label style="margin-top: 0; color: #b45309;">🎯 Target Tanggal Selesai *</label>
-          <input type="date" id="pTarget">
+          <!-- FITUR AUTO VALIDATE DITAMBAHKAN DI SINI -->
+          <input type="date" id="pTarget" onchange="validateStrictDate()">
           <div class="target-info" id="targetHint"></div>
         </div>
       </div>
@@ -269,7 +268,6 @@
     <button class="btn btn-back" onclick="window.close()">Tutup Halaman</button>
   </div>
 
-  <!-- FOOTER BARU -->
   <div class="footer">
     Safety Starts With Me © 2026 | v3.8<br>
     <small>Powered by Pausbiru7</small>
@@ -282,7 +280,7 @@
   const BASE_URL = "https://pausbiru7.github.io/safety-starts-with-me/";
 
   let currentHzId = "";
-  let loadedHazardData = null; // Menyimpan data sementara untuk fungsi kirim WA HSE
+  let loadedHazardData = null;
 
   const SUPERVISORS = [
     { name:"Muharza", title:"Project Manager", wa:"628116923792" },
@@ -293,7 +291,6 @@
   ];
 
   document.addEventListener("DOMContentLoaded", () => {
-    // TAMPILKAN TANGGAL DI SEMUA HEADER
     const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const todayStr = new Date().toLocaleDateString('id-ID', dateOptions);
     ['dateDisplay', 'dateDisplaySPV', 'dateDisplayHSE'].forEach(id => {
@@ -363,6 +360,7 @@
     return [year, month, day].join('-');
   }
 
+  // UPDATE RENTANG TANGGAL
   function updateTargetDateRange() {
     const risiko = document.getElementById('pRisiko').value;
     const targetBox = document.getElementById('targetBox');
@@ -376,8 +374,29 @@
     else if (risiko === 'MEDIUM') { maxDate.setDate(today.getDate() + 6); pesanHint = "Maks. 7 hari (Termasuk hari ini)."; } 
     else if (risiko === 'LOW') { maxDate.setDate(today.getDate() + 13); pesanHint = "Maks. 14 hari (Termasuk hari ini)."; }
 
-    targetInput.min = formatLocalDate(today); targetInput.max = formatLocalDate(maxDate);
-    targetInput.value = ''; hint.innerHTML = `⏳ SLA Risiko ${risiko}: <b>${pesanHint}</b>`;
+    let minStr = formatLocalDate(today);
+    let maxStr = formatLocalDate(maxDate);
+
+    targetInput.min = minStr;
+    targetInput.max = maxStr;
+
+    // Reset isi otomatis jika sebelumnya sudah memilih tanggal yang melebih batas baru
+    if(targetInput.value && (targetInput.value > maxStr || targetInput.value < minStr)) {
+        targetInput.value = ''; 
+    }
+
+    hint.innerHTML = `⏳ SLA Risiko ${risiko}: <b>${pesanHint}</b>`;
+  }
+
+  // FUNGSI AUTO-VALIDASI SAAT USER MENGGANTI TANGGAL DI KALENDER
+  function validateStrictDate() {
+    const targetInput = document.getElementById('pTarget');
+    if(targetInput.value) {
+       if(targetInput.value > targetInput.max || targetInput.value < targetInput.min) {
+           alert("⚠️ Tanggal melebihi Batas Waktu (SLA) yang diizinkan! Maksimal: " + targetInput.max);
+           targetInput.value = ''; // Kosongkan kembali
+       }
+    }
   }
 
   function compressImage(event, previewId, hiddenId) {
@@ -425,9 +444,14 @@
       alert("⚠️ Lengkapi semua kolom wajib!"); return; 
     }
 
+    // VALIDASI LAPIS 3 (BLOCKING FINAL)
     if(kategori !== 'Positive Finding') {
         if(!risiko || !targetDate || !saran || !spvRaw) {
             alert("⚠️ Lengkapi Tingkat Risiko, Target, Saran, dan Pilihan SPV!"); return;
+        }
+        const tInput = document.getElementById('pTarget');
+        if(targetDate > tInput.max || targetDate < tInput.min) {
+            alert("⚠️ Tanggal Target tidak sesuai dengan SLA Risiko!"); return;
         }
     } else {
         risiko = "N/A"; targetDate = "-"; saran = "-"; spvRaw = "No SPV|-";
@@ -485,7 +509,7 @@
 
       if(resData.ok) {
         const d = resData.data;
-        loadedHazardData = d; // Simpan ke variabel global untuk notifikasi verifikasi
+        loadedHazardData = d;
         const klasifikasiFull = (d.kategori || "-") + " - " + (d.jenisBahaya || "-");
 
         if(mode === 'spv') {
@@ -561,7 +585,6 @@
         document.getElementById('viewHSE').style.display = 'none';
         document.getElementById('viewSuksesHSE').style.display = 'block';
 
-        // SIAPKAN NOTIFIKASI WA UNTUK SPV
         if(loadedHazardData) {
           const spvWa = loadedHazardData.spvWa;
           const spvNama = loadedHazardData.spvNama || "Supervisor";
@@ -579,16 +602,12 @@
             const waUrl = `https://wa.me/${spvWa}?text=${encodeURIComponent(msgWA)}`;
             const btnWaHse = document.getElementById('btnKirimWaHse');
             btnWaHse.onclick = function() { window.open(waUrl, '_blank'); this.innerHTML = "✅ Pesan Terbuka"; this.style.background = "#94a3b8"; };
-            
-            // Auto open trigger (Jika diblokir browser, pengguna bisa klik tombol manual)
-            window.open(waUrl, '_blank');
           } else {
             document.getElementById('btnKirimWaHse').style.display = 'none';
           }
         }
-
       } else { alert("Gagal: " + resData.error); }
-    } catch(err) { document.getElementById('loading').style.display = 'none'; alert("Gagal koneksi. Konfirmasi ulang jaringan internet Anda."); }
+    } catch(err) { document.getElementById('loading').style.display = 'none'; alert("Gagal koneksi."); }
   }
 </script>
 </body>
