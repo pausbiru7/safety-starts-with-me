@@ -66,9 +66,9 @@
       <label>Tingkat Risiko *</label>
       <select id="pRisiko" onchange="updateTargetDateRange()">
         <option value="">-- Pilih Tingkat Risiko --</option>
-        <option value="LOW">🟢 RENDAH (Bisa ditunda, tidak mematikan)</option>
-        <option value="MEDIUM">🟡 SEDANG (Berpotensi cedera sedang)</option>
-        <option value="HIGH">🔴 TINGGI (Fatal / Kritis, harus STOP KERJA)</option>
+        <option value="LOW">LOW</option>
+        <option value="MEDIUM">MEDIUM</option>
+        <option value="HIGH">HIGH</option>
       </select>
       
       <div id="targetBox" style="display: none; background: #fffbeb; border: 1px solid #f59e0b; padding: 15px; border-radius: 10px; margin-top: 15px;">
@@ -161,7 +161,6 @@
 </div>
 
 <script>
-  // ⚠️ GANTI GAS_URL DENGAN MILIK ANDA
   const GAS_URL = "https://script.google.com/macros/s/AKfycbyhqzWgXnC46vs0VnEdvRG52afyV4IQtN2FDqxHB_XbQ7vcVKrDPrNHo3IzHyZU62mI7Q/exec"; 
   const BASE_URL = "https://pausbiru7.github.io/safety-starts-with-me/";
 
@@ -213,34 +212,56 @@
 
     let today = new Date(); let maxDate = new Date(); let pesanHint = "";
     if (risiko === 'HIGH') {
-      maxDate.setDate(today.getDate() + 3); pesanHint = "Maks. 3 hari (Harus segera).";
+      maxDate.setDate(today.getDate() + 2); pesanHint = "Maks. 3 hari (Termasuk hari ini).";
     } else if (risiko === 'MEDIUM') {
-      maxDate.setDate(today.getDate() + 7); pesanHint = "Maks. 7 hari dari laporan.";
+      maxDate.setDate(today.getDate() + 6); pesanHint = "Maks. 7 hari (Termasuk hari ini).";
     } else if (risiko === 'LOW') {
-      maxDate.setDate(today.getDate() + 14); pesanHint = "Maks. 14 hari dari laporan.";
+      maxDate.setDate(today.getDate() + 13); pesanHint = "Maks. 14 hari (Termasuk hari ini).";
     }
 
     targetInput.min = formatLocalDate(today); targetInput.max = formatLocalDate(maxDate);
     targetInput.value = ''; hint.innerHTML = `⏳ SLA Risiko ${risiko}: <b>${pesanHint}</b>`;
   }
 
+  // FUNGSI KOMPRESI FOTO (DIPERBAIKI)
   function compressImage(event, previewId, hiddenId) {
     const file = event.target.files[0];
     if(!file) return;
+
+    // Munculkan loading agar user tidak langsung memencet tombol
+    document.getElementById('loading').style.display = 'flex';
+    document.getElementById('loadMsg').innerText = "Memproses Foto...";
+
     const reader = new FileReader();
     reader.onload = (e) => {
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        const MAX_WIDTH = 800; const scale = MAX_WIDTH / img.width;
-        canvas.width = MAX_WIDTH; canvas.height = img.height * scale;
+        
+        // LIMIT EKSTREM UNTUK SHEETS (Max Width 400px)
+        const MAX_WIDTH = 400; 
+        let scale = MAX_WIDTH / img.width;
+        if (scale > 1) scale = 1; // Jangan perbesar gambar kecil
+
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         
-        const base64Str = canvas.toDataURL('image/jpeg', 0.6);
+        // KOMPRESI KUALITAS (0.5 cukup untuk HP)
+        let base64Str = canvas.toDataURL('image/jpeg', 0.5);
+        
+        // SAFETY NET: Jika masih di atas 45.000 karakter, kompres paksa lagi
+        if(base64Str.length > 45000) {
+           base64Str = canvas.toDataURL('image/jpeg', 0.3);
+        }
+
         document.getElementById(previewId).src = base64Str;
         document.getElementById(previewId).style.display = 'block';
         document.getElementById(hiddenId).value = base64Str;
+        
+        // Tutup loading
+        document.getElementById('loading').style.display = 'none';
       }
       img.src = e.target.result;
     }
