@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lapor Hazard - Pausbiru Safety</title>
+  <title>Pausbiru Safety - Hazard Report</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f4f8; min-height: 100vh; padding: 12px; }
-    .container { max-width: 600px; margin: 0 auto; background: #fff; border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,.12); overflow: hidden; padding-bottom: 20px; }
+    .container { max-width: 600px; margin: 0 auto; background: #fff; border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,.12); overflow: hidden; padding-bottom: 5px; }
     
+    /* Branding Header */
     .header { background: linear-gradient(135deg, #ea580c 0%, #dc2626 100%); color: #fff; padding: 24px; text-align: center; }
-    .header h1 { font-size: 1.5rem; font-weight: 900; }
-    .header p { font-size: 0.85rem; opacity: 0.9; margin-top: 5px; }
+    .header h1 { font-size: 1.6rem; font-weight: 900; letter-spacing: 0.5px; }
+    .header p { font-size: 0.9rem; opacity: 0.9; margin-top: 5px; font-weight: 500; }
     
     .section { padding: 20px; }
     label { display: block; font-size: 0.88rem; color: #374151; margin-bottom: 6px; font-weight: 600; margin-top: 15px; }
     input, textarea, select { width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; font-family: inherit; }
     input:focus, textarea:focus, select:focus { outline: none; border-color: #ea580c; }
     
-    /* PEWARNAAN DROPDOWN RISIKO */
     select#pRisiko option[value="LOW"] { color: #10b981; font-weight: bold; }
     select#pRisiko option[value="MEDIUM"] { color: #f59e0b; font-weight: bold; }
     select#pRisiko option[value="HIGH"] { color: #dc2626; font-weight: bold; }
@@ -41,6 +41,9 @@
     .target-info { font-size: 0.8rem; color: #64748b; margin-top: 5px; font-weight: 500; }
     .badge-risk { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; color: white; }
     .risk-HIGH { background: #dc2626; } .risk-MEDIUM { background: #f59e0b; } .risk-LOW { background: #10b981; }
+
+    /* Footer Branding */
+    .footer-credit { text-align: center; padding: 15px; font-size: 0.8rem; color: #94a3b8; font-weight: 500; border-top: 1px solid #f1f5f9; margin-top: 10px; }
   </style>
 </head>
 <body>
@@ -57,8 +60,8 @@
   <!-- ================= VIEW 1: PEKERJA MELAPOR ================= -->
   <div id="viewPelapor">
     <div class="header">
-      <h1>⚠️ LAPOR HAZARD</h1>
-      <p>Hazard Observation / Unsafe Condition</p>
+      <h1>Pausbiru Safety</h1>
+      <p>Hazard Report</p>
     </div>
     
     <div class="section">
@@ -99,7 +102,6 @@
       <label>Deskripsi Bahaya *</label>
       <textarea id="pDeskripsi" rows="3" placeholder="Apa bahayanya? (Contoh: Kabel terkelupas di genangan air)"></textarea>
 
-      <!-- FIELD SARAN PERBAIKAN (DIUBAH JADI WAJIB *) -->
       <label style="color: #16a34a;">💡 Saran Perbaikan dari Pelapor *</label>
       <textarea id="pSaran" rows="2" placeholder="Saran tindakan perbaikan menurut Anda (Contoh: Segera matikan sekring & bungkus isolasi)"></textarea>
       
@@ -132,8 +134,8 @@
   <!-- ================= VIEW 3: SPV MERESPONS ================= -->
   <div id="viewSPV" style="display:none;">
     <div class="header" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);">
-      <h1>🛠️ TINDAK LANJUT HAZARD</h1>
-      <p>Supervisor Response Panel</p>
+      <h1>Pausbiru Safety</h1>
+      <p>Hazard Report - Supervisor Panel</p>
     </div>
     
     <div class="section" id="spvContent" style="display:none;">
@@ -183,8 +185,8 @@
   <!-- ================= VIEW 5: VERIFIKASI HSE ================= -->
   <div id="viewHSE" style="display:none;">
     <div class="header" style="background: linear-gradient(135deg, #0f172a 0%, #334155 100%);">
-      <h1>🕵️‍♂️ VERIFIKASI HSE</h1>
-      <p>Quality Control & Close Out</p>
+      <h1>Pausbiru Safety</h1>
+      <p>Hazard Report - Verifikasi HSE</p>
     </div>
     
     <div class="section" id="hseContent" style="display:none;">
@@ -228,6 +230,10 @@
     <h2 style="color: #0f172a; margin: 15px 0;">Verifikasi Disimpan!</h2>
     <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 25px;">Keputusan Anda telah tercatat di sistem pusat.</p>
     <button class="btn btn-back" onclick="window.close()">Tutup Halaman</button>
+  </div>
+
+  <div class="footer-credit">
+    Powered by <b>Pausbiru7</b>
   </div>
 
 </div>
@@ -338,7 +344,6 @@
     const spvRaw = document.getElementById('pSpv').value;
     const foto = document.getElementById('fotoBase64').value;
 
-    // Saran perbaikan kini wajib diisi (*)
     if(!pelapor || !area || !detailLokasi || !risiko || !targetDate || !deskripsi || !saran || !spvRaw || !foto) { 
       alert("⚠️ Lengkapi semua kolom wajib (termasuk Saran Perbaikan)!"); return; 
     }
@@ -374,7 +379,7 @@
         document.getElementById('viewSukses').style.display = 'block';
         
         const linkSPV = BASE_URL + "hazard.html?id=" + resData.rowId + "&mode=spv";
-        const msg = `⚠️ *LAPORAN BAHAYA (HAZARD)* ⚠️\n\nBapak *${spvData[0]}*,\nSaya menemukan kondisi tidak aman di lapangan.\n\n📍 Lokasi: ${lokasiFull}\n❗ Risiko: *${risiko}*\n⏰ *Target Selesai: ${formatTargetWA}*\n📋 Detail: ${deskripsi}\n💡 Saran: ${saran}\n\nMohon segera ditindaklanjuti. Klik link di bawah ini untuk mengunggah foto bukti perbaikan:\n🔗 ${linkSPV}\n\n_Pausbiru Safety System_`;
+        const msg = `⚠️ *PAUSBIRU SAFETY - HAZARD REPORT* ⚠️\n\nBapak *${spvData[0]}*,\nSaya menemukan kondisi tidak aman di lapangan.\n\n📍 Lokasi: ${lokasiFull}\n❗ Risiko: *${risiko}*\n⏰ *Target Selesai: ${formatTargetWA}*\n📋 Detail: ${deskripsi}\n💡 Saran: ${saran}\n\nMohon segera ditindaklanjuti. Klik link di bawah ini untuk mengunggah foto bukti perbaikan:\n🔗 ${linkSPV}\n\n_Pausbiru Safety System_`;
         
         const waUrl = `https://wa.me/${spvData[1]}?text=${encodeURIComponent(msg)}`;
         const btnWa = document.getElementById('btnKirimWA');
@@ -463,7 +468,7 @@
         document.getElementById('viewHSE').style.display = 'none';
         document.getElementById('viewSuksesHSE').style.display = 'block';
       } else { alert("Gagal: " + resData.error); }
-    } catch(err) { document.getElementById('loading').style.display = 'none'; alert("Gagal koneksi."); }
+    } catch(err) { document.getElementById('loading').style.display = 'none'; alert("Gagal koneksi. Konfirmasi ulang jaringan internet Anda."); }
   }
 </script>
 </body>
