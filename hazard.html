@@ -213,7 +213,7 @@
     { name:"Adiyo A", title:"QA/QC Officer", wa:"6282257449322" }
   ];
 
-  window.onload = () => {
+  document.addEventListener("DOMContentLoaded", () => {
     const spvSelect = document.getElementById('pSpv');
     SUPERVISORS.forEach(s => {
       let opt = document.createElement('option');
@@ -235,7 +235,7 @@
       document.getElementById('viewHSE').style.display = 'block';
       loadHazardData(currentHzId, 'hse');
     }
-  };
+  });
 
   function formatLocalDate(d) {
     let month = '' + (d.getMonth() + 1), day = '' + d.getDate(), year = d.getFullYear();
@@ -313,12 +313,8 @@
       if(resData.ok) {
         document.getElementById('viewPelapor').style.display = 'none';
         document.getElementById('viewSukses').style.display = 'block';
-        
         const linkSPV = BASE_URL + "hazard.html?id=" + resData.rowId + "&mode=spv";
-        
-        // PESAN WHATSAPP DIPERBARUI (EMOJI STANDAR & IKON LINK)
         const msg = `⚠️ *LAPORAN BAHAYA (HAZARD)* ⚠️\n\nBapak *${spvData[0]}*,\nSaya menemukan kondisi tidak aman di lapangan.\n\n📍 Lokasi: ${lokasi}\n❗ Risiko: *${risiko}*\n⏰ *Target Selesai: ${formatTargetWA}*\n📋 Detail: ${deskripsi}\n\nMohon segera ditindaklanjuti. Klik link di bawah ini untuk mengunggah foto bukti perbaikan:\n🔗 ${linkSPV}\n\n_Pausbiru Safety System_`;
-        
         const waUrl = `https://wa.me/${spvData[1]}?text=${encodeURIComponent(msg)}`;
         const btnWa = document.getElementById('btnKirimWA');
         btnWa.onclick = function() { window.open(waUrl, '_blank'); this.innerHTML = "✅ Pesan Terbuka"; this.style.background = "#94a3b8"; };
@@ -393,17 +389,9 @@
       alert("⚠️ Anda menolak perbaikan ini. Wajib mengisi alasan di kolom catatan!"); return;
     }
     const d = new Date();
-    const payload = { 
-      action: 'verifyHazard', 
-      rowId: currentHzId, 
-      status: keputusan, 
-      catatan: catatan,
-      waktu: d.toLocaleDateString('id-ID') + ' ' + d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})
-    };
-    
+    const payload = { action: 'verifyHazard', rowId: currentHzId, status: keputusan, catatan: catatan, waktu: d.toLocaleDateString('id-ID') + ' ' + d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}) };
     document.getElementById('loading').style.display = 'flex';
     document.getElementById('loadMsg').innerText = "Menyimpan Verifikasi...";
-    
     try {
       const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) });
       const resData = await res.json();
