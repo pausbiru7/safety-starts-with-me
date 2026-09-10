@@ -99,8 +99,8 @@
       <label>Deskripsi Bahaya *</label>
       <textarea id="pDeskripsi" rows="3" placeholder="Apa bahayanya? (Contoh: Kabel terkelupas di genangan air)"></textarea>
 
-      <!-- FIELD SARAN PERBAIKAN (BARU) -->
-      <label style="color: #16a34a;">💡 Saran Perbaikan dari Pelapor (Opsional)</label>
+      <!-- FIELD SARAN PERBAIKAN (DIUBAH JADI WAJIB *) -->
+      <label style="color: #16a34a;">💡 Saran Perbaikan dari Pelapor *</label>
       <textarea id="pSaran" rows="2" placeholder="Saran tindakan perbaikan menurut Anda (Contoh: Segera matikan sekring & bungkus isolasi)"></textarea>
       
       <label>📸 Foto Kondisi Bahaya *</label>
@@ -149,7 +149,7 @@
         <p style="font-size:0.9rem; font-weight:600; color:#333;">Deskripsi Bahaya:</p>
         <p style="font-size:0.9rem; color:#475569; background:#fff; padding:10px; border-radius:8px; border:1px solid #cbd5e1; margin-top:5px;" id="lblDesc"></p>
         
-        <div id="lblSaranBox" style="display:none; margin-top:10px;">
+        <div style="margin-top:10px;">
           <p style="font-size:0.9rem; font-weight:600; color:#16a34a;">💡 Saran Perbaikan dari Pelapor:</p>
           <p style="font-size:0.90rem; color:#15803d; background:#f0fdf4; padding:10px; border-radius:8px; border:1px solid #bbf7d0; margin-top:5px;" id="lblSaran"></p>
         </div>
@@ -200,7 +200,7 @@
         <p style="font-size:0.85rem; color:#475569;"><strong>Pelapor:</strong> <span id="hPelapor"></span></p>
         <p style="font-size:0.85rem; color:#475569;"><strong>Lokasi:</strong> <span id="hLokasi"></span></p>
         <p style="font-size:0.85rem; color:#475569; margin-bottom:5px;"><strong>Deskripsi:</strong> <span id="hDesc"></span></p>
-        <div id="hSaranBox" style="display:none; margin-top:5px;">
+        <div style="margin-top:5px;">
           <p style="font-size:0.85rem; color:#15803d;"><strong>Saran Pelapor:</strong> <span id="hSaran"></span></p>
         </div>
         <img id="hImgAwal" src="" style="width:100%; border-radius:8px; border:1px solid #f87171; margin-top:8px;">
@@ -338,8 +338,9 @@
     const spvRaw = document.getElementById('pSpv').value;
     const foto = document.getElementById('fotoBase64').value;
 
-    if(!pelapor || !area || !detailLokasi || !risiko || !targetDate || !deskripsi || !spvRaw || !foto) { 
-      alert("⚠️ Lengkapi semua kolom wajib!"); return; 
+    // Saran perbaikan kini wajib diisi (*)
+    if(!pelapor || !area || !detailLokasi || !risiko || !targetDate || !deskripsi || !saran || !spvRaw || !foto) { 
+      alert("⚠️ Lengkapi semua kolom wajib (termasuk Saran Perbaikan)!"); return; 
     }
 
     const lokasiFull = area + " - " + detailLokasi;
@@ -373,8 +374,7 @@
         document.getElementById('viewSukses').style.display = 'block';
         
         const linkSPV = BASE_URL + "hazard.html?id=" + resData.rowId + "&mode=spv";
-        let msgSaran = saran ? `\n💡 Saran: ${saran}` : "";
-        const msg = `⚠️ *LAPORAN BAHAYA (HAZARD)* ⚠️\n\nBapak *${spvData[0]}*,\nSaya menemukan kondisi tidak aman di lapangan.\n\n📍 Lokasi: ${lokasiFull}\n❗ Risiko: *${risiko}*\n⏰ *Target Selesai: ${formatTargetWA}*\n📋 Detail: ${deskripsi}${msgSaran}\n\nMohon segera ditindaklanjuti. Klik link di bawah ini untuk mengunggah foto bukti perbaikan:\n🔗 ${linkSPV}\n\n_Pausbiru Safety System_`;
+        const msg = `⚠️ *LAPORAN BAHAYA (HAZARD)* ⚠️\n\nBapak *${spvData[0]}*,\nSaya menemukan kondisi tidak aman di lapangan.\n\n📍 Lokasi: ${lokasiFull}\n❗ Risiko: *${risiko}*\n⏰ *Target Selesai: ${formatTargetWA}*\n📋 Detail: ${deskripsi}\n💡 Saran: ${saran}\n\nMohon segera ditindaklanjuti. Klik link di bawah ini untuk mengunggah foto bukti perbaikan:\n🔗 ${linkSPV}\n\n_Pausbiru Safety System_`;
         
         const waUrl = `https://wa.me/${spvData[1]}?text=${encodeURIComponent(msg)}`;
         const btnWa = document.getElementById('btnKirimWA');
@@ -403,12 +403,7 @@
           document.getElementById('lblPelapor').innerText = d.pelapor;
           document.getElementById('lblTarget').innerText = d.targetDate || '-';
           document.getElementById('lblDesc').innerText = d.deskripsi;
-          
-          if(d.saran) {
-            document.getElementById('lblSaran').innerText = d.saran;
-            document.getElementById('lblSaranBox').style.display = 'block';
-          }
-
+          document.getElementById('lblSaran').innerText = d.saran || "-";
           document.getElementById('imgAwal').src = d.fotoUrl;
           document.getElementById('spvContent').style.display = 'block';
         } else if (mode === 'hse') {
@@ -418,12 +413,7 @@
           document.getElementById('hPelapor').innerText = d.pelapor;
           document.getElementById('hLokasi').innerText = d.lokasi;
           document.getElementById('hDesc').innerText = d.deskripsi;
-          
-          if(d.saran) {
-            document.getElementById('hSaran').innerText = d.saran;
-            document.getElementById('hSaranBox').style.display = 'block';
-          }
-
+          document.getElementById('hSaran').innerText = d.saran || "-";
           document.getElementById('hImgAwal').src = d.fotoUrl;
           document.getElementById('hSpv').innerText = d.spvNama;
           document.getElementById('hCatatanSPV').innerText = d.perbaikan ? d.perbaikan.catatan : "-";
