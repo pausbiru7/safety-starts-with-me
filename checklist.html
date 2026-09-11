@@ -1341,7 +1341,7 @@ async function doApprove(){
     });
 
     hideProgress();
-    kirimNotifikasiKeWorker(data);
+    eWorker(data);
 
     const enc = LZ.compress(JSON.stringify(data));
     showDone(enc, true);
@@ -1396,7 +1396,7 @@ async function doReject(){
       throw new Error(res.error || 'Gagal merespon di server');
     }
 
-    kirimNotifikasiKeWorker(data);
+    eWorker(data);
     
     const enc = LZ.compress(JSON.stringify(data));
     showDone(enc, true);
@@ -1432,8 +1432,8 @@ function kirimSemuaNotif(btn){
 function kirimNotifikasiKeWorker(data){
   const isApproved = data.sv.status === 'APPROVED';
   const st = isApproved ? 'app' : 'rej';
-  const shortUrl   = `${CONFIG.BASE_URL}checklist.html?id=${data.rowId || 'CHECKLIST'}&mode=view&st=${st}&sv=${encodeURIComponent(data.sv.nama)}&time=${encodeURIComponent(data.sv.time)}`;
-  const workerWA   = data.p.replace(/^0/, '62').replace(/[^0-9]/g, '');
+  const shortUrl = `${CONFIG.BASE_URL}checklist.html?id=${data.rowId || 'CHECKLIST'}&mode=view&st=${st}&sv=${encodeURIComponent(data.sv.nama)}&time=${encodeURIComponent(data.sv.time)}`;
+  const workerWA = data.p.replace(/^0/, '62').replace(/[^0-9]/g, '');
 
   const e_ok = decodeURIComponent('%E2%9C%85');
   const e_no = decodeURIComponent('%E2%9D%8C');
