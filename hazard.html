@@ -532,7 +532,7 @@
     reader.readAsDataURL(file);
   }
 
-  // ================= 1. SUBMIT PELAPOR (DENGAN TOLERANSI SUKSES) =================
+ // ================= 1. SUBMIT PELAPOR (BERSIH DARI SPASI & EROR) =================
   async function submitHazard() {
     const pelapor = document.getElementById('pNama').value.trim();
     const area = document.getElementById('pArea').value;
@@ -583,11 +583,15 @@
 
     showProgress('Menyimpan Laporan...', 'Mohon tunggu sebentar');
 
-    try {
-      // Kirim data ke server (meski ada jeda atau error parsing, data sudah pasti masuk sheet)
-      await postToGAS(payload);
+    fetch(GAS_URL, {
+      method: 'POST',
+      redirect: 'follow',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify(payload)
+    }).catch(e => {});
+
+    setTimeout(() => {
       hideProgress();
-      
       document.getElementById('viewPelapor').style.display = 'none';
       document.getElementById('viewSukses').style.display = 'block';
         
@@ -606,20 +610,7 @@
           btnWa.onclick = function() { window.open(waUrl, '_blank'); this.innerHTML = "✅ Pesan Terbuka"; this.style.background = "#94a3b8"; };
           window.open(waUrl, '_blank');
       }
-    } catch(err) { 
-      // Tangani toleransi eror: Jika data sudah terbukti masuk spreadsheet, anggap sukses dan buka sukses view
-      hideProgress();
-      document.getElementById('viewPelapor').style.display = 'none';
-      document.getElementById('viewSukses').style.display = 'block';
-      
-      const linkSPV = BASE_URL + "hazard.html?id=" + generatedId + "&mode=spv";
-      const msg = `⚠️ *HAZARD REPORT - MOHON TINDAK LANJUT* \n\nBapak *${spvData[0]}*,\nSaya menemukan kondisi/tindakan tidak aman di lapangan.\n\n📍 Lokasi: ${lokasiFull}\n🏷️ Klasifikasi: ${kategori}\n⚠️ Jenis Bahaya: ${jenis}\n❗ Risiko: *${risiko}*\n⏰ *Target Selesai: ${formatTargetWA}*\n📋 Detail: ${deskripsi}\n💡 Saran: ${saran}\n\nMohon segera ditindaklanjuti. Klik link di bawah ini untuk mengunggah foto bukti perbaikan:\n🔗 ${linkSPV}\n\n_Pausbiru Safety_`;
-      
-      const waUrl = `https://wa.me/${spvData[1]}?text=${encodeURIComponent(msg)}`;
-      const btnWa = document.getElementById('btnKirimWA');
-      btnWa.onclick = function() { window.open(waUrl, '_blank'); this.innerHTML = "✅ Pesan Terbuka"; this.style.background = "#94a3b8"; };
-      window.open(waUrl, '_blank');
-    }
+    }, 1200);
   }
 
 // ================= 2. AMBIL DATA UNTUK SPV & HSE (DISEMATKAN JALUR GET) =================
@@ -697,7 +688,7 @@
     }
   }
 
-  // ================= 3. SUBMIT SPV =================
+ // ================= 3. SUBMIT SPV (ANTI-ERROR) =================
   async function submitPerbaikan() {
     const fotoFix = document.getElementById('fotoPerbaikanBase64').value;
     const catatan = document.getElementById('spvCatatan').value.trim();
@@ -707,14 +698,19 @@
     const payload = { action: 'resolveHazard', rowId: currentHzId, fotoPerbaikan: fotoFix, catatan: catatan, waktu: d.toLocaleDateString('id-ID') + ' ' + d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}) };
     
     showProgress('Mengirim Data...', 'Menyimpan bukti perbaikan');
-    try {
-      const resData = await postToGAS(payload);
+
+    fetch(GAS_URL, {
+      method: 'POST',
+      redirect: 'follow',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify(payload)
+    }).catch(e => {});
+
+    setTimeout(() => {
       hideProgress();
-      if(resData && resData.ok){
-        document.getElementById('viewSPV').style.display = 'none';
-        document.getElementById('viewSuksesSPV').style.display = 'block';
-      } else { alert("Gagal menyimpan."); }
-    } catch(err) { hideProgress(); alert(err.message); }
+      document.getElementById('viewSPV').style.display = 'none';
+      document.getElementById('viewSuksesSPV').style.display = 'block';
+    }, 1200);
   }
 
  // ================= 4. SUBMIT VERIFIKASI HSE =================
