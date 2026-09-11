@@ -1343,134 +1343,38 @@ async function doApprove(){
     hideProgress();
 
     // 2. SETELAH BERHASIL, baru siapkan link WhatsApp untuk Pekerja & HSE
-    kirimNotifikasiKeWorker(data);
+    kconst st = isApproved ? 'app' : 'rej';
+  const shortUrl   = `${CONFIG.BASE_URL}checklist.html?id=${data.rowId || 'CHECKLIST'}&mode=view&st=${st}&sv=${encodeURIComponent(data.sv.nama)}&time=${encodeURIComponent(data.sv.time)}`;
+  const workerWA   = data.p.replace(/^0/, '62').replace(/[^0-9]/g, '');
 
-    // 3. Tampilkan halaman sukses (BERI NILAI TRUE AGAR TOMBOL MUNCUL UNTUK SPV)
-    const enc = LZ.compress(JSON.stringify(data));
-    showDone(enc, true); // <--- Perubahan ada di sini
-
-  }catch(e){
-    hideProgress();
-    showAlert('❌ Gagal memproses: ' + e.message);
-  }
-}
-window.doApprove = doApprove;
-
-async function doReject(){
-  const svNamaEl = document.getElementById('svNama');
-  const svNoteEl = document.getElementById('svNote');
-
-  const svNama = svNamaEl ? svNamaEl.value.trim() : '';
-  const svNote = svNoteEl ? svNoteEl.value.trim() : '';
-
-  if(!svNama){ showAlert('Masukkan nama supervisor terlebih dahulu'); return; }
-  if(!svNote){ showAlert('Berikan alasan penolakan terlebih dahulu'); return; }
-
-  const data = window.svData;
-  if(!data || !data.rowId){ 
-    showAlert('Data supervisor tidak ditemukan atau ID rusak. Buka ulang link verifikasi.'); 
-    return; 
-  }
-
-  data.sv = {
-    nama   : svNama,
-    status : 'REJECTED',
-    note   : svNote,
-    time   : formatIDDateTime(new Date()),
-    signUrl: ""
-  };
-
-  showProgress('📤 Mengirim Penolakan...', 'Menyimpan data ke server');
-  
-  try{
-    const res = await postToGAS({
-      action : 'respond',
-      rowId  : data.rowId,
-      status : 'REJECTED',
-      svname : svNama,
-      svnote : svNote,
-      svtime : data.sv.time,
-      svsign : ""
-    });
-
-    hideProgress();
-
-    if(res && res.ok === false){
-      throw new Error(res.error || 'Gagal merespon di server');
-    }
-
-    kirimNotifikasiKeWorker(data);
-    
-    // 3. Tampilkan halaman sukses (BERI NILAI TRUE AGAR TOMBOL MUNCUL UNTUK SPV)
-    const enc = LZ.compress(JSON.stringify(data));
-    showDone(enc, true); // <--- Perubahan ada di sini
-
-  }catch(e){
-    hideProgress();
-    showAlert('❌ Gagal memproses: ' + e.message);
-  }
-}
-window.doReject = doReject;
-
-/* ============================================================
-   NOTIFIKASI KE WORKER & HSE (BERTAHAP & AMAN)
-   ============================================================ */
-let _notifStep = 1;
-function kirimSemuaNotif(btn){
-  // 🚀 FITUR BARU: Hanya 1 klik langsung buka WA Pekerja
-  if(window._waWorkerLink){
-    window.open(window._waWorkerLink, '_blank');
-    
-    // Ubah tampilan tombol jadi selesai (abu-abu)
-    btn.innerHTML        = '✅ Notifikasi Pekerja Terkirim!';
-    btn.disabled         = true;
-    btn.style.background = '#9ca3af';
-    
-    // Beri tahu Supervisor bahwa tugasnya sudah beres
-    const hint = document.getElementById('notifHint');
-    if(hint){ 
-      hint.innerHTML = '<span style="color:#059669;font-weight:700">✅ Laporan HSE telah dikirim otomatis via Email, dan Notifikasi Pekerja sudah terkirim via WA! 🎉</span>'; 
-    }
-  } else {
-    showAlert("⚠️ Link WhatsApp Pekerja belum siap.");
-  }
-}
-
-function kirimNotifikasiKeWorker(data){
-  const isApproved = data.sv.status === 'APPROVED';
-  
-  // 🚀 KUNCI PERBAIKAN: Menyisipkan status langsung ke dalam link
-  const st = isApproved ? 'app' : 'rej';
-  const shortUrl   = `${CONFIG.BASE_URL}checklist.html?id=${data.rowId || 'CHECKLIST'}&mode=view&st=${st}&sv=${encodeURIComponent(data.sv.nama)}&time=${encodeURIComponent(data.sv.time)}`;  const workerWA   = data.p.replace(/^0/, '62').replace(/[^0-9]/g, '');
-
- const workerMsg = isApproved
-    ? `✅ *SAFETY CHECKLIST DISETUJUI*\n\n` +
+  const workerMsg = isApproved
+    ? `\u2705 *SAFETY CHECKLIST DISETUJUI*\n\n` +
       `Halo *${data.n}*,\n` +
-      `Checklist safety Anda telah 🔒 *DISETUJUI (APPROVED)* oleh supervisor.\n\n` +
-      `👨‍💼 *Supervisor:* ${data.sv.nama}\n` +
-      `🕐 *Waktu:* ${data.sv.time}\n` +
-      `${data.sv.note ? `📝 *Catatan:* ${data.sv.note}\n` : ''}` +
-      `\n✅ Anda diizinkan untuk memulai pekerjaan. Utamakan keselamatan!\n\n` +
-      `🔗 *Detail Laporan:*\n${shortUrl}\n\n` +
+      `Checklist safety Anda telah \uD83D\uDD12 *DISETUJUI (APPROVED)* oleh supervisor.\n\n` +
+      `\uD83D\uDC68\u200D\uD83D\uDCBC *Supervisor:* ${data.sv.nama}\n` +
+      `\u23F0 *Waktu:* ${data.sv.time}\n` +
+      `${data.sv.note ? `\uD83D\uDCDD *Catatan:* ${data.sv.note}\n` : ''}` +
+      `\n\u2705 Anda diizinkan untuk memulai pekerjaan. Utamakan keselamatan!\n\n` +
+      `\uD83D\uDD17 *Detail Laporan:*\n${shortUrl}\n\n` +
       `_Salam Safety,_\n*Pausbiru Safety*`
-    : `❌ *SAFETY CHECKLIST DITOLAK*\n\n` +
+    : `\u274C *SAFETY CHECKLIST DITOLAK*\n\n` +
       `Halo *${data.n}*,\n` +
-      `Mohon maaf, Checklist safety Anda ⛔ *DITOLAK (REJECTED)* oleh supervisor.\n\n` +
-      `👨‍💼 *Supervisor:* ${data.sv.nama}\n` +
-      `⚠️ *Alasan:* ${data.sv.note}\n` +
-      `🕐 *Waktu:* ${data.sv.time}\n` +
-      `\n🛑 Harap hentikan pekerjaan, lengkapi kekurangan safety sesuai catatan, dan kirim ulang checklist Anda.\n\n` +
-      `🔗 *Detail Laporan:*\n${shortUrl}\n\n` +
+      `Mohon maaf, Checklist safety Anda \u26D4 *DITOLAK (REJECTED)* oleh supervisor.\n\n` +
+      `\uD83D\uDC68\u200D\uD83D\uDCBC *Supervisor:* ${data.sv.nama}\n` +
+      `\u26A0\uFE0F *Alasan:* ${data.sv.note}\n` +
+      `\u23F0 *Waktu:* ${data.sv.time}\n` +
+      `\n\uD83D\uDED1 Harap hentikan pekerjaan, lengkapi kekurangan safety sesuai catatan, dan kirim ulang checklist Anda.\n\n` +
+      `\uD83D\uDD17 *Detail Laporan:*\n${shortUrl}\n\n` +
       `_Terima kasih,_\n*Pausbiru Safety*`;
 
-  const hzText = (data.hz || []).map(h => `• ${h.name}\n  🛡️ ${h.control}`).join('\n');
+  const hzText = (data.hz || []).map(h => `• ${h.name}\n  \uD83D\uDEE1\uFE0F ${h.control}`).join('\n');
   const ctText = (data.ct || []).length > 0 ? data.ct.join(', ') : 'Tidak ada';
 
   const hseMsg =
-    `📋 *LAPORAN SAFETY CHECKLIST*\n` +
-    `Status: *${isApproved ? '✅ APPROVED' : '❌ REJECTED'}*\n\n` +
+    `\uD83D\uDCCB *LAPORAN SAFETY CHECKLIST*\n` +
+    `Status: *${isApproved ? '\u2705 APPROVED' : '\u274C REJECTED'}*\n\n` +
     `━━━━━━━━━━━━━━━━━━━━\n` +
-    `👷 *DATA PEKERJA*\n` +
+    `\uD83D\uDC77 *DATA PEKERJA*\n` +
     `Nama     : ${data.n}\n` +
     `ID       : ${data.nid}\n` +
     `No WA    : ${data.p}\n` +
@@ -1478,26 +1382,25 @@ function kirimNotifikasiKeWorker(data){
     `Lokasi   : ${data.l}\n` +
     `Tanggal  : ${data.tgl} | ${data.jam}\n\n` +
     `━━━━━━━━━━━━━━━━━━━━\n` +
-    `📝 *PEKERJAAN*\n` +
+    `\uD83D\uDCDD *PEKERJAAN*\n` +
     `${data.job}\n\n` +
     `━━━━━━━━━━━━━━━━━━━━\n` +
-    `⚠️ *POTENSI BAHAYA*\n` +
+    `\u26A0\uFE0F *POTENSI BAHAYA*\n` +
     `${hzText || 'Tidak ada'}\n\n` +
     `━━━━━━━━━━━━━━━━━━━━\n` +
-    `🛡️ *APD DIGUNAKAN*\n` +
+    `\uD83D\uDEE1\uFE0F *APD DIGUNAKAN*\n` +
     `${ctText}\n\n` +
     `━━━━━━━━━━━━━━━━━━━━\n` +
-    `👨‍💼 *VERIFIKASI SUPERVISOR*\n` +
+    `\uD83D\uDC68\u200D\uD83D\uDCBC *VERIFIKASI SUPERVISOR*\n` +
     `Nama     : ${data.sv.nama}\n` +
-    `Status   : ${isApproved ? '✅ DISETUJUI' : '❌ DITOLAK'}\n` +
+    `Status   : ${isApproved ? '\u2705 DISETUJUI' : '\u274C DITOLAK'}\n` +
     `${data.sv.note ? `Catatan  : ${data.sv.note}\n` : ''}` +
     `Waktu    : ${data.sv.time}\n\n` +
-    `🔗 *Detail Laporan:*\n${shortUrl}\n\n` +
+    `\uD83D\uDD17 *Detail Laporan:*\n${shortUrl}\n\n` +
     `*Pausbiru Safety*`;
 
   window._waWorkerLink = `https://wa.me/${workerWA}?text=${encodeURIComponent(workerMsg)}`;
   window._waHSELink    = `https://wa.me/${CONFIG.HSE_WA}?text=${encodeURIComponent(hseMsg)}`;
-}
   
 /* ============================================================
    DONE / RESULT VIEW (BEBAS TOMBOL UNTUK PEKERJA)
@@ -1926,23 +1829,23 @@ async function submitChecklist(){
   hideProgress();
 
   /* Buat pesan WA supervisor */
-  const hzText = data.hz.map(h => `• ${h.name}\n  🛡️ ${h.control}`).join('\n');
+  const hzText = data.hz.map(h => `• ${h.name}\n  \uD83D\uDEE1\uFE0F ${h.control}`).join('\n');
   const ctText = data.ct.length > 0 ? data.ct.join(', ') : 'Tidak ada';
 
   const msg =
-    `📋 *SAFETY PRE-START CHECK* \n\n` +
+    `\uD83D\uDCCB *SAFETY PRE-START CHECK* \n\n` +
     `Halo Bapak *${data.spv_name}*,\n` +
     `Seorang pekerja telah mensubmit *Daily Safety Checklist* dan saat ini menunggu verifikasi (Approval) dari Anda.\n\n` +
-    `👷 *Nama Pekerja:* ${data.n}\n` +
-    `🪪 *ID Pekerja:* ${data.nid}\n` +
-    `💼 *Jabatan:* ${data.pt}\n` +
-    `📍 *Area / Lokasi:* ${data.l}\n` +
-    `📅 *Tanggal:* ${data.tgl} | ⏰ ${data.jam}\n\n` +
-    `🛠️ *Jenis Pekerjaan:*\n${data.job}\n\n` +
-    `⚠️ *Potensi Bahaya:*\n${hzText}\n\n` +
-    `🛡️ *APD:* ${ctText}\n\n` +
+    `\uD83D\uDC77 *Nama Pekerja:* ${data.n}\n` +
+    `\uD83E\uDEAA *ID Pekerja:* ${data.nid}\n` +
+    `\uD83D\uDCBC *Jabatan:* ${data.pt}\n` +
+    `\uD83D\uDCCD *Area / Lokasi:* ${data.l}\n` +
+    `\uD83D\uDCC5 *Tanggal:* ${data.tgl} | \u23F0 ${data.jam}\n\n` +
+    `\uD83D\uDEE0\uFE0F *Jenis Pekerjaan:*\n${data.job}\n\n` +
+    `\u26A0\uFE0F *Potensi Bahaya:*\n${hzText}\n\n` +
+    `\uD83D\uDEE1\uFE0F *APD:* ${ctText}\n\n` +
     `Mohon luangkan waktu sebentar untuk mengecek kelengkapan dan memverifikasi dokumen tersebut melalui link di bawah ini:\n` +
-    `🔗 ${vUrl}\n\n` +
+    `\uD83D\uDD17 ${vUrl}\n\n` +
     `_Terima kasih,_\n*Pausbiru Safety*`;
 
       localStorage.removeItem('safetyDraft');
