@@ -19,6 +19,7 @@
     label { display: block; font-size: 0.88rem; color: #374151; margin-bottom: 6px; font-weight: 600; margin-top: 15px; }
     input, textarea, select { width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; font-family: inherit; }
     input:focus, textarea:focus, select:focus { outline: none; border-color: #ea580c; }
+    textarea:disabled { background: #f1f5f9; color: #475569; font-weight: 600; border-color: #cbd5e1; }
     
     /* PEWARNAAN DROPDOWN RISIKO */
     select#pRisiko option[value="LOW"] { color: #10b981; font-weight: bold; }
@@ -34,6 +35,7 @@
     .btn-wa { background: #25d366; color: #fff; }
     .btn-hse-ok { background: #16a34a; color: #fff; }
     .btn-hse-reject { background: #dc2626; color: #fff; }
+    .btn-print { background: #334155; color: #fff; margin-bottom: 10px; }
     .btn-back { background: #f1f5f9; color: #475569; margin-top: 10px; }
     
     .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 999; align-items: center; justify-content: center; }
@@ -42,9 +44,18 @@
 
     .target-info { font-size: 0.8rem; color: #64748b; margin-top: 5px; font-weight: 500; }
     .badge-risk { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; color: white; }
-    .risk-HIGH { background: #dc2626; } .risk-MEDIUM { background: #f59e0b; } .risk-LOW { background: #10b981; }
+    .risk-HIGH { background: #dc2626; } .risk-MEDIUM { background: #f59e0b; } .risk-LOW { background: #10b981; } .risk-N { background: #16a34a; }
 
     .footer { text-align: center; padding: 20px; font-size: 0.85rem; color: #64748b; border-top: 1px solid #e2e8f0; margin-top: 20px; line-height: 1.6; }
+
+    /* PENGATURAN CETAK PDF */
+    @media print {
+      body { background: #fff; padding: 0; }
+      .container { box-shadow: none; max-width: 100%; border-radius: 0; }
+      .btn, .footer { display: none !important; }
+      textarea { border: 1px solid #e2e8f0; resize: none; background: transparent; }
+      .header, .badge-risk, .badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
   </style>
 </head>
 <body>
@@ -226,7 +237,7 @@
   <div id="viewHSE" style="display:none;">
     <div class="header" style="background: linear-gradient(135deg, #0f172a 0%, #334155 100%);">
       <h1>⛑️ PAUSBIRU SAFETY</h1>
-      <p>Hazard Report - Verifikasi HSE</p>
+      <p>Hazard Report - HSE Verification</p>
       <div class="badge" id="dateDisplayHSE">Loading...</div>
     </div>
     
@@ -250,7 +261,7 @@
       </div>
 
       <!-- KARTU 2: PERBAIKAN SPV -->
-      <div style="background:#f0fdf4; border:2px solid #bbf7d0; padding:15px; border-radius:12px; margin-bottom:20px;">
+      <div style="background:#f0fdf4; border:2px solid #bbf7d0; padding:15px; border-radius:12px; margin-bottom:20px;" id="kartuPerbaikanSPV">
         <h3 style="font-size:1rem; color:#166534; margin-bottom:10px;">🛠️ TINDAKAN SUPERVISOR</h3>
         <p style="font-size:0.85rem; color:#475569;"><strong>SPV PIC:</strong> <span id="hSpv"></span></p>
         <p style="font-size:0.85rem; color:#475569; margin-bottom:5px;"><strong>Catatan SPV:</strong> <span id="hCatatanSPV"></span></p>
@@ -260,8 +271,10 @@
       <label style="color:#0f172a;">Catatan Verifikasi (HSE) *</label>
       <textarea id="hseCatatan" rows="2" placeholder="Ketik alasan jika direject, atau catatan closing..."></textarea>
       
-      <button class="btn btn-hse-ok" style="margin-bottom:10px;" onclick="submitVerify('CLOSED')">✅ APPROVE (Selesai & Tutup Kasus)</button>
-      <button class="btn btn-hse-reject" onclick="submitVerify('REJECTED')">❌ REJECT (Tolak Perbaikan)</button>
+      <!-- TOMBOL AKAN DISESUAIKAN BERDASARKAN STATUS -->
+      <button class="btn btn-print" id="btnCetakPDF" onclick="window.print()" style="display:none;">🖨️ Cetak Laporan (PDF)</button>
+      <button class="btn btn-hse-ok" id="btnApprove" style="margin-bottom:10px;" onclick="submitVerify('CLOSED')">✅ APPROVE (Selesai & Tutup Kasus)</button>
+      <button class="btn btn-hse-reject" id="btnReject" onclick="submitVerify('REJECTED')">❌ REJECT (Tolak Perbaikan)</button>
     </div>
   </div>
 
@@ -275,8 +288,8 @@
   </div>
 
   <div class="footer">
-    Safety Starts With Me © 2026 | v3.8<br>
-    <small>Powered by Pausbiru7</small>
+    Safety Starts With Me © 2026<br>
+    <small>Powered by <strong>Pausbiru7</strong></small>
   </div>
 
 </div>
@@ -496,7 +509,6 @@
     const spvData = spvRaw.split('|'); const d = new Date(); 
     const formatTargetWA = (targetDate !== "-") ? (() => { let t = targetDate.split('-'); return `${t[2]}/${t[1]}/${t[0]}`; })() : "-";
     
-    // PEMBUATAN ID LANGSUNG DI HP
     const generatedId = 'HZD-' + new Date().getTime();
 
     const payload = { 
@@ -509,7 +521,6 @@
     document.getElementById('loadMsg').innerText = "Menyimpan...";
 
     try {
-      // MENGGUNAKAN MODE NO-CORS ANTI CRASH
       await fetch(GAS_URL, { 
           method: 'POST', 
           mode: 'no-cors',
@@ -542,7 +553,6 @@
   // ================= 2. AMBIL DATA UNTUK SPV & HSE =================
   async function loadHazardData(id, mode) {
     document.getElementById('loading').style.display = 'flex';
-    // PESAN LOADING DIPERJELAS AGAR USER MENUNGGU COLD START SERVER GOOGLE
     document.getElementById('loadMsg').innerHTML = "Menyambungkan Server...<br><small>Mohon tunggu beberapa detik</small>";
     try {
       const res = await fetch(GAS_URL, { 
@@ -577,16 +587,31 @@
         } else if (mode === 'hse') {
           document.getElementById('hLblId').innerText = id;
           document.getElementById('hLblRisk').innerText = d.risiko;
-          document.getElementById('hLblRisk').className = 'badge-risk risk-' + d.risiko;
+          document.getElementById('hLblRisk').className = d.risiko === 'N/A' ? 'badge-risk risk-N' : 'badge-risk risk-' + d.risiko;
           document.getElementById('hPelapor').innerText = d.pelapor;
           document.getElementById('hLokasi').innerText = d.lokasi;
           document.getElementById('hKlasifikasi').innerText = klasifikasiFull;
           document.getElementById('hDesc').innerText = d.deskripsi;
           document.getElementById('hSaran').innerText = d.saran || "-";
           document.getElementById('hImgAwal').src = d.fotoUrl;
-          document.getElementById('hSpv').innerText = d.spvNama;
-          document.getElementById('hCatatanSPV').innerText = d.perbaikan ? d.perbaikan.catatan : "-";
-          document.getElementById('hImgFix').src = d.fotoPerbaikanUrl;
+          
+          if(d.kategori === '🌟 Observasi Positif (Aman)') {
+             document.getElementById('kartuPerbaikanSPV').style.display = 'none';
+          } else {
+             document.getElementById('hSpv').innerText = d.spvNama;
+             document.getElementById('hCatatanSPV').innerText = d.perbaikan ? d.perbaikan.catatan : "-";
+             document.getElementById('hImgFix').src = d.fotoPerbaikanUrl;
+          }
+
+          // FITUR AUTO-LOCK & MUNCUL TOMBOL CETAK PDF
+          if(d.status === 'CLOSED' || d.status === 'REJECTED') {
+             document.getElementById('hseCatatan').value = d.verifikasiHSE ? d.verifikasiHSE.catatan : "";
+             document.getElementById('hseCatatan').disabled = true;
+             document.getElementById('btnApprove').style.display = 'none';
+             document.getElementById('btnReject').style.display = 'none';
+             document.getElementById('btnCetakPDF').style.display = 'block';
+          }
+
           document.getElementById('hseContent').style.display = 'block';
         }
       } else { alert("⚠️ Data tidak ditemukan."); }
@@ -604,7 +629,6 @@
     document.getElementById('loading').style.display = 'flex';
     document.getElementById('loadMsg').innerText = "Mengirim...";
     try {
-      // MENGGUNAKAN MODE NO-CORS ANTI CRASH
       await fetch(GAS_URL, { 
           method: 'POST', 
           mode: 'no-cors',
@@ -631,7 +655,6 @@
     document.getElementById('loadMsg').innerText = "Menyimpan Verifikasi...";
     
     try {
-      // MENGGUNAKAN MODE NO-CORS ANTI CRASH
       await fetch(GAS_URL, { 
           method: 'POST', 
           mode: 'no-cors',
