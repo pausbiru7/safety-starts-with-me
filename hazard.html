@@ -38,8 +38,10 @@
     .btn-print { background: #334155; color: #fff; margin-bottom: 10px; }
     .btn-back { background: #f1f5f9; color: #475569; margin-top: 10px; }
     
-    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 999; align-items: center; justify-content: center; }
-    .spinner { width: 40px; height: 40px; border: 4px solid #fff; border-top-color: #ea580c; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 10px; }
+    /* PROGRESS LOADING SEPERTI CHECKLIST */
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 9998; align-items: center; justify-content: center; }
+    .progress-box { background: #fff; border-radius: 20px; padding: 32px 28px; text-align: center; max-width: 320px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,.3); margin: 0 auto; }
+    .progress-box .spinner { width: 48px; height: 48px; border: 4px solid #e5e7eb; border-top-color: #ea580c; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     .target-info { font-size: 0.8rem; color: #64748b; margin-top: 5px; font-weight: 500; }
@@ -49,44 +51,39 @@
     .footer { text-align: center; padding: 20px; font-size: 0.85rem; color: #64748b; border-top: 1px solid #e2e8f0; margin-top: 20px; line-height: 1.6; }
 
     /* =========================================
-       PENGATURAN CETAK PDF (FORMAL 1 HALAMAN)
+       CSS KHUSUS UNTUK PRINT / EXPORT PDF
        ========================================= */
-    @media print {
-      @page { size: A4 portrait; margin: 12mm; }
-      body { background: #fff !important; padding: 0 !important; color: #000 !important; font-family: 'Times New Roman', Times, serif; }
-      .container { box-shadow: none !important; width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; border-radius: 0 !important; }
-      
-      .header, .btn, .footer { display: none !important; }
-      .print-header, .print-footer { display: block !important; }
-      
-      .print-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
-      .print-header h1 { font-size: 22px; margin: 0; color: #000; letter-spacing: 1px; }
-      .print-header p { font-size: 13px; margin: 5px 0 0 0; font-weight: bold; color: #333; text-transform: uppercase; }
-      
-      .section { padding: 0 !important; }
-      div[style*="padding:15px"] { padding: 10px !important; margin-bottom: 12px !important; border: 1px solid #000 !important; background: #fff !important; border-radius: 0 !important; page-break-inside: avoid; }
-      
-      h3 { font-size: 14px !important; margin-bottom: 8px !important; color: #000 !important; border-bottom: 1px solid #000; padding-bottom: 4px; }
-      p { font-size: 12px !important; margin-bottom: 4px !important; color: #000 !important; }
-      strong { color: #000 !important; }
-      
-      #hImgAwal, #hImgFix { max-height: 180px !important; width: auto !important; display: block; margin: 8px auto 0 !important; border: 1px solid #000 !important; border-radius: 0 !important; }
-      
-      label { font-size: 12px !important; color: #000 !important; margin-top: 10px !important; margin-bottom: 4px !important; font-weight: bold; }
-      #hseCatatan { border: 1px solid #000 !important; background: #fff !important; color: #000 !important; resize: none; font-size: 12px !important; padding: 6px !important; border-radius: 0 !important; height: auto !important; min-height: 50px; }
-      
-      .badge-risk { border: 1px solid #000 !important; color: #000 !important; background: #fff !important; padding: 3px 8px !important; border-radius: 0 !important; }
+    .print-only { display: none; } 
 
-      .print-footer { text-align: center; font-size: 10px; color: #555; border-top: 1px solid #000; padding-top: 6px; margin-top: 15px; font-style: italic; }
+    @media print {
+      @page { margin: 15mm; } 
+      body { background: #fff !important; padding: 0 !important; font-size: 12px; color: #000; font-family: 'Segoe UI', Arial, sans-serif; }
+      .container { box-shadow: none !important; max-width: 100% !important; border-radius: 0 !important; margin: 0 !important; }
+      .header, .footer, .btn, #btnKirimWA, #btnKirimWaHse { display: none !important; }
+      
+      .section { border: none !important; padding: 0 !important; }
+      div[style*="background:#fef2f2"], div[style*="background:#f0fdf4"] { border: 1px solid #000 !important; background: #fff !important; padding: 15px !important; margin-bottom: 15px !important; border-radius: 0 !important; page-break-inside: avoid; }
+      
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+      .print-only { display: flex !important; width: 100%; justify-content: space-between; align-items: flex-end; }
+      #printHeader { border-bottom: 2px solid #ea580c; padding-bottom: 12px; margin-bottom: 20px; }
+      #printHeader h2 { margin: 0; font-size: 1.5rem; color: #ea580c; }
+      #printHeader p { margin: 0; font-size: 0.85rem; color: #555; }
+      #printFooter { border-top: 1px solid #ccc; padding-top: 8px; margin-top: 30px; font-size: 0.8rem; color: #666; font-weight: bold; }
+
+      img { max-height: 200px !important; width: auto !important; border: 1px solid #ccc !important; }
+      textarea { border: 1px solid #ccc !important; background: #fff !important; resize: none; min-height: 60px; color: #000 !important; }
     }
   </style>
 </head>
 <body>
 
 <div class="overlay" id="loading">
-  <div style="text-align:center; color:white; font-weight:bold;">
-    <div class="spinner" id="spinIcon"></div>
-    <p id="loadMsg" style="line-height: 1.4;">Memproses...</p>
+  <div class="progress-box">
+    <div class="spinner"></div>
+    <p id="progressMsg" style="color:#1a5276; font-weight:800; margin-bottom:5px;">Memproses...</p>
+    <small id="progressSub" style="color:#6b7280;">Mohon tunggu sebentar</small>
   </div>
 </div>
 
@@ -265,10 +262,17 @@
     </div>
     
     <div class="section" id="hseContent" style="display:none;">
+      
       <!-- HEADER KHUSUS CETAK PDF -->
-      <div class="print-header" style="display: none;">
-        <h1>⛑️ PAUSBIRU SAFETY</h1>
-        <p>Hazard & BBS Observation Report</p>
+      <div id="printHeader" class="print-only">
+        <div>
+          <h2>⛑️ PAUSBIRU SAFETY</h2>
+          <p>Laporan Hazard & BBS Observation</p>
+        </div>
+        <div style="text-align:right;">
+          <p id="printDateTime" style="font-weight:bold; color:#000;"></p>
+          <p>ID: <span id="printHzId"></span></p>
+        </div>
       </div>
 
       <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
@@ -300,16 +304,17 @@
       <label style="color:#0f172a;">Catatan Verifikasi (HSE) *</label>
       <textarea id="hseCatatan" rows="2" placeholder="Ketik alasan jika direject, atau catatan closing..."></textarea>
       
-      <!-- FOOTNOTE KHUSUS CETAK PDF -->
-      <div class="print-footer" style="display: none;">
-        Safety Starts With Me © 2026 - Pausbiru Safety System<br>
-        * Dokumen ini sah dan telah diverifikasi secara digital oleh Tim HSE.
-      </div>
-
       <!-- TOMBOL AKAN DISESUAIKAN BERDASARKAN STATUS -->
-      <button class="btn btn-print" id="btnCetakPDF" onclick="window.print()" style="display:none; margin-top: 15px;">🖨️ Cetak Laporan (PDF)</button>
+      <button class="btn btn-print" id="btnCetakPDF" onclick="cetakPDF()" style="display:none; margin-top: 15px;">🖨️ Cetak Laporan (PDF)</button>
       <button class="btn btn-hse-ok" id="btnApprove" style="margin-bottom:10px;" onclick="submitVerify('CLOSED')">✅ APPROVE (Selesai & Tutup Kasus)</button>
       <button class="btn btn-hse-reject" id="btnReject" onclick="submitVerify('REJECTED')">❌ REJECT (Tolak Perbaikan)</button>
+      <button class="btn btn-back" id="btnKembali" onclick="location.href='index.html'" style="display:none;">🔄 Kembali ke Beranda</button>
+      
+      <!-- FOOTER KHUSUS CETAK PDF -->
+      <div id="printFooter" class="print-only">
+        <span>Safety Starts With Me © 2026 | Pausbiru Safety</span>
+        <span>Dokumen Resmi K3</span>
+      </div>
     </div>
   </div>
 
@@ -324,7 +329,7 @@
 
   <div class="footer">
     Safety Starts With Me © 2026<br>
-    <small>Powered by <strong>Pausbiru7</strong></small>
+    <small>Powered by <strong>Pausbiru Safety</strong></small>
   </div>
 
 </div>
@@ -343,6 +348,43 @@
     { name:"Muh Yusuf", title:"Project Controller", wa:"6285399450821" },
     { name:"Adiyo A", title:"QA/QC Officer", wa:"6282257449322" }
   ];
+
+  /* 🚀 JARINGAN TERCEPAT (ANTI-ERROR) SEPERTI DI CHECKLIST */
+  async function postToGAS(payload){
+    const MAX_RETRY = 3; 
+    for(let attempt = 1; attempt <= MAX_RETRY; attempt++){
+      try {
+        const fetchOptions = {
+          method  : 'POST',
+          redirect: 'follow',
+          headers : {'Content-Type': 'text/plain;charset=utf-8'},
+          body    : JSON.stringify(payload) 
+        };
+        const res = await fetch(GAS_URL, fetchOptions);
+        const text = await res.text();
+        try {
+          return JSON.parse(text);
+        } catch(e) {
+          throw new Error("Respon server bukan data JSON.");
+        }
+      } catch(err) {
+        if (attempt === MAX_RETRY) {
+          throw new Error("Koneksi ditolak / sinyal tidak stabil. Pastikan sinyal kuat.");
+        }
+        await new Promise(r => setTimeout(r, 1500 * attempt));
+      }
+    }
+  }
+
+  function showProgress(msg, sub){
+    document.getElementById('progressMsg').textContent = msg || 'Memproses...';
+    document.getElementById('progressSub').textContent = sub || 'Mohon tunggu sebentar';
+    document.getElementById('loading').style.display = 'flex';
+  }
+
+  function hideProgress(){
+    document.getElementById('loading').style.display = 'none';
+  }
 
   document.addEventListener("DOMContentLoaded", () => {
     const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -368,7 +410,7 @@
       document.getElementById('viewPelapor').style.display = 'none';
       document.getElementById('viewSPV').style.display = 'block';
       loadHazardData(currentHzId, 'spv');
-    } else if(mode === 'hse' && currentHzId) {
+    } else if((mode === 'hse' || mode === 'view') && currentHzId) {
       document.getElementById('viewPelapor').style.display = 'none';
       document.getElementById('viewHSE').style.display = 'block';
       loadHazardData(currentHzId, 'hse');
@@ -387,28 +429,22 @@
       wKlasifikasi.style.display = 'none'; 
       wRisikoSaran.style.display = 'none';
       wSaranSPV.style.display = 'none';
-      
       document.getElementById('pRisiko').value = '';
       document.getElementById('pTarget').value = '';
       document.getElementById('pSaran').value = '-';
       document.getElementById('pSpv').value = 'Tidak Perlu SPV|0000';
-      
       lblDeskripsi.innerHTML = 'Tindakan / Kondisi Aman yang Ditemukan *';
       document.getElementById('pDeskripsi').placeholder = 'Sebutkan siapa yang bekerja & tindakan aman apa yang dilakukan...';
-      
       btnSubmit.innerHTML = 'Simpan Laporan Positive 📝';
       btnSubmit.style.background = '#16a34a';
     } else {
       wKlasifikasi.style.display = 'block'; 
       wRisikoSaran.style.display = 'block';
       wSaranSPV.style.display = 'block';
-      
       document.getElementById('pSaran').value = '';
       document.getElementById('pSpv').value = '';
-      
       lblDeskripsi.innerHTML = 'Deskripsi Temuan Bahaya *';
       document.getElementById('pDeskripsi').placeholder = 'Jelaskan apa bahaya yang Anda lihat...';
-      
       btnSubmit.innerHTML = 'Kirim & Lapor via WA 📱';
       btnSubmit.style.background = '#ea580c';
       updateTargetDateRange();
@@ -457,10 +493,7 @@
     targetInput.min = minStr;
     targetInput.max = maxStr;
 
-    if(targetInput.value && (targetInput.value > maxStr || targetInput.value < minStr)) {
-        targetInput.value = ''; 
-    }
-
+    if(targetInput.value && (targetInput.value > maxStr || targetInput.value < minStr)) { targetInput.value = ''; }
     hint.innerHTML = `⏳ SLA Risiko ${risiko}: <b>${pesanHint}</b>`;
   }
 
@@ -477,8 +510,7 @@
   function compressImage(event, previewId, hiddenId) {
     const file = event.target.files[0];
     if(!file) return;
-    document.getElementById('loading').style.display = 'flex';
-    document.getElementById('loadMsg').innerText = "Memproses Foto...";
+    showProgress('Memproses Foto...', 'Menyesuaikan resolusi');
     const reader = new FileReader();
     reader.onload = (e) => {
       const img = new Image();
@@ -493,7 +525,7 @@
         document.getElementById(previewId).src = base64Str;
         document.getElementById(previewId).style.display = 'block';
         document.getElementById(hiddenId).value = base64Str;
-        document.getElementById('loading').style.display = 'none';
+        hideProgress();
       }
       img.src = e.target.result;
     }
@@ -522,9 +554,7 @@
     if(kategori !== '🌟 Observasi Positif (Aman)') {
         if(jenis === '🚧 Lainnya') {
             const spesifik = document.getElementById('pJenisLainnya').value.trim();
-            if(!spesifik) {
-                alert("⚠️ Sebutkan spesifikasi 'Jenis Bahaya Lainnya' pada kotak yang tersedia!"); return;
-            }
+            if(!spesifik) { alert("⚠️ Sebutkan spesifikasi 'Jenis Bahaya Lainnya' pada kotak yang tersedia!"); return; }
             jenis = "🚧 " + spesifik; 
         }
 
@@ -545,70 +575,50 @@
     const formatTargetWA = (targetDate !== "-") ? (() => { let t = targetDate.split('-'); return `${t[2]}/${t[1]}/${t[0]}`; })() : "-";
     
     const generatedId = 'HZD-' + new Date().getTime();
-
     const payload = { 
       action: 'submitHazard', rowId: generatedId, pelapor: pelapor, lokasi: lokasiFull, kategori: kategori, jenisBahaya: jenis,
       risiko: risiko, targetDate: formatTargetWA, deskripsi: deskripsi, saran: saran, fotoBase64: foto, 
       spvNama: spvData[0], spvWa: spvData[1], tgl: d.toLocaleDateString('id-ID'), jam: d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}) 
     };
 
-    document.getElementById('loading').style.display = 'flex';
-    document.getElementById('loadMsg').innerText = "Menyimpan...";
+    showProgress('Menyimpan Laporan...', 'Mohon tunggu sebentar');
 
     try {
-      await fetch(GAS_URL, { 
-          method: 'POST', 
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload) 
-      });
-
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('viewPelapor').style.display = 'none';
-      document.getElementById('viewSukses').style.display = 'block';
-        
-      if(kategori === '🌟 Observasi Positif (Aman)') {
-          document.getElementById('suksesIcon').innerText = '🌟';
-          document.getElementById('suksesTitle').innerText = 'Observasi Positif Tersimpan!';
-          document.getElementById('suksesTitle').style.color = '#16a34a';
-          document.getElementById('suksesDesc').innerText = 'Terima kasih telah mengapresiasi praktik kerja aman. Laporan ini telah terekam otomatis di database dan dikirimkan ke Tim HSE.';
-          document.getElementById('btnKirimWA').style.display = 'none';
-      } else {
-          const linkSPV = BASE_URL + "hazard.html?id=" + generatedId + "&mode=spv";
-          const msg = `⚠️ *PAUSBIRU SAFETY - HAZARD REPORT* ⚠️\n\nBapak *${spvData[0]}*,\nSaya menemukan kondisi/tindakan tidak aman di lapangan.\n\n📍 Lokasi: ${lokasiFull}\n🏷️ Klasifikasi: ${kategori}\n⚠️ Jenis Bahaya: ${jenis}\n❗ Risiko: *${risiko}*\n⏰ *Target Selesai: ${formatTargetWA}*\n📋 Detail: ${deskripsi}\n💡 Saran: ${saran}\n\nMohon segera ditindaklanjuti. Klik link di bawah ini untuk mengunggah foto bukti perbaikan:\n🔗 ${linkSPV}\n\n_Pausbiru Safety System_`;
+      const resData = await postToGAS(payload);
+      hideProgress();
+      
+      if(resData && resData.ok) {
+        document.getElementById('viewPelapor').style.display = 'none';
+        document.getElementById('viewSukses').style.display = 'block';
           
-          const waUrl = `https://wa.me/${spvData[1]}?text=${encodeURIComponent(msg)}`;
-          const btnWa = document.getElementById('btnKirimWA');
-          btnWa.onclick = function() { window.open(waUrl, '_blank'); this.innerHTML = "✅ Pesan Terbuka"; this.style.background = "#94a3b8"; };
-          window.open(waUrl, '_blank');
-      }
-    } catch(err) { document.getElementById('loading').style.display = 'none'; alert("Gagal koneksi. Cek jaringan internet Anda."); }
+        if(kategori === '🌟 Observasi Positif (Aman)') {
+            document.getElementById('suksesIcon').innerText = '🌟';
+            document.getElementById('suksesTitle').innerText = 'Observasi Positif Tersimpan!';
+            document.getElementById('suksesTitle').style.color = '#16a34a';
+            document.getElementById('suksesDesc').innerText = 'Terima kasih telah mengapresiasi praktik kerja aman. Laporan ini telah terekam otomatis di database dan dikirimkan ke Tim HSE.';
+            document.getElementById('btnKirimWA').style.display = 'none';
+        } else {
+            const linkSPV = BASE_URL + "hazard.html?id=" + generatedId + "&mode=spv";
+            // PESAN WA TANPA JUDUL "PAUSBIRU SAFETY" & FOOTNOTE UNIFIED
+            const msg = `⚠️ *MOHON TINDAK LANJUT HAZARD* ⚠️\n\nBapak *${spvData[0]}*,\nSaya menemukan kondisi/tindakan tidak aman di lapangan.\n\n📍 Lokasi: ${lokasiFull}\n🏷️ Klasifikasi: ${kategori}\n⚠️ Jenis Bahaya: ${jenis}\n❗ Risiko: *${risiko}*\n⏰ *Target Selesai: ${formatTargetWA}*\n📋 Detail: ${deskripsi}\n💡 Saran: ${saran}\n\nMohon segera ditindaklanjuti. Klik link di bawah ini untuk mengunggah foto bukti perbaikan:\n🔗 ${linkSPV}\n\n_Pausbiru Safety_`;
+            
+            const waUrl = `https://wa.me/${spvData[1]}?text=${encodeURIComponent(msg)}`;
+            const btnWa = document.getElementById('btnKirimWA');
+            btnWa.onclick = function() { window.open(waUrl, '_blank'); this.innerHTML = "✅ Pesan Terbuka"; this.style.background = "#94a3b8"; };
+            window.open(waUrl, '_blank');
+        }
+      } else { alert("Gagal menyimpan ke server."); }
+    } catch(err) { hideProgress(); alert(err.message); }
   }
 
   // ================= 2. AMBIL DATA UNTUK SPV & HSE =================
   async function loadHazardData(id, mode) {
-    document.getElementById('loading').style.display = 'flex';
-    document.getElementById('loadMsg').innerHTML = "Membuka Database Server...<br><small>Normalnya butuh 3-5 detik</small>";
-    
+    showProgress('Membuka Server...', 'Mencari ID: ' + id);
     try {
-      const url = GAS_URL + "?action=getHazard&rowId=" + id;
-      const res = await fetch(url);
-      const rawText = await res.text();
-      
-      // PROTEKSI: Jika Google mengembalikan HTML karena Deploy belum diganti ke "New Version" atau "Anyone"
-      if(rawText.toLowerCase().includes("<!doctype html>") || rawText.toLowerCase().includes("<html")) {
-          document.getElementById('loading').style.display = 'none';
-          alert("⚠️ AKSES DITOLAK GOOGLE!\n\nIni terjadi karena Server Google masih mengeksekusi versi lama.\n\nSOLUSI:\n1. Buka Apps Script\n2. Klik Deploy -> Manage Deployments\n3. Klik Ikon Pensil (Edit)\n4. WAJIB ubah Version ke 'New version'\n5. Akses pastikan 'Anyone'.\n6. Klik Deploy.");
-          return;
-      }
+      const resData = await postToGAS({ action: 'getHazard', rowId: id });
+      hideProgress();
 
-      let resData;
-      try { resData = JSON.parse(rawText); } 
-      catch(e) { document.getElementById('loading').style.display = 'none'; alert("Gagal membaca respon server. Coba muat ulang halaman."); return; }
-
-      document.getElementById('loading').style.display = 'none';
-
-      if(resData.ok) {
+      if(resData && resData.ok) {
         const d = resData.data;
         loadedHazardData = d;
         const klasifikasiFull = (d.kategori || "-") + " - " + (d.jenisBahaya || "-");
@@ -625,8 +635,9 @@
           document.getElementById('lblSaran').innerText = d.saran || "-";
           document.getElementById('imgAwal').src = d.fotoUrl;
           document.getElementById('spvContent').style.display = 'block';
-        } else if (mode === 'hse') {
+        } else if (mode === 'hse' || mode === 'view') {
           document.getElementById('hLblId').innerText = id;
+          document.getElementById('printHzId').innerText = id;
           document.getElementById('hLblRisk').innerText = d.risiko;
           document.getElementById('hLblRisk').className = d.risiko === 'N/A' ? 'badge-risk risk-N' : 'badge-risk risk-' + d.risiko;
           document.getElementById('hPelapor').innerText = d.pelapor;
@@ -644,18 +655,19 @@
              document.getElementById('hImgFix').src = d.fotoPerbaikanUrl;
           }
 
-          if(d.status === 'CLOSED' || d.status === 'REJECTED') {
+          if(d.status === 'CLOSED' || d.status === 'REJECTED' || mode === 'view') {
              document.getElementById('hseCatatan').value = d.verifikasiHSE ? d.verifikasiHSE.catatan : "";
              document.getElementById('hseCatatan').disabled = true;
              document.getElementById('btnApprove').style.display = 'none';
              document.getElementById('btnReject').style.display = 'none';
              document.getElementById('btnCetakPDF').style.display = 'block';
+             document.getElementById('btnKembali').style.display = 'block';
           }
 
           document.getElementById('hseContent').style.display = 'block';
         }
       } else { alert("⚠️ Data tidak ditemukan."); }
-    } catch(err) { document.getElementById('loading').style.display = 'none'; alert("Gagal menarik data."); }
+    } catch(err) { hideProgress(); alert(err.message); }
   }
 
   // ================= 3. SUBMIT SPV =================
@@ -666,20 +678,16 @@
     
     const d = new Date();
     const payload = { action: 'resolveHazard', rowId: currentHzId, fotoPerbaikan: fotoFix, catatan: catatan, waktu: d.toLocaleDateString('id-ID') + ' ' + d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}) };
-    document.getElementById('loading').style.display = 'flex';
-    document.getElementById('loadMsg').innerText = "Mengirim...";
+    
+    showProgress('Mengirim Data...', 'Menyimpan bukti perbaikan');
     try {
-      await fetch(GAS_URL, { 
-          method: 'POST', 
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload) 
-      });
-      
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('viewSPV').style.display = 'none';
-      document.getElementById('viewSuksesSPV').style.display = 'block';
-    } catch(err) { document.getElementById('loading').style.display = 'none'; alert("Gagal koneksi."); }
+      const resData = await postToGAS(payload);
+      hideProgress();
+      if(resData && resData.ok){
+        document.getElementById('viewSPV').style.display = 'none';
+        document.getElementById('viewSuksesSPV').style.display = 'block';
+      } else { alert("Gagal menyimpan."); }
+    } catch(err) { hideProgress(); alert(err.message); }
   }
 
   // ================= 4. SUBMIT VERIFIKASI HSE =================
@@ -691,43 +699,47 @@
     const d = new Date();
     const payload = { action: 'verifyHazard', rowId: currentHzId, status: keputusan, catatan: catatan, waktu: d.toLocaleDateString('id-ID') + ' ' + d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}) };
     
-    document.getElementById('loading').style.display = 'flex';
-    document.getElementById('loadMsg').innerText = "Menyimpan Verifikasi...";
-    
+    showProgress('Menyimpan Verifikasi...', 'Koneksi ke server');
     try {
-      await fetch(GAS_URL, { 
-          method: 'POST', 
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload) 
-      });
+      const resData = await postToGAS(payload);
+      hideProgress();
+      
+      if(resData && resData.ok) {
+        document.getElementById('viewHSE').style.display = 'none';
+        document.getElementById('viewSuksesHSE').style.display = 'block';
 
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('viewHSE').style.display = 'none';
-      document.getElementById('viewSuksesHSE').style.display = 'block';
+        if(loadedHazardData) {
+          const spvWa = loadedHazardData.spvWa;
+          const spvNama = loadedHazardData.spvNama || "Supervisor";
+          const lokasi = loadedHazardData.lokasi || "-";
+          let msgWA = "";
 
-      if(loadedHazardData) {
-        const spvWa = loadedHazardData.spvWa;
-        const spvNama = loadedHazardData.spvNama || "Supervisor";
-        const lokasi = loadedHazardData.lokasi || "-";
-        let msgWA = "";
+          // FOOTNOTE UNIFIED
+          if(keputusan === 'CLOSED') {
+            msgWA = `✅ *VERIFIKASI HSE - APPROVED*\n\nHalo Bapak *${spvNama}*,\nTerima kasih, perbaikan hazard di *${lokasi}* telah kami verifikasi dan dinyatakan *SELESAI (CLOSED)*.\n\n📝 Catatan HSE: ${catatan}\n\n_Pausbiru Safety_`;
+          } else {
+            const linkSPV = BASE_URL + "hazard.html?id=" + currentHzId + "&mode=spv";
+            msgWA = `❌ *VERIFIKASI HSE - REJECTED*\n\nHalo Bapak *${spvNama}*,\nMohon maaf, perbaikan hazard di *${lokasi}* *DITOLAK* oleh HSE dan memerlukan perbaikan ulang.\n\n⚠️ Alasan/Catatan HSE: ${catatan}\n\nMohon segera ditindaklanjuti kembali (Upload Ulang) pada link berikut:\n🔗 ${linkSPV}\n\n_Pausbiru Safety_`;
+          }
 
-        if(keputusan === 'CLOSED') {
-          msgWA = `✅ *VERIFIKASI HSE - APPROVED*\n\nHalo Bapak *${spvNama}*,\nTerima kasih, perbaikan hazard di *${lokasi}* telah kami verifikasi dan dinyatakan *SELESAI (CLOSED)*.\n\n📝 Catatan HSE: ${catatan}\n\n_Pausbiru Safety System_`;
-        } else {
-          const linkSPV = BASE_URL + "hazard.html?id=" + currentHzId + "&mode=spv";
-          msgWA = `❌ *VERIFIKASI HSE - REJECTED*\n\nHalo Bapak *${spvNama}*,\nMohon maaf, perbaikan hazard di *${lokasi}* *DITOLAK* oleh HSE dan memerlukan perbaikan ulang.\n\n⚠️ Alasan/Catatan HSE: ${catatan}\n\nMohon segera ditindaklanjuti kembali (Upload Ulang) pada link berikut:\n🔗 ${linkSPV}\n\n_Pausbiru Safety System_`;
+          if(spvWa && spvWa.length > 5) {
+            const waUrl = `https://wa.me/${spvWa}?text=${encodeURIComponent(msgWA)}`;
+            const btnWaHse = document.getElementById('btnKirimWaHse');
+            btnWaHse.onclick = function() { window.open(waUrl, '_blank'); this.innerHTML = "✅ Pesan Terbuka"; this.style.background = "#94a3b8"; };
+          } else {
+            document.getElementById('btnKirimWaHse').style.display = 'none';
+          }
         }
+      } else { alert("Gagal menyimpan."); }
+    } catch(err) { hideProgress(); alert(err.message); }
+  }
 
-        if(spvWa && spvWa.length > 5) {
-          const waUrl = `https://wa.me/${spvWa}?text=${encodeURIComponent(msgWA)}`;
-          const btnWaHse = document.getElementById('btnKirimWaHse');
-          btnWaHse.onclick = function() { window.open(waUrl, '_blank'); this.innerHTML = "✅ Pesan Terbuka"; this.style.background = "#94a3b8"; };
-        } else {
-          document.getElementById('btnKirimWaHse').style.display = 'none';
-        }
-      }
-    } catch(err) { document.getElementById('loading').style.display = 'none'; alert("Gagal koneksi. Cek jaringan Anda."); }
+  // ================= 5. CETAK PDF =================
+  function cetakPDF() {
+    const d = new Date();
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+    document.getElementById('printDateTime').textContent = 'Dicetak: ' + d.toLocaleDateString('id-ID', options);
+    window.print();
   }
 </script>
 </body>
