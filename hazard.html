@@ -56,18 +56,13 @@
       body { background: #fff !important; padding: 0 !important; color: #000 !important; font-family: 'Times New Roman', Times, serif; }
       .container { box-shadow: none !important; width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; border-radius: 0 !important; }
       
-      /* Sembunyikan elemen Web UI (Header Gradasi, Tombol, Footer Web) */
       .header, .btn, .footer { display: none !important; }
-      
-      /* Tampilkan Print Header & Footer Formal */
       .print-header, .print-footer { display: block !important; }
       
-      /* Styling Header PDF */
       .print-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
       .print-header h1 { font-size: 22px; margin: 0; color: #000; letter-spacing: 1px; }
       .print-header p { font-size: 13px; margin: 5px 0 0 0; font-weight: bold; color: #333; text-transform: uppercase; }
       
-      /* Padatkan Konten (Anti Tumpah ke Halaman 2) */
       .section { padding: 0 !important; }
       div[style*="padding:15px"] { padding: 10px !important; margin-bottom: 12px !important; border: 1px solid #000 !important; background: #fff !important; border-radius: 0 !important; page-break-inside: avoid; }
       
@@ -75,17 +70,13 @@
       p { font-size: 12px !important; margin-bottom: 4px !important; color: #000 !important; }
       strong { color: #000 !important; }
       
-      /* Perkecil Gambar agar sangat presisi */
       #hImgAwal, #hImgFix { max-height: 180px !important; width: auto !important; display: block; margin: 8px auto 0 !important; border: 1px solid #000 !important; border-radius: 0 !important; }
       
-      /* Atur Textarea Catatan HSE */
       label { font-size: 12px !important; color: #000 !important; margin-top: 10px !important; margin-bottom: 4px !important; font-weight: bold; }
       #hseCatatan { border: 1px solid #000 !important; background: #fff !important; color: #000 !important; resize: none; font-size: 12px !important; padding: 6px !important; border-radius: 0 !important; height: auto !important; min-height: 50px; }
       
-      /* Badge Status/Risk */
       .badge-risk { border: 1px solid #000 !important; color: #000 !important; background: #fff !important; padding: 3px 8px !important; border-radius: 0 !important; }
 
-      /* Footnote PDF */
       .print-footer { text-align: center; font-size: 10px; color: #555; border-top: 1px solid #000; padding-top: 6px; margin-top: 15px; font-style: italic; }
     }
   </style>
@@ -597,12 +588,20 @@
   // ================= 2. AMBIL DATA UNTUK SPV & HSE =================
   async function loadHazardData(id, mode) {
     document.getElementById('loading').style.display = 'flex';
-    document.getElementById('loadMsg').innerHTML = "Menyambungkan Server...<br><small>Mohon tunggu beberapa detik</small>";
+    document.getElementById('loadMsg').innerHTML = "Membuka Database Server...<br><small>Normalnya butuh 3-5 detik</small>";
     
     try {
       const url = GAS_URL + "?action=getHazard&rowId=" + id;
       const res = await fetch(url);
       const rawText = await res.text();
+      
+      // PROTEKSI: Jika Google mengembalikan HTML karena Deploy belum diganti ke "New Version" atau "Anyone"
+      if(rawText.toLowerCase().includes("<!doctype html>") || rawText.toLowerCase().includes("<html")) {
+          document.getElementById('loading').style.display = 'none';
+          alert("⚠️ AKSES DITOLAK GOOGLE!\n\nIni terjadi karena Server Google masih mengeksekusi versi lama.\n\nSOLUSI:\n1. Buka Apps Script\n2. Klik Deploy -> Manage Deployments\n3. Klik Ikon Pensil (Edit)\n4. WAJIB ubah Version ke 'New version'\n5. Akses pastikan 'Anyone'.\n6. Klik Deploy.");
+          return;
+      }
+
       let resData;
       try { resData = JSON.parse(rawText); } 
       catch(e) { document.getElementById('loading').style.display = 'none'; alert("Gagal membaca respon server. Coba muat ulang halaman."); return; }
@@ -645,7 +644,6 @@
              document.getElementById('hImgFix').src = d.fotoPerbaikanUrl;
           }
 
-          // FITUR AUTO-LOCK & MUNCUL TOMBOL CETAK PDF
           if(d.status === 'CLOSED' || d.status === 'REJECTED') {
              document.getElementById('hseCatatan').value = d.verifikasiHSE ? d.verifikasiHSE.catatan : "";
              document.getElementById('hseCatatan').disabled = true;
