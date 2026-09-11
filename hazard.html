@@ -48,13 +48,45 @@
 
     .footer { text-align: center; padding: 20px; font-size: 0.85rem; color: #64748b; border-top: 1px solid #e2e8f0; margin-top: 20px; line-height: 1.6; }
 
-    /* PENGATURAN CETAK PDF */
+    /* =========================================
+       PENGATURAN CETAK PDF (FORMAL 1 HALAMAN)
+       ========================================= */
     @media print {
-      body { background: #fff; padding: 0; }
-      .container { box-shadow: none; max-width: 100%; border-radius: 0; }
-      .btn, .footer { display: none !important; }
-      textarea { border: 1px solid #e2e8f0; resize: none; background: transparent; }
-      .header, .badge-risk, .badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      @page { size: A4 portrait; margin: 12mm; }
+      body { background: #fff !important; padding: 0 !important; color: #000 !important; font-family: 'Times New Roman', Times, serif; }
+      .container { box-shadow: none !important; width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; border-radius: 0 !important; }
+      
+      /* Sembunyikan elemen Web UI (Header Gradasi, Tombol, Footer Web) */
+      .header, .btn, .footer { display: none !important; }
+      
+      /* Tampilkan Print Header & Footer Formal */
+      .print-header, .print-footer { display: block !important; }
+      
+      /* Styling Header PDF */
+      .print-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; }
+      .print-header h1 { font-size: 22px; margin: 0; color: #000; letter-spacing: 1px; }
+      .print-header p { font-size: 13px; margin: 5px 0 0 0; font-weight: bold; color: #333; text-transform: uppercase; }
+      
+      /* Padatkan Konten (Anti Tumpah ke Halaman 2) */
+      .section { padding: 0 !important; }
+      div[style*="padding:15px"] { padding: 10px !important; margin-bottom: 12px !important; border: 1px solid #000 !important; background: #fff !important; border-radius: 0 !important; page-break-inside: avoid; }
+      
+      h3 { font-size: 14px !important; margin-bottom: 8px !important; color: #000 !important; border-bottom: 1px solid #000; padding-bottom: 4px; }
+      p { font-size: 12px !important; margin-bottom: 4px !important; color: #000 !important; }
+      strong { color: #000 !important; }
+      
+      /* Perkecil Gambar agar sangat presisi */
+      #hImgAwal, #hImgFix { max-height: 180px !important; width: auto !important; display: block; margin: 8px auto 0 !important; border: 1px solid #000 !important; border-radius: 0 !important; }
+      
+      /* Atur Textarea Catatan HSE */
+      label { font-size: 12px !important; color: #000 !important; margin-top: 10px !important; margin-bottom: 4px !important; font-weight: bold; }
+      #hseCatatan { border: 1px solid #000 !important; background: #fff !important; color: #000 !important; resize: none; font-size: 12px !important; padding: 6px !important; border-radius: 0 !important; height: auto !important; min-height: 50px; }
+      
+      /* Badge Status/Risk */
+      .badge-risk { border: 1px solid #000 !important; color: #000 !important; background: #fff !important; padding: 3px 8px !important; border-radius: 0 !important; }
+
+      /* Footnote PDF */
+      .print-footer { text-align: center; font-size: 10px; color: #555; border-top: 1px solid #000; padding-top: 6px; margin-top: 15px; font-style: italic; }
     }
   </style>
 </head>
@@ -235,13 +267,19 @@
 
   <!-- ================= VIEW 5: VERIFIKASI HSE ================= -->
   <div id="viewHSE" style="display:none;">
-    <div class="header" style="background: linear-gradient(135deg, #0f172a 0%, #334155 100%);">
+    <div class="header">
       <h1>⛑️ PAUSBIRU SAFETY</h1>
       <p>Hazard Report - HSE Verification</p>
       <div class="badge" id="dateDisplayHSE">Loading...</div>
     </div>
     
     <div class="section" id="hseContent" style="display:none;">
+      <!-- HEADER KHUSUS CETAK PDF -->
+      <div class="print-header" style="display: none;">
+        <h1>⛑️ PAUSBIRU SAFETY</h1>
+        <p>Hazard & BBS Observation Report</p>
+      </div>
+
       <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
           <span style="font-weight:bold; color:#0f172a;" id="hLblId"></span>
           <span class="badge-risk" id="hLblRisk"></span>
@@ -249,7 +287,7 @@
 
       <!-- KARTU 1: TEMUAN AWAL -->
       <div style="background:#fef2f2; border:2px solid #fecaca; padding:15px; border-radius:12px; margin-bottom:15px;">
-        <h3 style="font-size:1rem; color:#991b1b; margin-bottom:10px;">🚨 KONDISI AWAL (Dari Pekerja)</h3>
+        <h3 style="font-size:1rem; color:#991b1b; margin-bottom:10px;">KONDISI AWAL (Dari Pekerja)</h3>
         <p style="font-size:0.85rem; color:#475569;"><strong>Pelapor:</strong> <span id="hPelapor"></span></p>
         <p style="font-size:0.85rem; color:#475569;"><strong>Lokasi:</strong> <span id="hLokasi"></span></p>
         <p style="font-size:0.85rem; color:#475569;"><strong>Klasifikasi:</strong> <span id="hKlasifikasi"></span></p>
@@ -262,7 +300,7 @@
 
       <!-- KARTU 2: PERBAIKAN SPV -->
       <div style="background:#f0fdf4; border:2px solid #bbf7d0; padding:15px; border-radius:12px; margin-bottom:20px;" id="kartuPerbaikanSPV">
-        <h3 style="font-size:1rem; color:#166534; margin-bottom:10px;">🛠️ TINDAKAN SUPERVISOR</h3>
+        <h3 style="font-size:1rem; color:#166534; margin-bottom:10px;">TINDAKAN SUPERVISOR</h3>
         <p style="font-size:0.85rem; color:#475569;"><strong>SPV PIC:</strong> <span id="hSpv"></span></p>
         <p style="font-size:0.85rem; color:#475569; margin-bottom:5px;"><strong>Catatan SPV:</strong> <span id="hCatatanSPV"></span></p>
         <img id="hImgFix" src="" style="width:100%; border-radius:8px; border:1px solid #4ade80;">
@@ -271,8 +309,14 @@
       <label style="color:#0f172a;">Catatan Verifikasi (HSE) *</label>
       <textarea id="hseCatatan" rows="2" placeholder="Ketik alasan jika direject, atau catatan closing..."></textarea>
       
+      <!-- FOOTNOTE KHUSUS CETAK PDF -->
+      <div class="print-footer" style="display: none;">
+        Safety Starts With Me © 2026 - Pausbiru Safety System<br>
+        * Dokumen ini sah dan telah diverifikasi secara digital oleh Tim HSE.
+      </div>
+
       <!-- TOMBOL AKAN DISESUAIKAN BERDASARKAN STATUS -->
-      <button class="btn btn-print" id="btnCetakPDF" onclick="window.print()" style="display:none;">🖨️ Cetak Laporan (PDF)</button>
+      <button class="btn btn-print" id="btnCetakPDF" onclick="window.print()" style="display:none; margin-top: 15px;">🖨️ Cetak Laporan (PDF)</button>
       <button class="btn btn-hse-ok" id="btnApprove" style="margin-bottom:10px;" onclick="submitVerify('CLOSED')">✅ APPROVE (Selesai & Tutup Kasus)</button>
       <button class="btn btn-hse-reject" id="btnReject" onclick="submitVerify('REJECTED')">❌ REJECT (Tolak Perbaikan)</button>
     </div>
@@ -553,11 +597,9 @@
   // ================= 2. AMBIL DATA UNTUK SPV & HSE =================
   async function loadHazardData(id, mode) {
     document.getElementById('loading').style.display = 'flex';
-    // 🚀 PESAN LOADING DIPERBARUI AGAR SPV BERSABAR MENUNGGU COLD-START GOOGLE
     document.getElementById('loadMsg').innerHTML = "Menyambungkan Server...<br><small>Mohon tunggu beberapa detik</small>";
     
     try {
-      // 🚀 MENGGUNAKAN GET METHOD AGAR 10X LEBIH CEPAT DAN ANTI-CORS ERROR
       const url = GAS_URL + "?action=getHazard&rowId=" + id;
       const res = await fetch(url);
       const rawText = await res.text();
