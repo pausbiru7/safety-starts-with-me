@@ -1352,39 +1352,130 @@ async function doApprove(){
 }
 window.doApprove = doApprove;
 
-    // 2. SETELAH BERHASIL, baru siapkan link WhatsApp untuk Pekerja & HSE
-    kconst st = isApproved ? 'app' : 'rej';
+async function doReject(){
+  const svNamaEl = document.getElementById('svNama');
+  const svNoteEl = document.getElementById('svNote');
+
+  const svNama = svNamaEl ? svNamaEl.value.trim() : '';
+  const svNote = svNoteEl ? svNoteEl.value.trim() : '';
+
+  if(!svNama){ showAlert('Masukkan nama supervisor terlebih dahulu'); return; }
+  if(!svNote){ showAlert('Berikan alasan penolakan terlebih dahulu'); return; }
+
+  const data = window.svData;
+  if(!data || !data.rowId){ 
+    showAlert('Data supervisor tidak ditemukan atau ID rusak. Buka ulang link verifikasi.'); 
+    return; 
+  }
+
+  data.sv = {
+    nama   : svNama,
+    status : 'REJECTED',
+    note   : svNote,
+    time   : formatIDDateTime(new Date()),
+    signUrl: ""
+  };
+
+  showProgress('📤 Mengirim Penolakan...', 'Menyimpan data ke server');
+  
+  try{
+    const res = await postToGAS({
+      action : 'respond',
+      rowId  : data.rowId,
+      status : 'REJECTED',
+      svname : svNama,
+      svnote : svNote,
+      svtime : data.sv.time,
+      svsign : ""
+    });
+
+    hideProgress();
+
+    if(res && res.ok === false){
+      throw new Error(res.error || 'Gagal merespon di server');
+    }
+
+    kirimNotifikasiKeWorker(data);
+    
+    const enc = LZ.compress(JSON.stringify(data));
+    showDone(enc, true);
+
+  }catch(e){
+    hideProgress();
+    showAlert('❌ Gagal memproses: ' + e.message);
+  }
+}
+window.doReject = doReject;
+
+/* ============================================================
+   NOTIFIKASI KE WORKER & HSE (BERTAHAP & AMAN)
+   ============================================================ */
+let _notifStep = 1;
+function kirimSemuaNotif(btn){
+  if(window._waWorkerLink){
+    window.open(window._waWorkerLink, '_blank');
+    
+    btn.innerHTML        = '✅ Notifikasi Pekerja Terkirim!';
+    btn.disabled         = true;
+    btn.style.background = '#9ca3af';
+    
+    const hint = document.getElementById('notifHint');
+    if(hint){ 
+      hint.innerHTML = '<span style="color:#059669;font-weight:700">✅ Laporan HSE telah dikirim otomatis via Email, dan Notifikasi Pekerja sudah terkirim via WA! 🎉</span>'; 
+    }
+  } else {
+    showAlert("⚠️ Link WhatsApp Pekerja belum siap.");
+  }
+}
+
+function kirimNotifikasiKeWorker(data){
+  const isApproved = data.sv.status === 'APPROVED';
+  const st = isApproved ? 'app' : 'rej';
   const shortUrl   = `${CONFIG.BASE_URL}checklist.html?id=${data.rowId || 'CHECKLIST'}&mode=view&st=${st}&sv=${encodeURIComponent(data.sv.nama)}&time=${encodeURIComponent(data.sv.time)}`;
   const workerWA   = data.p.replace(/^0/, '62').replace(/[^0-9]/g, '');
 
+  const e_ok = decodeURIComponent('%E2%9C%85');
+  const e_no = decodeURIComponent('%E2%9D%8C');
+  const e_board = decodeURIComponent('%F0%9F%93%8B');
+  const e_worker = decodeURIComponent('%F0%9F%91%B7');
+  const e_spv = decodeURIComponent('%F0%9F%91%A8%E2%80%8D%F0%9F%92%BC');
+  const e_time = decodeURIComponent('%E2%8F%B0');
+  const e_note = decodeURIComponent('%F0%9F%93%9D');
+  const e_link = decodeURIComponent('%F0%9F%94%97');
+  const e_lock = decodeURIComponent('%F0%9F%94%92');
+  const e_stop1 = decodeURIComponent('%E2%9B%94');
+  const e_stop2 = decodeURIComponent('%F0%9F%9B%91');
+  const e_warn = decodeURIComponent('%E2%9A%A0%EF%B8%8F');
+  const e_shield = decodeURIComponent('%F0%9F%9B%A1%EF%B8%8F');
+
   const workerMsg = isApproved
-    ? `\u2705 *SAFETY CHECKLIST DISETUJUI*\n\n` +
+    ? `${e_ok} *SAFETY CHECKLIST DISETUJUI*\n\n` +
       `Halo *${data.n}*,\n` +
-      `Checklist safety Anda telah \uD83D\uDD12 *DISETUJUI (APPROVED)* oleh supervisor.\n\n` +
-      `\uD83D\uDC68\u200D\uD83D\uDCBC *Supervisor:* ${data.sv.nama}\n` +
-      `\u23F0 *Waktu:* ${data.sv.time}\n` +
-      `${data.sv.note ? `\uD83D\uDCDD *Catatan:* ${data.sv.note}\n` : ''}` +
-      `\n\u2705 Anda diizinkan untuk memulai pekerjaan. Utamakan keselamatan!\n\n` +
-      `\uD83D\uDD17 *Detail Laporan:*\n${shortUrl}\n\n` +
+      `Checklist safety Anda telah ${e_lock} *DISETUJUI (APPROVED)* oleh supervisor.\n\n` +
+      `${e_spv} *Supervisor:* ${data.sv.nama}\n` +
+      `${e_time} *Waktu:* ${data.sv.time}\n` +
+      `${data.sv.note ? `${e_note} *Catatan:* ${data.sv.note}\n` : ''}` +
+      `\n${e_ok} Anda diizinkan untuk memulai pekerjaan. Utamakan keselamatan!\n\n` +
+      `${e_link} *Detail Laporan:*\n${shortUrl}\n\n` +
       `_Salam Safety,_\n*Pausbiru Safety*`
-    : `\u274C *SAFETY CHECKLIST DITOLAK*\n\n` +
+    : `${e_no} *SAFETY CHECKLIST DITOLAK*\n\n` +
       `Halo *${data.n}*,\n` +
-      `Mohon maaf, Checklist safety Anda \u26D4 *DITOLAK (REJECTED)* oleh supervisor.\n\n` +
-      `\uD83D\uDC68\u200D\uD83D\uDCBC *Supervisor:* ${data.sv.nama}\n` +
-      `\u26A0\uFE0F *Alasan:* ${data.sv.note}\n` +
-      `\u23F0 *Waktu:* ${data.sv.time}\n` +
-      `\n\uD83D\uDED1 Harap hentikan pekerjaan, lengkapi kekurangan safety sesuai catatan, dan kirim ulang checklist Anda.\n\n` +
-      `\uD83D\uDD17 *Detail Laporan:*\n${shortUrl}\n\n` +
+      `Mohon maaf, Checklist safety Anda ${e_stop1} *DITOLAK (REJECTED)* oleh supervisor.\n\n` +
+      `${e_spv} *Supervisor:* ${data.sv.nama}\n` +
+      `${e_warn} *Alasan:* ${data.sv.note}\n` +
+      `${e_time} *Waktu:* ${data.sv.time}\n` +
+      `\n${e_stop2} Harap hentikan pekerjaan, lengkapi kekurangan safety sesuai catatan, dan kirim ulang checklist Anda.\n\n` +
+      `${e_link} *Detail Laporan:*\n${shortUrl}\n\n` +
       `_Terima kasih,_\n*Pausbiru Safety*`;
 
-  const hzText = (data.hz || []).map(h => `• ${h.name}\n  \uD83D\uDEE1\uFE0F ${h.control}`).join('\n');
+  const hzText = (data.hz || []).map(h => `• ${h.name}\n  ${e_shield} ${h.control}`).join('\n');
   const ctText = (data.ct || []).length > 0 ? data.ct.join(', ') : 'Tidak ada';
 
   const hseMsg =
-    `\uD83D\uDCCB *LAPORAN SAFETY CHECKLIST*\n` +
-    `Status: *${isApproved ? '\u2705 APPROVED' : '\u274C REJECTED'}*\n\n` +
+    `${e_board} *LAPORAN SAFETY CHECKLIST*\n` +
+    `Status: *${isApproved ? `${e_ok} APPROVED` : `${e_no} REJECTED`}*\n\n` +
     `━━━━━━━━━━━━━━━━━━━━\n` +
-    `\uD83D\uDC77 *DATA PEKERJA*\n` +
+    `${e_worker} *DATA PEKERJA*\n` +
     `Nama     : ${data.n}\n` +
     `ID       : ${data.nid}\n` +
     `No WA    : ${data.p}\n` +
@@ -1392,25 +1483,26 @@ window.doApprove = doApprove;
     `Lokasi   : ${data.l}\n` +
     `Tanggal  : ${data.tgl} | ${data.jam}\n\n` +
     `━━━━━━━━━━━━━━━━━━━━\n` +
-    `\uD83D\uDCDD *PEKERJAAN*\n` +
+    `${e_note} *PEKERJAAN*\n` +
     `${data.job}\n\n` +
     `━━━━━━━━━━━━━━━━━━━━\n` +
-    `\u26A0\uFE0F *POTENSI BAHAYA*\n` +
+    `${e_warn} *POTENSI BAHAYA*\n` +
     `${hzText || 'Tidak ada'}\n\n` +
     `━━━━━━━━━━━━━━━━━━━━\n` +
-    `\uD83D\uDEE1\uFE0F *APD DIGUNAKAN*\n` +
+    `${e_shield} *APD DIGUNAKAN*\n` +
     `${ctText}\n\n` +
     `━━━━━━━━━━━━━━━━━━━━\n` +
-    `\uD83D\uDC68\u200D\uD83D\uDCBC *VERIFIKASI SUPERVISOR*\n` +
+    `${e_spv} *VERIFIKASI SUPERVISOR*\n` +
     `Nama     : ${data.sv.nama}\n` +
-    `Status   : ${isApproved ? '\u2705 DISETUJUI' : '\u274C DITOLAK'}\n` +
+    `Status   : ${isApproved ? `${e_ok} DISETUJUI` : `${e_no} DITOLAK`}\n` +
     `${data.sv.note ? `Catatan  : ${data.sv.note}\n` : ''}` +
     `Waktu    : ${data.sv.time}\n\n` +
-    `\uD83D\uDD17 *Detail Laporan:*\n${shortUrl}\n\n` +
+    `${e_link} *Detail Laporan:*\n${shortUrl}\n\n` +
     `*Pausbiru Safety*`;
 
   window._waWorkerLink = `https://wa.me/${workerWA}?text=${encodeURIComponent(workerMsg)}`;
   window._waHSELink    = `https://wa.me/${CONFIG.HSE_WA}?text=${encodeURIComponent(hseMsg)}`;
+}
   
 /* ============================================================
    DONE / RESULT VIEW (BEBAS TOMBOL UNTUK PEKERJA)
@@ -1839,26 +1931,38 @@ async function submitChecklist(){
   hideProgress();
 
   /* Buat pesan WA supervisor */
-  const hzText = data.hz.map(h => `• ${h.name}\n  \uD83D\uDEE1\uFE0F ${h.control}`).join('\n');
+  const e_board = decodeURIComponent('%F0%9F%93%8B');
+  const e_worker = decodeURIComponent('%F0%9F%91%B7');
+  const e_id = decodeURIComponent('%F0%9F%AA%AA');
+  const e_bag = decodeURIComponent('%F0%9F%92%BC');
+  const e_pin = decodeURIComponent('%F0%9F%93%8D');
+  const e_date = decodeURIComponent('%F0%9F%93%85');
+  const e_time = decodeURIComponent('%E2%8F%B0');
+  const e_tool = decodeURIComponent('%F0%9F%9B%A0%EF%B8%8F');
+  const e_warn = decodeURIComponent('%E2%9A%A0%EF%B8%8F');
+  const e_shield = decodeURIComponent('%F0%9F%9B%A1%EF%B8%8F');
+  const e_link = decodeURIComponent('%F0%9F%94%97');
+
+  const hzText = data.hz.map(h => `• ${h.name}\n  ${e_shield} ${h.control}`).join('\n');
   const ctText = data.ct.length > 0 ? data.ct.join(', ') : 'Tidak ada';
 
   const msg =
-    `\uD83D\uDCCB *SAFETY PRE-START CHECK* \n\n` +
+    `${e_board} *SAFETY PRE-START CHECK* \n\n` +
     `Halo Bapak *${data.spv_name}*,\n` +
     `Seorang pekerja telah mensubmit *Daily Safety Checklist* dan saat ini menunggu verifikasi (Approval) dari Anda.\n\n` +
-    `\uD83D\uDC77 *Nama Pekerja:* ${data.n}\n` +
-    `\uD83E\uDEAA *ID Pekerja:* ${data.nid}\n` +
-    `\uD83D\uDCBC *Jabatan:* ${data.pt}\n` +
-    `\uD83D\uDCCD *Area / Lokasi:* ${data.l}\n` +
-    `\uD83D\uDCC5 *Tanggal:* ${data.tgl} | \u23F0 ${data.jam}\n\n` +
-    `\uD83D\uDEE0\uFE0F *Jenis Pekerjaan:*\n${data.job}\n\n` +
-    `\u26A0\uFE0F *Potensi Bahaya:*\n${hzText}\n\n` +
-    `\uD83D\uDEE1\uFE0F *APD:* ${ctText}\n\n` +
+    `${e_worker} *Nama Pekerja:* ${data.n}\n` +
+    `${e_id} *ID Pekerja:* ${data.nid}\n` +
+    `${e_bag} *Jabatan:* ${data.pt}\n` +
+    `${e_pin} *Area / Lokasi:* ${data.l}\n` +
+    `${e_date} *Tanggal:* ${data.tgl} | ${e_time} ${data.jam}\n\n` +
+    `${e_tool} *Jenis Pekerjaan:*\n${data.job}\n\n` +
+    `${e_warn} *Potensi Bahaya:*\n${hzText}\n\n` +
+    `${e_shield} *APD:* ${ctText}\n\n` +
     `Mohon luangkan waktu sebentar untuk mengecek kelengkapan dan memverifikasi dokumen tersebut melalui link di bawah ini:\n` +
-    `\uD83D\uDD17 ${vUrl}\n\n` +
+    `${e_link} ${vUrl}\n\n` +
     `_Terima kasih,_\n*Pausbiru Safety*`;
 
-      localStorage.removeItem('safetyDraft');
+  localStorage.removeItem('safetyDraft');
 
   /* Buka WA supervisor */
   const spvWA  = data.spv_wa.replace(/^0/, '62').replace(/[^0-9]/g, '');
