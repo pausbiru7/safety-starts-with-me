@@ -20,6 +20,7 @@
     input, textarea, select { width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; font-family: inherit; }
     input:focus, textarea:focus, select:focus { outline: none; border-color: #ea580c; }
     
+    /* PEWARNAAN DROPDOWN RISIKO */
     select#pRisiko option[value="LOW"] { color: #10b981; font-weight: bold; }
     select#pRisiko option[value="MEDIUM"] { color: #f59e0b; font-weight: bold; }
     select#pRisiko option[value="HIGH"] { color: #dc2626; font-weight: bold; }
@@ -86,6 +87,7 @@
         <input type="text" id="pLokasi" placeholder="Contoh: Depan pintu masuk, Blok A, dll">
       </div>
       
+      <!-- KATEGORI TEMUAN -->
       <label>Kategori Temuan *</label>
       <select id="pKategori" onchange="togglePositiveFinding()">
         <option value="">-- Pilih Kategori --</option>
@@ -94,24 +96,28 @@
         <option value="Positive Finding" style="color:#16a34a; font-weight:bold;">🌟 Positive Finding (Kondisi/Tindakan Aman)</option>
       </select>
 
-      <label>Klasifikasi / Jenis *</label>
-      <select id="pJenisBahaya">
-        <option value="">-- Pilih Jenis --</option>
-        <option value="⚙️ Bahaya Mekanik">⚙️ Bahaya Mekanik</option>
-        <option value="🧗 Bahaya Ketinggian (Working at Height)">🧗 Bahaya Ketinggian (Working at Height)</option>
-        <option value="🚜 Bahaya Alat Berat, Kendaraan & Mobilitas">🚜 Bahaya Alat Berat, Kendaraan & Mobilitas</option>
-        <option value="⚡ Bahaya Listrik">⚡ Bahaya Listrik</option>
-        <option value="🧪 Bahaya Kimia">🧪 Bahaya Kimia</option>
-        <option value="🕳️ Bahaya Ruang Terbatas (Confined Space)">🕳️ Bahaya Ruang Terbatas (Confined Space)</option>
-        <option value="🔥 Bahaya Pekerjaan Panas (Hot Work)">🔥 Bahaya Pekerjaan Panas (Hot Work)</option>
-        <option value="🪑 Bahaya Ergonomi">🪑 Bahaya Ergonomi</option>
-        <option value="🌡️ Bahaya Fisik & Lingkungan">🌡️ Bahaya Fisik & Lingkungan</option>
-        <option value="🦠 Bahaya Biologis">🦠 Bahaya Biologis</option>
-        <option value="🌱 Bahaya Lingkungan & Pengelolaan Limbah">🌱 Bahaya Lingkungan & Pengelolaan Limbah</option>
-        <option value="🧠 Bahaya Psikososial">🧠 Bahaya Psikososial</option>
-        <option value="🚧 Lainnya">🚧 Lainnya</option>
-      </select>
+      <!-- WRAPPER KLASIFIKASI AGAR BISA DISEMBUNYIKAN -->
+      <div id="wrapKlasifikasi">
+        <label>Klasifikasi / Jenis Bahaya *</label>
+        <select id="pJenisBahaya">
+          <option value="">-- Pilih Jenis --</option>
+          <option value="⚙️ Bahaya Mekanik">⚙️ Bahaya Mekanik</option>
+          <option value="🧗 Bahaya Ketinggian (Working at Height)">🧗 Bahaya Ketinggian (Working at Height)</option>
+          <option value="🚜 Bahaya Alat Berat, Kendaraan & Mobilitas">🚜 Bahaya Alat Berat, Kendaraan & Mobilitas</option>
+          <option value="⚡ Bahaya Listrik">⚡ Bahaya Listrik</option>
+          <option value="🧪 Bahaya Kimia">🧪 Bahaya Kimia</option>
+          <option value="🕳️ Bahaya Ruang Terbatas (Confined Space)">🕳️ Bahaya Ruang Terbatas (Confined Space)</option>
+          <option value="🔥 Bahaya Pekerjaan Panas (Hot Work)">🔥 Bahaya Pekerjaan Panas (Hot Work)</option>
+          <option value="🪑 Bahaya Ergonomi">🪑 Bahaya Ergonomi</option>
+          <option value="🌡️ Bahaya Fisik & Lingkungan">🌡️ Bahaya Fisik & Lingkungan</option>
+          <option value="🦠 Bahaya Biologis">🦠 Bahaya Biologis</option>
+          <option value="🌱 Bahaya Lingkungan & Pengelolaan Limbah">🌱 Bahaya Lingkungan & Pengelolaan Limbah</option>
+          <option value="🧠 Bahaya Psikososial">🧠 Bahaya Psikososial</option>
+          <option value="🚧 Lainnya">🚧 Lainnya</option>
+        </select>
+      </div>
 
+      <!-- WRAPPER UNTUK OPSI YANG AKAN DISEMBUNYIKAN SAAT POSITIVE FINDING -->
       <div id="wrapRisikoSaran">
         <label>Tingkat Risiko *</label>
         <select id="pRisiko" onchange="updateTargetDateRange()" style="font-weight: bold;">
@@ -123,14 +129,13 @@
         
         <div id="targetBox" style="display: none; background: #fffbeb; border: 1px solid #f59e0b; padding: 15px; border-radius: 10px; margin-top: 15px;">
           <label style="margin-top: 0; color: #b45309;">🎯 Target Tanggal Selesai *</label>
-          <!-- FITUR AUTO VALIDATE DITAMBAHKAN DI SINI -->
           <input type="date" id="pTarget" onchange="validateStrictDate()">
           <div class="target-info" id="targetHint"></div>
         </div>
       </div>
 
-      <label>Deskripsi Temuan *</label>
-      <textarea id="pDeskripsi" rows="3" placeholder="Jelaskan apa yang Anda lihat..."></textarea>
+      <label id="lblDeskripsi">Deskripsi Temuan Bahaya *</label>
+      <textarea id="pDeskripsi" rows="3" placeholder="Jelaskan apa bahaya yang Anda lihat..."></textarea>
 
       <div id="wrapSaranSPV">
         <label style="color: #16a34a;">💡 Saran Perbaikan dari Pelapor *</label>
@@ -142,7 +147,7 @@
         </select>
       </div>
 
-      <label>📸 Foto Temuan *</label>
+      <label>📸 Foto Temuan / Observasi *</label>
       <div class="photo-box">
         <input type="file" accept="image/*" capture="environment" onchange="compressImage(event, 'fotoPreview', 'fotoBase64')">
         <img id="fotoPreview">
@@ -321,26 +326,41 @@
     }
   });
 
+  // FUNGSI PINTAR: MENYEMBUNYIKAN KLASIFIKASI JIKA POSITIVE FINDING
   function togglePositiveFinding() {
     const kat = document.getElementById('pKategori').value;
+    const wKlasifikasi = document.getElementById('wrapKlasifikasi');
     const wRisikoSaran = document.getElementById('wrapRisikoSaran');
     const wSaranSPV = document.getElementById('wrapSaranSPV');
     const btnSubmit = document.getElementById('btnSubmitForm');
+    const lblDeskripsi = document.getElementById('lblDeskripsi');
     
     if(kat === 'Positive Finding') {
+      wKlasifikasi.style.display = 'none'; // Sembunyikan Klasifikasi Bahaya
       wRisikoSaran.style.display = 'none';
       wSaranSPV.style.display = 'none';
+      
       document.getElementById('pRisiko').value = '';
       document.getElementById('pTarget').value = '';
       document.getElementById('pSaran').value = '-';
       document.getElementById('pSpv').value = 'Tidak Perlu SPV|0000';
+      
+      lblDeskripsi.innerHTML = 'Tindakan / Kondisi Aman yang Ditemukan *';
+      document.getElementById('pDeskripsi').placeholder = 'Sebutkan siapa yang bekerja & tindakan aman apa yang dilakukan...';
+      
       btnSubmit.innerHTML = 'Simpan Laporan Positive 📝';
       btnSubmit.style.background = '#16a34a';
     } else {
+      wKlasifikasi.style.display = 'block'; // Munculkan Kembali Klasifikasi Bahaya
       wRisikoSaran.style.display = 'block';
       wSaranSPV.style.display = 'block';
+      
       document.getElementById('pSaran').value = '';
       document.getElementById('pSpv').value = '';
+      
+      lblDeskripsi.innerHTML = 'Deskripsi Temuan Bahaya *';
+      document.getElementById('pDeskripsi').placeholder = 'Jelaskan apa bahaya yang Anda lihat...';
+      
       btnSubmit.innerHTML = 'Kirim & Lapor via WA 📱';
       btnSubmit.style.background = '#ea580c';
       updateTargetDateRange();
@@ -360,7 +380,6 @@
     return [year, month, day].join('-');
   }
 
-  // UPDATE RENTANG TANGGAL
   function updateTargetDateRange() {
     const risiko = document.getElementById('pRisiko').value;
     const targetBox = document.getElementById('targetBox');
@@ -380,7 +399,6 @@
     targetInput.min = minStr;
     targetInput.max = maxStr;
 
-    // Reset isi otomatis jika sebelumnya sudah memilih tanggal yang melebih batas baru
     if(targetInput.value && (targetInput.value > maxStr || targetInput.value < minStr)) {
         targetInput.value = ''; 
     }
@@ -388,13 +406,12 @@
     hint.innerHTML = `⏳ SLA Risiko ${risiko}: <b>${pesanHint}</b>`;
   }
 
-  // FUNGSI AUTO-VALIDASI SAAT USER MENGGANTI TANGGAL DI KALENDER
   function validateStrictDate() {
     const targetInput = document.getElementById('pTarget');
     if(targetInput.value) {
        if(targetInput.value > targetInput.max || targetInput.value < targetInput.min) {
            alert("⚠️ Tanggal melebihi Batas Waktu (SLA) yang diizinkan! Maksimal: " + targetInput.max);
-           targetInput.value = ''; // Kosongkan kembali
+           targetInput.value = ''; 
        }
     }
   }
@@ -431,29 +448,31 @@
     const area = document.getElementById('pArea').value;
     const detailLokasi = document.getElementById('pLokasi').value.trim();
     const kategori = document.getElementById('pKategori').value;
-    const jenis = document.getElementById('pJenisBahaya').value;
     const deskripsi = document.getElementById('pDeskripsi').value.trim();
     const foto = document.getElementById('fotoBase64').value;
     
+    // Variabel yang mungkin dilewati jika Positive Finding
+    let jenis = document.getElementById('pJenisBahaya').value;
     let risiko = document.getElementById('pRisiko').value;
     let targetDate = document.getElementById('pTarget').value;
     let saran = document.getElementById('pSaran').value.trim();
     let spvRaw = document.getElementById('pSpv').value;
 
-    if(!pelapor || !area || !detailLokasi || !kategori || !jenis || !deskripsi || !foto) { 
+    if(!pelapor || !area || !detailLokasi || !kategori || !deskripsi || !foto) { 
       alert("⚠️ Lengkapi semua kolom wajib!"); return; 
     }
 
-    // VALIDASI LAPIS 3 (BLOCKING FINAL)
     if(kategori !== 'Positive Finding') {
-        if(!risiko || !targetDate || !saran || !spvRaw) {
-            alert("⚠️ Lengkapi Tingkat Risiko, Target, Saran, dan Pilihan SPV!"); return;
+        if(!jenis || !risiko || !targetDate || !saran || !spvRaw) {
+            alert("⚠️ Lengkapi Jenis Bahaya, Tingkat Risiko, Target, Saran, dan Pilihan SPV!"); return;
         }
         const tInput = document.getElementById('pTarget');
         if(targetDate > tInput.max || targetDate < tInput.min) {
             alert("⚠️ Tanggal Target tidak sesuai dengan SLA Risiko!"); return;
         }
     } else {
+        // Injeksi Otomatis Jika Positive Finding
+        jenis = "🌟 Observasi Positif (BBS)";
         risiko = "N/A"; targetDate = "-"; saran = "-"; spvRaw = "No SPV|-";
     }
 
@@ -483,7 +502,7 @@
             document.getElementById('suksesIcon').innerText = '🌟';
             document.getElementById('suksesTitle').innerText = 'Observasi Positif Tersimpan!';
             document.getElementById('suksesTitle').style.color = '#16a34a';
-            document.getElementById('suksesDesc').innerText = 'Terima kasih telah mengapresiasi praktik kerja aman. Laporan ini telah terekam otomatis di database tanpa perlu tindak lanjut perbaikan.';
+            document.getElementById('suksesDesc').innerText = 'Terima kasih telah mengapresiasi praktik kerja aman. Laporan ini telah terekam otomatis di database dan dikirimkan ke Tim HSE.';
             document.getElementById('btnKirimWA').style.display = 'none';
         } else {
             const linkSPV = BASE_URL + "hazard.html?id=" + resData.rowId + "&mode=spv";
