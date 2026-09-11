@@ -169,7 +169,7 @@ textarea{resize:vertical;min-height:80px}
 
   <div class="header">
     <h1>⛑️ PAUSBIRU SAFETY</h1>
-    <p>Daily Pre-Work Safety Checklist v3.8</p>
+    <p>Daily Pre-Work Safety Checklist</p>
     <div class="badge" id="dateDisplay">Loading...</div>
   </div>
 
@@ -1341,7 +1341,7 @@ async function doApprove(){
     });
 
     hideProgress();
-    eWorker(data);
+    kirimNotifikasiKeWorker(data);
 
     const enc = LZ.compress(JSON.stringify(data));
     showDone(enc, true);
