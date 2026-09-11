@@ -87,13 +87,13 @@
         <input type="text" id="pLokasi" placeholder="Contoh: Depan pintu masuk, Blok A, dll">
       </div>
       
-      <!-- KATEGORI TEMUAN -->
+      <!-- KATEGORI TEMUAN: BAHASA INDONESIA -->
       <label>Kategori Temuan *</label>
       <select id="pKategori" onchange="togglePositiveFinding()">
         <option value="">-- Pilih Kategori --</option>
-        <option value="KTA (Kondisi Tidak Aman)">🏗️ KTA (Kondisi Tidak Aman / Unsafe Condition)</option>
-        <option value="TTA (Tindakan Tidak Aman)">👷 TTA (Tindakan Tidak Aman / Unsafe Act)</option>
-        <option value="Positive Finding" style="color:#16a34a; font-weight:bold;">🌟 Positive Finding (Kondisi/Tindakan Aman)</option>
+        <option value="Kondisi Tidak Aman (KTA)">🏗️ Kondisi Tidak Aman (KTA)</option>
+        <option value="Tindakan Tidak Aman (TTA)">👷 Tindakan Tidak Aman (TTA)</option>
+        <option value="Observasi Positif (Aman)" style="color:#16a34a; font-weight:bold;">🌟 Observasi Positif (Aman)</option>
       </select>
 
       <!-- WRAPPER KLASIFIKASI AGAR BISA DISEMBUNYIKAN -->
@@ -274,7 +274,7 @@
   </div>
 
   <div class="footer">
-    Safety Starts With Me © 2026 | v3.8<br>
+    Safety Starts With Me © 2026<br>
     <small>Powered by Pausbiru7</small>
   </div>
 
@@ -291,7 +291,6 @@
     { name:"Muharza", title:"Project Manager", wa:"628116923792" },
     { name:"Muji Agus", title:"Electrical Supervisor", wa:"6281254346552" },
     { name:"Safarudin", title:"Mechanical Supervisor", wa:"6281315693779" },
-    { name:"Muh Yusuf", title:"Project Controller", wa:"6285399450821" },
     { name:"Adiyo A", title:"QA/QC Officer", wa:"6282257449322" }
   ];
 
@@ -335,8 +334,9 @@
     const btnSubmit = document.getElementById('btnSubmitForm');
     const lblDeskripsi = document.getElementById('lblDeskripsi');
     
-    if(kat === 'Positive Finding') {
-      wKlasifikasi.style.display = 'none'; // Sembunyikan Klasifikasi Bahaya
+    // MENCOCOKKAN TEKS BAHASA INDONESIA
+    if(kat === 'Observasi Positif (Aman)') {
+      wKlasifikasi.style.display = 'none'; 
       wRisikoSaran.style.display = 'none';
       wSaranSPV.style.display = 'none';
       
@@ -351,7 +351,7 @@
       btnSubmit.innerHTML = 'Simpan Laporan Positive 📝';
       btnSubmit.style.background = '#16a34a';
     } else {
-      wKlasifikasi.style.display = 'block'; // Munculkan Kembali Klasifikasi Bahaya
+      wKlasifikasi.style.display = 'block'; 
       wRisikoSaran.style.display = 'block';
       wSaranSPV.style.display = 'block';
       
@@ -451,7 +451,6 @@
     const deskripsi = document.getElementById('pDeskripsi').value.trim();
     const foto = document.getElementById('fotoBase64').value;
     
-    // Variabel yang mungkin dilewati jika Positive Finding
     let jenis = document.getElementById('pJenisBahaya').value;
     let risiko = document.getElementById('pRisiko').value;
     let targetDate = document.getElementById('pTarget').value;
@@ -462,7 +461,7 @@
       alert("⚠️ Lengkapi semua kolom wajib!"); return; 
     }
 
-    if(kategori !== 'Positive Finding') {
+    if(kategori !== 'Observasi Positif (Aman)') {
         if(!jenis || !risiko || !targetDate || !saran || !spvRaw) {
             alert("⚠️ Lengkapi Jenis Bahaya, Tingkat Risiko, Target, Saran, dan Pilihan SPV!"); return;
         }
@@ -471,8 +470,7 @@
             alert("⚠️ Tanggal Target tidak sesuai dengan SLA Risiko!"); return;
         }
     } else {
-        // Injeksi Otomatis Jika Positive Finding
-        jenis = "🌟 Observasi Positif (BBS)";
+        jenis = "Observasi Positif (Aman)"; // Teks bersih tanpa emoji ke database
         risiko = "N/A"; targetDate = "-"; saran = "-"; spvRaw = "No SPV|-";
     }
 
