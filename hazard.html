@@ -613,14 +613,30 @@
     }, 1200);
   }
 
-// ================= 2. AMBIL DATA UNTUK SPV & HSE (ANTI-CORS ERROR) =================
+// ================= 2. AMBIL DATA UNTUK SPV & HSE (ANTI-CORS / JSONP) =================
+  function fetchHazardJSONP(id) {
+    return new Promise((resolve, reject) => {
+      const callbackName = 'jsonp_cb_' + Math.round(100000 * Math.random());
+      const timeout = setTimeout(() => { reject(new Error("Waktu habis, pastikan sinyal internet stabil.")); }, 15000);
+
+      window[callbackName] = function(data) {
+        clearTimeout(timeout);
+        delete window[callbackName];
+        resolve(data);
+      };
+
+      const script = document.createElement('script');
+      script.src = GAS_URL + "?action=getHazard&rowId=" + id + "&callback=" + callbackName;
+      script.onerror = () => { clearTimeout(timeout); reject(new Error("Koneksi diblokir oleh browser.")); };
+      document.body.appendChild(script);
+    });
+  }
+
   async function loadHazardData(id, mode) {
     showProgress('Membuka Server...', 'Mencari ID: ' + id);
     try {
-      // Menggunakan jalur POST (postToGAS) yang terbukti tangguh dan kebal blokir CORS
-      const payload = { action: 'getHazard', rowId: id };
-      const resData = await postToGAS(payload);
-
+      // Menggunakan teknik JSONP yang 100% kebal blokir CORS browser
+      const resData = await fetchHazardJSONP(id);
       hideProgress();
 
       if(resData && resData.ok) {
