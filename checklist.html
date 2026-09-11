@@ -1875,7 +1875,7 @@ function buildSummaryHTML(d){
 }
 
 /* ============================================================
-   SUBMIT CHECKLIST (UPGRADE DENGAN PENANGKAP ERROR)
+   SUBMIT CHECKLIST (SUPER CEPAT & ANTI-LOADING LAMA)
    ============================================================ */
 async function submitChecklist(){
   // AMBIL TANDA TANGAN
@@ -1896,83 +1896,70 @@ async function submitChecklist(){
 
   showProgress('💾 Menyimpan ke Google Sheets...', 'Mohon tunggu sebentar');
 
-  let rowId = 'LOCAL-' + Date.now();
+  // Buat ID unik sementara agar langsung siap dipakai
+  let rowId = 'CHK-' + Date.now();
+  data.rowId = rowId;
 
-  try{
-    const res = await postToGAS({ action:'submit', ...data });
-    
-    // 🚀 LOGIKA BARU: TANGKAP ERROR JIKA SERVER GAGAL
-    if(res && res.ok === false) {
-      hideProgress();
-      showAlert("❌ SERVER ERROR:<br>" + (res.error || "Gagal menyimpan data ke Spreadsheet."));
-      return; // STOP DISINI! Jangan buka WhatsApp jika data gagal masuk
-    }
+  const vUrl = `${CONFIG.BASE_URL}checklist.html?id=${rowId}`;
+  data.verifyLink = vUrl;
 
-    if(res && res.rowId) rowId = res.rowId;
-    data.rowId = rowId;
-  }catch(e){
-    console.warn('GAS submit failed, offline mode:', e.message);
-    data.rowId = rowId;
-    saveToQueue(data);
-  }
+  // 🚀 Tembak data ke Google Sheets di latar belakang (tanpa menunggu balasan ketat)
+  fetch(CONFIG.GAS_URL, {
+    method  : 'POST',
+    redirect: 'follow',
+    headers : {'Content-Type': 'text/plain;charset=utf-8'},
+    body    : JSON.stringify({ action: 'submit', ...data })
+  }).catch(e => {});
 
-  const vUrl = `${CONFIG.BASE_URL}checklist.html?id=${data.rowId}`;
+  // Beri jeda 1.2 detik agar data sempat masuk spreadsheet, lalu langsung buka WhatsApp
+  setTimeout(() => {
+    hideProgress();
 
-  try{
-    await postToGAS({
-      action: 'updateVerifyLink',
-      rowId: data.rowId,
-      verifyLink: vUrl
-    });
-  }catch(e){
-    console.warn('Update verifyLink gagal:', e.message);
-  }
+    /* Buat pesan WA supervisor */
+    const e_board = decodeURIComponent('%F0%9F%93%8B');
+    const e_worker = decodeURIComponent('%F0%9F%91%B7');
+    const e_id = decodeURIComponent('%F0%9F%AA%AA');
+    const e_bag = decodeURIComponent('%F0%9F%92%BC');
+    const e_pin = decodeURIComponent('%F0%9F%93%8D');
+    const e_date = decodeURIComponent('%F0%9F%93%85');
+    const e_time = decodeURIComponent('%E2%8F%B0');
+    const e_tool = decodeURIComponent('%F0%9F%9B%A0%EF%B8%8F');
+    const e_warn = decodeURIComponent('%E2%9A%A0%EF%B8%8F');
+    const e_shield = decodeURIComponent('%F0%9F%9B%A1%EF%B8%8F');
+    const e_link = decodeURIComponent('%F0%9F%94%97');
 
-  hideProgress();
+    const hzText = data.hz.map(h => `• ${h.name}\n  ${e_shield} ${h.control}`).join('\n');
+    const ctText = data.ct.length > 0 ? data.ct.join(', ') : 'Tidak ada';
 
-  /* Buat pesan WA supervisor */
-  const e_board = decodeURIComponent('%F0%9F%93%8B');
-  const e_worker = decodeURIComponent('%F0%9F%91%B7');
-  const e_id = decodeURIComponent('%F0%9F%AA%AA');
-  const e_bag = decodeURIComponent('%F0%9F%92%BC');
-  const e_pin = decodeURIComponent('%F0%9F%93%8D');
-  const e_date = decodeURIComponent('%F0%9F%93%85');
-  const e_time = decodeURIComponent('%E2%8F%B0');
-  const e_tool = decodeURIComponent('%F0%9F%9B%A0%EF%B8%8F');
-  const e_warn = decodeURIComponent('%E2%9A%A0%EF%B8%8F');
-  const e_shield = decodeURIComponent('%F0%9F%9B%A1%EF%B8%8F');
-  const e_link = decodeURIComponent('%F0%9F%94%97');
+    const msg =
+      `${e_board} *SAFETY PRE-START CHECK* \n\n` +
+      `Halo Bapak *${data.spv_name}*,\n` +
+      `Seorang pekerja telah mensubmit *Daily Safety Checklist* dan saat ini menunggu verifikasi (Approval) dari Anda.\n\n` +
+      `${e_worker} *Nama Pekerja:* ${data.n}\n` +
+      `${e_id} *ID Pekerja:* ${data.nid}\n` +
+      `${e_bag} *Jabatan:* ${data.pt}\n` +
+      `${e_pin} *Area / Lokasi:* ${data.l}\n` +
+      `${e_date} *Tanggal:* ${data.tgl} | ${e_time} ${data.jam}\n\n` +
+      `${e_tool} *Jenis Pekerjaan:*\n${data.job}\n\n` +
+      `${e_warn} *Potensi Bahaya:*\n${hzText}\n\n` +
+      `${e_shield} *APD:* ${ctText}\n\n` +
+      `Mohon luangkan waktu sebentar untuk mengecek kelengkapan dan memverifikasi dokumen tersebut melalui link di bawah ini:\n` +
+      `${e_link} ${vUrl}\n\n` +
+      `_Terima kasih,_\n*Pausbiru Safety*`;
 
-  const hzText = data.hz.map(h => `• ${h.name}\n  ${e_shield} ${h.control}`).join('\n');
-  const ctText = data.ct.length > 0 ? data.ct.join(', ') : 'Tidak ada';
+    localStorage.removeItem('safetyDraft');
 
-  const msg =
-    `${e_board} *SAFETY PRE-START CHECK* \n\n` +
-    `Halo Bapak *${data.spv_name}*,\n` +
-    `Seorang pekerja telah mensubmit *Daily Safety Checklist* dan saat ini menunggu verifikasi (Approval) dari Anda.\n\n` +
-    `${e_worker} *Nama Pekerja:* ${data.n}\n` +
-    `${e_id} *ID Pekerja:* ${data.nid}\n` +
-    `${e_bag} *Jabatan:* ${data.pt}\n` +
-    `${e_pin} *Area / Lokasi:* ${data.l}\n` +
-    `${e_date} *Tanggal:* ${data.tgl} | ${e_time} ${data.jam}\n\n` +
-    `${e_tool} *Jenis Pekerjaan:*\n${data.job}\n\n` +
-    `${e_warn} *Potensi Bahaya:*\n${hzText}\n\n` +
-    `${e_shield} *APD:* ${ctText}\n\n` +
-    `Mohon luangkan waktu sebentar untuk mengecek kelengkapan dan memverifikasi dokumen tersebut melalui link di bawah ini:\n` +
-    `${e_link} ${vUrl}\n\n` +
-    `_Terima kasih,_\n*Pausbiru Safety*`;
+    /* Buka WA supervisor */
+    const spvWA  = data.spv_wa.replace(/^0/, '62').replace(/[^0-9]/g, '');
+    const waLink = `https://wa.me/${spvWA}?text=${encodeURIComponent(msg)}`;
 
-  localStorage.removeItem('safetyDraft');
+    window._waSPVKey = rowId;
+    window._waSPVLink = waLink;
+    window.open(waLink, '_blank');
 
-  /* Buka WA supervisor */
-  const spvWA  = data.spv_wa.replace(/^0/, '62').replace(/[^0-9]/g, '');
-  const waLink = `https://wa.me/${spvWA}?text=${encodeURIComponent(msg)}`;
-
-  window._waSPVLink = waLink;
-  window.open(waLink, '_blank');
-
-  renderStep6(rowId, data.spv_name);
-  goStep(6);
+    renderStep6(rowId, data.spv_name);
+    goStep(6);
+  }, 1200);
 }
 
 /* ============================================================
