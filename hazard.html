@@ -52,7 +52,7 @@
 <div class="overlay" id="loading">
   <div style="text-align:center; color:white; font-weight:bold;">
     <div class="spinner" id="spinIcon"></div>
-    <p id="loadMsg">Memproses...</p>
+    <p id="loadMsg" style="line-height: 1.4;">Memproses...</p>
   </div>
 </div>
 
@@ -97,7 +97,6 @@
 
       <div id="wrapKlasifikasi">
         <label>Klasifikasi / Jenis Bahaya *</label>
-        <!-- TAMBAH FUNGSI onchange="toggleJenisLainnya()" -->
         <select id="pJenisBahaya" onchange="toggleJenisLainnya()">
           <option value="">-- Pilih Jenis --</option>
           <option value="⚙️ Bahaya Mekanik">⚙️ Bahaya Mekanik</option>
@@ -115,7 +114,6 @@
           <option value="🚧 Lainnya">🚧 Lainnya</option>
         </select>
         
-        <!-- KOTAK DETAIL LAINNYA (BARU) -->
         <div id="detailJenisBox" style="display: none; margin-top: 10px;">
           <input type="text" id="pJenisLainnya" placeholder="Sebutkan jenis bahaya spesifik...">
         </div>
@@ -376,7 +374,6 @@
     else { detailBox.style.display = 'none'; }
   }
 
-  // FUNGSI BARU UNTUK KLASIFIKASI "LAINNYA"
   function toggleJenisLainnya() {
     const jenisVal = document.getElementById('pJenisBahaya').value;
     const detailBox = document.getElementById('detailJenisBox');
@@ -475,13 +472,12 @@
     }
 
     if(kategori !== '🌟 Observasi Positif (Aman)') {
-        // VALIDASI JIKA PILIH "LAINNYA"
         if(jenis === '🚧 Lainnya') {
             const spesifik = document.getElementById('pJenisLainnya').value.trim();
             if(!spesifik) {
                 alert("⚠️ Sebutkan spesifikasi 'Jenis Bahaya Lainnya' pada kotak yang tersedia!"); return;
             }
-            jenis = "🚧 " + spesifik; // Gabungkan emoji lainnya dengan teks spesifik
+            jenis = "🚧 " + spesifik; 
         }
 
         if(!jenis || !risiko || !targetDate || !saran || !spvRaw) {
@@ -500,8 +496,11 @@
     const spvData = spvRaw.split('|'); const d = new Date(); 
     const formatTargetWA = (targetDate !== "-") ? (() => { let t = targetDate.split('-'); return `${t[2]}/${t[1]}/${t[0]}`; })() : "-";
     
+    // PEMBUATAN ID LANGSUNG DI HP
+    const generatedId = 'HZD-' + new Date().getTime();
+
     const payload = { 
-      action: 'submitHazard', pelapor: pelapor, lokasi: lokasiFull, kategori: kategori, jenisBahaya: jenis,
+      action: 'submitHazard', rowId: generatedId, pelapor: pelapor, lokasi: lokasiFull, kategori: kategori, jenisBahaya: jenis,
       risiko: risiko, targetDate: formatTargetWA, deskripsi: deskripsi, saran: saran, fotoBase64: foto, 
       spvNama: spvData[0], spvWa: spvData[1], tgl: d.toLocaleDateString('id-ID'), jam: d.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}) 
     };
@@ -510,52 +509,41 @@
     document.getElementById('loadMsg').innerText = "Menyimpan...";
 
     try {
-      const res = await fetch(GAS_URL, { 
+      // MENGGUNAKAN MODE NO-CORS ANTI CRASH
+      await fetch(GAS_URL, { 
           method: 'POST', 
+          mode: 'no-cors',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload) 
       });
-      const rawText = await res.text();
-      let resData;
-      try {
-        resData = JSON.parse(rawText);
-      } catch(e) {
-        document.getElementById('loading').style.display = 'none';
-        alert("Peringatan: Data berhasil masuk, namun respon server tidak terbaca. Pastikan Deploy Apps Script diset ke akses 'Anyone'.");
-        document.getElementById('viewPelapor').style.display = 'none';
-        document.getElementById('viewSukses').style.display = 'block';
-        return;
-      }
 
       document.getElementById('loading').style.display = 'none';
-      
-      if(resData.ok) {
-        document.getElementById('viewPelapor').style.display = 'none';
-        document.getElementById('viewSukses').style.display = 'block';
+      document.getElementById('viewPelapor').style.display = 'none';
+      document.getElementById('viewSukses').style.display = 'block';
         
-        if(resData.isPositive) {
-            document.getElementById('suksesIcon').innerText = '🌟';
-            document.getElementById('suksesTitle').innerText = 'Observasi Positif Tersimpan!';
-            document.getElementById('suksesTitle').style.color = '#16a34a';
-            document.getElementById('suksesDesc').innerText = 'Terima kasih telah mengapresiasi praktik kerja aman. Laporan ini telah terekam otomatis di database dan dikirimkan ke Tim HSE.';
-            document.getElementById('btnKirimWA').style.display = 'none';
-        } else {
-            const linkSPV = BASE_URL + "hazard.html?id=" + resData.rowId + "&mode=spv";
-            const msg = `⚠️ *PAUSBIRU SAFETY - HAZARD REPORT* ⚠️\n\nBapak *${spvData[0]}*,\nSaya menemukan kondisi/tindakan tidak aman di lapangan.\n\n📍 Lokasi: ${lokasiFull}\n🏷️ Klasifikasi: ${kategori}\n⚠️ Jenis Bahaya: ${jenis}\n❗ Risiko: *${risiko}*\n⏰ *Target Selesai: ${formatTargetWA}*\n📋 Detail: ${deskripsi}\n💡 Saran: ${saran}\n\nMohon segera ditindaklanjuti. Klik link di bawah ini untuk mengunggah foto bukti perbaikan:\n🔗 ${linkSPV}\n\n_Pausbiru Safety System_`;
-            
-            const waUrl = `https://wa.me/${spvData[1]}?text=${encodeURIComponent(msg)}`;
-            const btnWa = document.getElementById('btnKirimWA');
-            btnWa.onclick = function() { window.open(waUrl, '_blank'); this.innerHTML = "✅ Pesan Terbuka"; this.style.background = "#94a3b8"; };
-            window.open(waUrl, '_blank');
-        }
-      } else { alert("Gagal: " + resData.error); }
+      if(kategori === '🌟 Observasi Positif (Aman)') {
+          document.getElementById('suksesIcon').innerText = '🌟';
+          document.getElementById('suksesTitle').innerText = 'Observasi Positif Tersimpan!';
+          document.getElementById('suksesTitle').style.color = '#16a34a';
+          document.getElementById('suksesDesc').innerText = 'Terima kasih telah mengapresiasi praktik kerja aman. Laporan ini telah terekam otomatis di database dan dikirimkan ke Tim HSE.';
+          document.getElementById('btnKirimWA').style.display = 'none';
+      } else {
+          const linkSPV = BASE_URL + "hazard.html?id=" + generatedId + "&mode=spv";
+          const msg = `⚠️ *PAUSBIRU SAFETY - HAZARD REPORT* ⚠️\n\nBapak *${spvData[0]}*,\nSaya menemukan kondisi/tindakan tidak aman di lapangan.\n\n📍 Lokasi: ${lokasiFull}\n🏷️ Klasifikasi: ${kategori}\n⚠️ Jenis Bahaya: ${jenis}\n❗ Risiko: *${risiko}*\n⏰ *Target Selesai: ${formatTargetWA}*\n📋 Detail: ${deskripsi}\n💡 Saran: ${saran}\n\nMohon segera ditindaklanjuti. Klik link di bawah ini untuk mengunggah foto bukti perbaikan:\n🔗 ${linkSPV}\n\n_Pausbiru Safety System_`;
+          
+          const waUrl = `https://wa.me/${spvData[1]}?text=${encodeURIComponent(msg)}`;
+          const btnWa = document.getElementById('btnKirimWA');
+          btnWa.onclick = function() { window.open(waUrl, '_blank'); this.innerHTML = "✅ Pesan Terbuka"; this.style.background = "#94a3b8"; };
+          window.open(waUrl, '_blank');
+      }
     } catch(err) { document.getElementById('loading').style.display = 'none'; alert("Gagal koneksi. Cek jaringan internet Anda."); }
   }
 
   // ================= 2. AMBIL DATA UNTUK SPV & HSE =================
   async function loadHazardData(id, mode) {
     document.getElementById('loading').style.display = 'flex';
-    document.getElementById('loadMsg').innerText = "Mencari Data...";
+    // PESAN LOADING DIPERJELAS AGAR USER MENUNGGU COLD START SERVER GOOGLE
+    document.getElementById('loadMsg').innerHTML = "Menyambungkan Server...<br><small>Mohon tunggu beberapa detik</small>";
     try {
       const res = await fetch(GAS_URL, { 
           method: 'POST', 
@@ -565,7 +553,7 @@
       const rawText = await res.text();
       let resData;
       try { resData = JSON.parse(rawText); } 
-      catch(e) { document.getElementById('loading').style.display = 'none'; alert("Gagal membaca respon server."); return; }
+      catch(e) { document.getElementById('loading').style.display = 'none'; alert("Gagal membaca respon server. Coba muat ulang halaman."); return; }
 
       document.getElementById('loading').style.display = 'none';
 
@@ -616,27 +604,17 @@
     document.getElementById('loading').style.display = 'flex';
     document.getElementById('loadMsg').innerText = "Mengirim...";
     try {
-      const res = await fetch(GAS_URL, { 
+      // MENGGUNAKAN MODE NO-CORS ANTI CRASH
+      await fetch(GAS_URL, { 
           method: 'POST', 
+          mode: 'no-cors',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload) 
       });
-      const rawText = await res.text();
-      let resData;
-      try { resData = JSON.parse(rawText); } 
-      catch(e) { 
-        document.getElementById('loading').style.display = 'none'; 
-        alert("Peringatan: Perbaikan berhasil terkirim, namun sistem gagal membaca respon sukses. Silakan tutup halaman."); 
-        document.getElementById('viewSPV').style.display = 'none';
-        document.getElementById('viewSuksesSPV').style.display = 'block';
-        return; 
-      }
       
       document.getElementById('loading').style.display = 'none';
-      if(resData.ok) {
-        document.getElementById('viewSPV').style.display = 'none';
-        document.getElementById('viewSuksesSPV').style.display = 'block';
-      } else { alert("Gagal: " + resData.error); }
+      document.getElementById('viewSPV').style.display = 'none';
+      document.getElementById('viewSuksesSPV').style.display = 'block';
     } catch(err) { document.getElementById('loading').style.display = 'none'; alert("Gagal koneksi."); }
   }
 
@@ -653,50 +631,39 @@
     document.getElementById('loadMsg').innerText = "Menyimpan Verifikasi...";
     
     try {
-      const res = await fetch(GAS_URL, { 
+      // MENGGUNAKAN MODE NO-CORS ANTI CRASH
+      await fetch(GAS_URL, { 
           method: 'POST', 
+          mode: 'no-cors',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload) 
       });
-      const rawText = await res.text();
-      let resData;
-      try { resData = JSON.parse(rawText); } 
-      catch(e) { 
-          document.getElementById('loading').style.display = 'none'; 
-          alert("Peringatan: Verifikasi berhasil disimpan, silakan tutup halaman ini."); 
-          document.getElementById('viewHSE').style.display = 'none';
-          document.getElementById('viewSuksesHSE').style.display = 'block';
-          return; 
-      }
 
       document.getElementById('loading').style.display = 'none';
-      
-      if(resData.ok) {
-        document.getElementById('viewHSE').style.display = 'none';
-        document.getElementById('viewSuksesHSE').style.display = 'block';
+      document.getElementById('viewHSE').style.display = 'none';
+      document.getElementById('viewSuksesHSE').style.display = 'block';
 
-        if(loadedHazardData) {
-          const spvWa = loadedHazardData.spvWa;
-          const spvNama = loadedHazardData.spvNama || "Supervisor";
-          const lokasi = loadedHazardData.lokasi || "-";
-          let msgWA = "";
+      if(loadedHazardData) {
+        const spvWa = loadedHazardData.spvWa;
+        const spvNama = loadedHazardData.spvNama || "Supervisor";
+        const lokasi = loadedHazardData.lokasi || "-";
+        let msgWA = "";
 
-          if(keputusan === 'CLOSED') {
-            msgWA = `✅ *VERIFIKASI HSE - APPROVED*\n\nHalo Bapak *${spvNama}*,\nTerima kasih, perbaikan hazard di *${lokasi}* telah kami verifikasi dan dinyatakan *SELESAI (CLOSED)*.\n\n📝 Catatan HSE: ${catatan}\n\n_Pausbiru Safety System_`;
-          } else {
-            const linkSPV = BASE_URL + "hazard.html?id=" + currentHzId + "&mode=spv";
-            msgWA = `❌ *VERIFIKASI HSE - REJECTED*\n\nHalo Bapak *${spvNama}*,\nMohon maaf, perbaikan hazard di *${lokasi}* *DITOLAK* oleh HSE dan memerlukan perbaikan ulang.\n\n⚠️ Alasan/Catatan HSE: ${catatan}\n\nMohon segera ditindaklanjuti kembali (Upload Ulang) pada link berikut:\n🔗 ${linkSPV}\n\n_Pausbiru Safety System_`;
-          }
-
-          if(spvWa && spvWa.length > 5) {
-            const waUrl = `https://wa.me/${spvWa}?text=${encodeURIComponent(msgWA)}`;
-            const btnWaHse = document.getElementById('btnKirimWaHse');
-            btnWaHse.onclick = function() { window.open(waUrl, '_blank'); this.innerHTML = "✅ Pesan Terbuka"; this.style.background = "#94a3b8"; };
-          } else {
-            document.getElementById('btnKirimWaHse').style.display = 'none';
-          }
+        if(keputusan === 'CLOSED') {
+          msgWA = `✅ *VERIFIKASI HSE - APPROVED*\n\nHalo Bapak *${spvNama}*,\nTerima kasih, perbaikan hazard di *${lokasi}* telah kami verifikasi dan dinyatakan *SELESAI (CLOSED)*.\n\n📝 Catatan HSE: ${catatan}\n\n_Pausbiru Safety System_`;
+        } else {
+          const linkSPV = BASE_URL + "hazard.html?id=" + currentHzId + "&mode=spv";
+          msgWA = `❌ *VERIFIKASI HSE - REJECTED*\n\nHalo Bapak *${spvNama}*,\nMohon maaf, perbaikan hazard di *${lokasi}* *DITOLAK* oleh HSE dan memerlukan perbaikan ulang.\n\n⚠️ Alasan/Catatan HSE: ${catatan}\n\nMohon segera ditindaklanjuti kembali (Upload Ulang) pada link berikut:\n🔗 ${linkSPV}\n\n_Pausbiru Safety System_`;
         }
-      } else { alert("Gagal: " + resData.error); }
+
+        if(spvWa && spvWa.length > 5) {
+          const waUrl = `https://wa.me/${spvWa}?text=${encodeURIComponent(msgWA)}`;
+          const btnWaHse = document.getElementById('btnKirimWaHse');
+          btnWaHse.onclick = function() { window.open(waUrl, '_blank'); this.innerHTML = "✅ Pesan Terbuka"; this.style.background = "#94a3b8"; };
+        } else {
+          document.getElementById('btnKirimWaHse').style.display = 'none';
+        }
+      }
     } catch(err) { document.getElementById('loading').style.display = 'none'; alert("Gagal koneksi. Cek jaringan Anda."); }
   }
 </script>
