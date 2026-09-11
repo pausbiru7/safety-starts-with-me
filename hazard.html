@@ -87,7 +87,6 @@
         <input type="text" id="pLokasi" placeholder="Contoh: Depan pintu masuk, Blok A, dll">
       </div>
       
-      <!-- KATEGORI TEMUAN: BAHASA INDONESIA -->
       <label>Kategori Temuan *</label>
       <select id="pKategori" onchange="togglePositiveFinding()">
         <option value="">-- Pilih Kategori --</option>
@@ -96,7 +95,6 @@
         <option value="Observasi Positif (Aman)" style="color:#16a34a; font-weight:bold;">🌟 Observasi Positif (Aman)</option>
       </select>
 
-      <!-- WRAPPER KLASIFIKASI AGAR BISA DISEMBUNYIKAN -->
       <div id="wrapKlasifikasi">
         <label>Klasifikasi / Jenis Bahaya *</label>
         <select id="pJenisBahaya">
@@ -117,7 +115,6 @@
         </select>
       </div>
 
-      <!-- WRAPPER UNTUK OPSI YANG AKAN DISEMBUNYIKAN SAAT POSITIVE FINDING -->
       <div id="wrapRisikoSaran">
         <label>Tingkat Risiko *</label>
         <select id="pRisiko" onchange="updateTargetDateRange()" style="font-weight: bold;">
@@ -274,7 +271,7 @@
   </div>
 
   <div class="footer">
-    Safety Starts With Me © 2026<br>
+    Safety Starts With Me © 2026 | v3.8<br>
     <small>Powered by Pausbiru7</small>
   </div>
 
@@ -291,6 +288,7 @@
     { name:"Muharza", title:"Project Manager", wa:"628116923792" },
     { name:"Muji Agus", title:"Electrical Supervisor", wa:"6281254346552" },
     { name:"Safarudin", title:"Mechanical Supervisor", wa:"6281315693779" },
+    { name:"Muh Yusuf", title:"Project Controller", wa:"6285399450821" },
     { name:"Adiyo A", title:"QA/QC Officer", wa:"6282257449322" }
   ];
 
@@ -325,7 +323,6 @@
     }
   });
 
-  // FUNGSI PINTAR: MENYEMBUNYIKAN KLASIFIKASI JIKA POSITIVE FINDING
   function togglePositiveFinding() {
     const kat = document.getElementById('pKategori').value;
     const wKlasifikasi = document.getElementById('wrapKlasifikasi');
@@ -334,7 +331,6 @@
     const btnSubmit = document.getElementById('btnSubmitForm');
     const lblDeskripsi = document.getElementById('lblDeskripsi');
     
-    // MENCOCOKKAN TEKS BAHASA INDONESIA
     if(kat === 'Observasi Positif (Aman)') {
       wKlasifikasi.style.display = 'none'; 
       wRisikoSaran.style.display = 'none';
@@ -470,7 +466,7 @@
             alert("⚠️ Tanggal Target tidak sesuai dengan SLA Risiko!"); return;
         }
     } else {
-        jenis = "Observasi Positif (Aman)"; // Teks bersih tanpa emoji ke database
+        jenis = "Observasi Positif (Aman)"; 
         risiko = "N/A"; targetDate = "-"; saran = "-"; spvRaw = "No SPV|-";
     }
 
@@ -488,8 +484,24 @@
     document.getElementById('loadMsg').innerText = "Menyimpan...";
 
     try {
-      const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) });
-      const resData = await res.json();
+      // PERBAIKAN FETCH DENGAN TEXT/PLAIN AGAR ANTI-CRASH DI HP
+      const res = await fetch(GAS_URL, { 
+          method: 'POST', 
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload) 
+      });
+      const rawText = await res.text();
+      let resData;
+      try {
+        resData = JSON.parse(rawText);
+      } catch(e) {
+        document.getElementById('loading').style.display = 'none';
+        alert("Peringatan: Data berhasil masuk, namun respon server tidak terbaca. Pastikan Deploy Apps Script diset ke akses 'Anyone'.");
+        document.getElementById('viewPelapor').style.display = 'none';
+        document.getElementById('viewSukses').style.display = 'block';
+        return;
+      }
+
       document.getElementById('loading').style.display = 'none';
       
       if(resData.ok) {
@@ -512,7 +524,7 @@
             window.open(waUrl, '_blank');
         }
       } else { alert("Gagal: " + resData.error); }
-    } catch(err) { document.getElementById('loading').style.display = 'none'; alert("Gagal koneksi."); }
+    } catch(err) { document.getElementById('loading').style.display = 'none'; alert("Gagal koneksi. Cek jaringan internet Anda."); }
   }
 
   // ================= 2. AMBIL DATA UNTUK SPV & HSE =================
@@ -520,8 +532,16 @@
     document.getElementById('loading').style.display = 'flex';
     document.getElementById('loadMsg').innerText = "Mencari Data...";
     try {
-      const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify({ action: 'getHazard', rowId: id }) });
-      const resData = await res.json();
+      const res = await fetch(GAS_URL, { 
+          method: 'POST', 
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'getHazard', rowId: id }) 
+      });
+      const rawText = await res.text();
+      let resData;
+      try { resData = JSON.parse(rawText); } 
+      catch(e) { document.getElementById('loading').style.display = 'none'; alert("Gagal membaca respon server."); return; }
+
       document.getElementById('loading').style.display = 'none';
 
       if(resData.ok) {
@@ -571,8 +591,22 @@
     document.getElementById('loading').style.display = 'flex';
     document.getElementById('loadMsg').innerText = "Mengirim...";
     try {
-      const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) });
-      const resData = await res.json();
+      const res = await fetch(GAS_URL, { 
+          method: 'POST', 
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload) 
+      });
+      const rawText = await res.text();
+      let resData;
+      try { resData = JSON.parse(rawText); } 
+      catch(e) { 
+        document.getElementById('loading').style.display = 'none'; 
+        alert("Peringatan: Perbaikan berhasil terkirim, namun sistem gagal membaca respon sukses. Silakan tutup halaman."); 
+        document.getElementById('viewSPV').style.display = 'none';
+        document.getElementById('viewSuksesSPV').style.display = 'block';
+        return; 
+      }
+      
       document.getElementById('loading').style.display = 'none';
       if(resData.ok) {
         document.getElementById('viewSPV').style.display = 'none';
@@ -594,8 +628,22 @@
     document.getElementById('loadMsg').innerText = "Menyimpan Verifikasi...";
     
     try {
-      const res = await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) });
-      const resData = await res.json();
+      const res = await fetch(GAS_URL, { 
+          method: 'POST', 
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload) 
+      });
+      const rawText = await res.text();
+      let resData;
+      try { resData = JSON.parse(rawText); } 
+      catch(e) { 
+          document.getElementById('loading').style.display = 'none'; 
+          alert("Peringatan: Verifikasi berhasil disimpan, silakan tutup halaman ini."); 
+          document.getElementById('viewHSE').style.display = 'none';
+          document.getElementById('viewSuksesHSE').style.display = 'block';
+          return; 
+      }
+
       document.getElementById('loading').style.display = 'none';
       
       if(resData.ok) {
@@ -624,7 +672,7 @@
           }
         }
       } else { alert("Gagal: " + resData.error); }
-    } catch(err) { document.getElementById('loading').style.display = 'none'; alert("Gagal koneksi."); }
+    } catch(err) { document.getElementById('loading').style.display = 'none'; alert("Gagal koneksi. Cek jaringan Anda."); }
   }
 </script>
 </body>
