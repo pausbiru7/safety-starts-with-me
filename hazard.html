@@ -603,7 +603,7 @@
           document.getElementById('btnKirimWA').style.display = 'none';
       } else {
           const linkSPV = BASE_URL + "hazard.html?id=" + generatedId + "&mode=spv";
-          const msg = `⚠️ *HAZARD REPORT - MOHON TINDAK LANJUT* \n\nBapak *${spvData[0]}*,\nSaya menemukan kondisi/tindakan tidak aman di lapangan.\n\n📍 Lokasi: ${lokasiFull}\n🏷️ Klasifikasi: ${kategori}\n⚠️ Jenis Bahaya: ${jenis}\n❗ Risiko: *${risiko}*\n⏰ *Target Selesai: ${formatTargetWA}*\n📋 Detail: ${deskripsi}\n💡 Saran: ${saran}\n\nMohon segera ditindaklanjuti. Klik link di bawah ini untuk mengunggah foto bukti perbaikan:\n🔗 ${linkSPV}\n\n_Pausbiru Safety_`;
+          const msg = `⚠️ *HAZARD REPORT - MOHON TINDAK LANJUT* \n\nHalo Bapak *${spvData[0]}*,\nKami menerima laporan temuan kondisi/tindakan tidak aman di lapangan yang memerlukan perhatian Anda.\n\n📍 *Lokasi:* ${lokasiFull}\n🏷️ *Klasifikasi:* ${kategori}\n⚠️ *Jenis Bahaya:* ${jenis}\n❗ *Tingkat Risiko:* ${risiko}\n⏰ *Target Selesai:* ${formatTargetWA}\n\n📋 *Deskripsi Temuan:*\n_${deskripsi}_\n\n💡 *Saran Pelapor:*\n_${saran}_\n\nMohon segera ditindaklanjuti. Jika perbaikan sudah selesai, silakan unggah (upload) foto bukti perbaikan Anda pada link berikut:\n🔗 ${linkSPV}\n\n_Terima kasih,_\n*Pausbiru Safety*`;
           
           const waUrl = `https://wa.me/${spvData[1]}?text=${encodeURIComponent(msg)}`;
           const btnWa = document.getElementById('btnKirimWA');
@@ -747,10 +747,10 @@
           let msgWA = "";
 
           if(keputusan === 'CLOSED') {
-            msgWA = `✅ *VERIFIKASI HSE - APPROVED*\n\nHalo Bapak *${spvNama}*,\nTerima kasih, perbaikan hazard di *${lokasi}* telah kami verifikasi dan dinyatakan *SELESAI (CLOSED)*.\n\n📝 Catatan HSE: ${catatan}\n\n_Pausbiru Safety_`;
+            msgWA = `✅ *VERIFIKASI HSE - APPROVED*\n\nHalo Bapak *${spvNama}*,\nTerima kasih atas respons cepat Anda. Tindakan perbaikan hazard di area *${lokasi}* telah kami verifikasi dan dinyatakan 🔒 *SELESAI (CLOSED)*.\n\n📝 *Catatan Verifikasi HSE:*\n_${catatan}_\n\nKerja bagus dalam menjaga keselamatan area kerja kita!\n\n_Salam Safety,_\n*Pausbiru Safety*`;
           } else {
             const linkSPV = BASE_URL + "hazard.html?id=" + currentHzId + "&mode=spv";
-            msgWA = `❌ *VERIFIKASI HSE - REJECTED*\n\nHalo Bapak *${spvNama}*,\nMohon maaf, perbaikan hazard di *${lokasi}* *DITOLAK* oleh HSE dan memerlukan perbaikan ulang.\n\n⚠️ Alasan/Catatan HSE: ${catatan}\n\nMohon segera ditindaklanjuti kembali (Upload Ulang) pada link berikut:\n🔗 ${linkSPV}\n\n_Pausbiru Safety_`;
+            msgWA = `❌ *VERIFIKASI HSE - REJECTED*\n\nHalo Bapak *${spvNama}*,\nMohon maaf, bukti perbaikan hazard di area *${lokasi}* ⛔ *DITOLAK* oleh Tim HSE karena belum memenuhi standar aman dan memerlukan perbaikan ulang.\n\n⚠️ *Alasan Penolakan HSE:*\n_${catatan}_\n\nMohon segera ditindaklanjuti kembali dan unggah (upload) ulang bukti perbaikannya pada link berikut:\n🔗 ${linkSPV}\n\n_Terima kasih,_\n*Pausbiru Safety*`;
           }
 
           if(spvWa && spvWa.length > 5) {
