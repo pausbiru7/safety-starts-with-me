@@ -611,11 +611,22 @@
     } catch(err) { hideProgress(); alert(err.message); }
   }
 
-  // ================= 2. AMBIL DATA UNTUK SPV & HSE =================
+// ================= 2. AMBIL DATA UNTUK SPV & HSE (DISEMATKAN JALUR GET) =================
   async function loadHazardData(id, mode) {
     showProgress('Membuka Server...', 'Mencari ID: ' + id);
     try {
-      const resData = await postToGAS({ action: 'getHazard', rowId: id });
+      // Menggunakan jalur GET langsung ke Web App URL (Sama persis dengan cara browser meload halaman)
+      const targetUrl = GAS_URL + "?action=getHazard&rowId=" + id;
+      const res = await fetch(targetUrl, { method: 'GET', redirect: 'follow' });
+      const text = await res.text();
+      
+      let resData;
+      try {
+        resData = JSON.parse(text);
+      } catch(e) {
+        throw new Error("Gagal membaca respon server.");
+      }
+
       hideProgress();
 
       if(resData && resData.ok) {
@@ -666,8 +677,13 @@
 
           document.getElementById('hseContent').style.display = 'block';
         }
-      } else { alert("⚠️ Data tidak ditemukan."); }
-    } catch(err) { hideProgress(); alert(err.message); }
+      } else { 
+        alert("⚠️ Data tidak ditemukan di database Google Sheets."); 
+      }
+    } catch(err) { 
+      hideProgress(); 
+      alert("Gagal koneksi: " + err.message); 
+    }
   }
 
   // ================= 3. SUBMIT SPV =================
