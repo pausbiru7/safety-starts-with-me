@@ -1451,7 +1451,7 @@ function kirimNotifikasiKeWorker(data){
       `🕐 Waktu      : ${data.sv.time}\n` +
       `${data.sv.note ? `📝 Catatan    : ${data.sv.note}\n` : ''}` +
       `\n✅ Anda diizinkan memulai pekerjaan.\n` +
-      `\n🔗 Detail Laporan:\n${shortUrl}\n\n_Powered by Pausbiru7_`
+      `\n🔗 Detail Laporan:\n${shortUrl}\n\n_Pausbiru Safety_`
     : `❌ *SAFETY CHECKLIST DITOLAK*\n\n` +
       `Halo *${data.n}*,\n\n` +
       `Checklist safety Anda *DITOLAK* oleh supervisor.\n\n` +
@@ -1459,7 +1459,7 @@ function kirimNotifikasiKeWorker(data){
       `📝 Alasan     : ${data.sv.note}\n` +
       `🕐 Waktu      : ${data.sv.time}\n` +
       `\n⚠️ Selesaikan perbaikan dan kirim ulang checklist.\n` +
-      `\n🔗 Detail Laporan:\n${shortUrl}\n\n_Powered by Pausbiru7_`;
+      `\n🔗 Detail Laporan:\n${shortUrl}\n\n_Pausbiru Safety_`;
 
   const hzText = (data.hz || []).map(h => `• ${h.name}\n  🛡️ ${h.control}`).join('\n');
   const ctText = (data.ct || []).length > 0 ? data.ct.join(', ') : 'Tidak ada';
@@ -1490,7 +1490,7 @@ function kirimNotifikasiKeWorker(data){
     `Status   : ${isApproved ? '✅ DISETUJUI' : '❌ DITOLAK'}\n` +
     `${data.sv.note ? `Catatan  : ${data.sv.note}\n` : ''}` +
     `Waktu    : ${data.sv.time}\n\n` +
-    `🔗 Detail Laporan:\n${shortUrl}\n\n_Powered by Pausbiru7_`;
+    `🔗 Detail Laporan:\n${shortUrl}\n\n_Pausbiru Safety_`;
 
   window._waWorkerLink = `https://wa.me/${workerWA}?text=${encodeURIComponent(workerMsg)}`;
   window._waHSELink    = `https://wa.me/${CONFIG.HSE_WA}?text=${encodeURIComponent(hseMsg)}`;
@@ -1939,7 +1939,7 @@ async function submitChecklist(){
     `🛡️ *APD:* ${ctText}\n\n` +
     `━━━━━━━━━━━━━━━━━━━━\n` +
     `✅ *Klik link berikut untuk VERIFIKASI & CEK FOTO:*\n${vUrl}\n\n` +
-    `_Powered by Pausbiru7_`;
+    `_Pausbiru Safety_`;
 
   localStorage.removeItem('safetyDraft');
 
