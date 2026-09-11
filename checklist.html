@@ -135,6 +135,7 @@ textarea{resize:vertical;min-height:80px}
 .photo-box { border: 2px dashed #cbd5e1; border-radius: 12px; background: #f8fafc; padding: 20px; text-align: center; margin-bottom: 15px; }
 #fotoPreview { display: none; width: 100%; max-height: 350px; object-fit: contain; border-radius: 8px; margin-top: 10px; border: 2px solid #e2e8f0; }
 .sbox img { max-width: 100%; height: auto; object-fit: contain; border-radius: 8px; }.gps-box { background: #e0f2fe; color: #0369a1; padding: 12px; border-radius: 10px; font-size: 0.85rem; margin-top: 10px; display: flex; align-items: center; gap: 8px; font-weight: 600; }
+
 /* =========================================
    CSS KHUSUS UNTUK PRINT / EXPORT PDF
    ========================================= */
@@ -168,7 +169,7 @@ textarea{resize:vertical;min-height:80px}
 
   <div class="header">
     <h1>⛑️ PAUSBIRU SAFETY</h1>
-    <p>Daily Pre-Work Safety Checklist</p>
+    <p>Daily Pre-Work Safety Checklist v3.8</p>
     <div class="badge" id="dateDisplay">Loading...</div>
   </div>
 
@@ -1875,7 +1876,7 @@ function buildSummaryHTML(d){
 }
 
 /* ============================================================
-   SUBMIT CHECKLIST (BERSIH & AMAN)
+   SUBMIT CHECKLIST (STABIL & IKON AMAN)
    ============================================================ */
 async function submitChecklist(){
   const workerSign = getSignatureBase64('workerCanvas');
@@ -1896,27 +1897,29 @@ async function submitChecklist(){
   let rowId = 'CHK-' + Date.now();
   let vUrl = `${CONFIG.BASE_URL}checklist.html?id=${rowId}`;
 
-  try {
-    const res = await postToGAS({ action: 'submit', ...data });
+  try{
+    // Mengirim data dan langsung menerima rowId serta link resmi dari Google Sheets
+    const res = await postToGAS({ action:'submit', ...data });
     
-    if(!res || res.ok === false) {
+    if(res && res.ok === false) {
       hideProgress();
-      showAlert("❌ Gagal menyimpan ke server: " + (res.error || "Kesalahan database."));
-      return;
+      showAlert("❌ SERVER ERROR:<br>" + (res.error || "Gagal menyimpan data ke Spreadsheet."));
+      return; 
     }
 
-    if(res.rowId) rowId = res.rowId;
-    if(res.verifyLink) vUrl = res.verifyLink;
+    if(res && res.rowId) rowId = res.rowId;
+    if(res && res.verifyLink) vUrl = res.verifyLink;
+    data.rowId = rowId;
 
-  } catch(e) {
-    hideProgress();
-    showAlert("❌ Gagal koneksi ke server: " + e.message);
-    return;
+  }catch(e){
+    console.warn('GAS submit failed, offline mode:', e.message);
+    data.rowId = rowId;
+    saveToQueue(data);
   }
 
   hideProgress();
 
-  /* Format Pesan WhatsApp Supervisor */
+  /* Buat pesan WA supervisor menggunakan decodeURIComponent (Kebal Tanda Tanya) */
   const e_board = decodeURIComponent('%F0%9F%93%8B');
   const e_worker = decodeURIComponent('%F0%9F%91%B7');
   const e_id = decodeURIComponent('%F0%9F%AA%AA');
@@ -1929,8 +1932,8 @@ async function submitChecklist(){
   const e_shield = decodeURIComponent('%F0%9F%9B%A1%EF%B8%8F');
   const e_link = decodeURIComponent('%F0%9F%94%97');
 
-  const hzText = data.hz.map(h => `• ${h.name}\n  ${e_shield} ${h.control}`).join('\n');
-  const ctText = data.ct.length > 0 ? data.ct.join(', ') : 'Tidak ada';
+  const hzText = (data.hz || []).map(h => `• ${h.name}\n  ${e_shield} ${h.control}`).join('\n');
+  const ctText = (data.ct || []).length > 0 ? data.ct.join(', ') : 'Tidak ada';
 
   const msg =
     `${e_board} *SAFETY PRE-START CHECK* \n\n` +
@@ -1950,6 +1953,7 @@ async function submitChecklist(){
 
   localStorage.removeItem('safetyDraft');
 
+  /* Buka WA supervisor */
   const spvWA  = data.spv_wa.replace(/^0/, '62').replace(/[^0-9]/g, '');
   const waLink = `https://wa.me/${spvWA}?text=${encodeURIComponent(msg)}`;
 
