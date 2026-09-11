@@ -1432,6 +1432,8 @@ function kirimSemuaNotif(btn){
 function kirimNotifikasiKeWorker(data){
   const isApproved = data.sv.status === 'APPROVED';
   const st = isApproved ? 'app' : 'rej';
+  
+  // 🚀 PERBAIKAN: Tambahkan "checklist.html" agar link WA pekerja bisa terbuka normal
   const shortUrl = `${CONFIG.BASE_URL}checklist.html?id=${data.rowId || 'CHECKLIST'}&mode=view&st=${st}&sv=${encodeURIComponent(data.sv.nama)}&time=${encodeURIComponent(data.sv.time)}`;
   const workerWA = data.p.replace(/^0/, '62').replace(/[^0-9]/g, '');
 
