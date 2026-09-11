@@ -613,21 +613,13 @@
     }, 1200);
   }
 
-// ================= 2. AMBIL DATA UNTUK SPV & HSE (DISEMATKAN JALUR GET) =================
+// ================= 2. AMBIL DATA UNTUK SPV & HSE (ANTI-CORS ERROR) =================
   async function loadHazardData(id, mode) {
     showProgress('Membuka Server...', 'Mencari ID: ' + id);
     try {
-      // Menggunakan jalur GET langsung ke Web App URL (Sama persis dengan cara browser meload halaman)
-      const targetUrl = GAS_URL + "?action=getHazard&rowId=" + id;
-      const res = await fetch(targetUrl, { method: 'GET', redirect: 'follow' });
-      const text = await res.text();
-      
-      let resData;
-      try {
-        resData = JSON.parse(text);
-      } catch(e) {
-        throw new Error("Gagal membaca respon server.");
-      }
+      // Menggunakan jalur POST (postToGAS) yang terbukti tangguh dan kebal blokir CORS
+      const payload = { action: 'getHazard', rowId: id };
+      const resData = await postToGAS(payload);
 
       hideProgress();
 
