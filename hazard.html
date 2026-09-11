@@ -87,7 +87,6 @@
         <input type="text" id="pLokasi" placeholder="Contoh: Depan pintu masuk, Blok A, dll">
       </div>
       
-      <!-- KATEGORI TEMUAN (DENGAN ICON) -->
       <label>Kategori Temuan *</label>
       <select id="pKategori" onchange="togglePositiveFinding()">
         <option value="">-- Pilih Kategori --</option>
@@ -96,10 +95,10 @@
         <option value="🌟 Observasi Positif (Aman)" style="color:#16a34a; font-weight:bold;">🌟 Observasi Positif (Aman)</option>
       </select>
 
-      <!-- KLASIFIKASI BAHAYA (DENGAN ICON) -->
       <div id="wrapKlasifikasi">
         <label>Klasifikasi / Jenis Bahaya *</label>
-        <select id="pJenisBahaya">
+        <!-- TAMBAH FUNGSI onchange="toggleJenisLainnya()" -->
+        <select id="pJenisBahaya" onchange="toggleJenisLainnya()">
           <option value="">-- Pilih Jenis --</option>
           <option value="⚙️ Bahaya Mekanik">⚙️ Bahaya Mekanik</option>
           <option value="🧗 Bahaya Ketinggian (Working at Height)">🧗 Bahaya Ketinggian (Working at Height)</option>
@@ -115,6 +114,11 @@
           <option value="🧠 Bahaya Psikososial">🧠 Bahaya Psikososial</option>
           <option value="🚧 Lainnya">🚧 Lainnya</option>
         </select>
+        
+        <!-- KOTAK DETAIL LAINNYA (BARU) -->
+        <div id="detailJenisBox" style="display: none; margin-top: 10px;">
+          <input type="text" id="pJenisLainnya" placeholder="Sebutkan jenis bahaya spesifik...">
+        </div>
       </div>
 
       <div id="wrapRisikoSaran">
@@ -333,7 +337,6 @@
     const btnSubmit = document.getElementById('btnSubmitForm');
     const lblDeskripsi = document.getElementById('lblDeskripsi');
     
-    // Sesuaikan nilai value persis dengan value option di atas
     if(kat === '🌟 Observasi Positif (Aman)') {
       wKlasifikasi.style.display = 'none'; 
       wRisikoSaran.style.display = 'none';
@@ -371,6 +374,17 @@
     const detailBox = document.getElementById('detailAreaBox');
     if(areaVal !== "") { detailBox.style.display = 'block'; } 
     else { detailBox.style.display = 'none'; }
+  }
+
+  // FUNGSI BARU UNTUK KLASIFIKASI "LAINNYA"
+  function toggleJenisLainnya() {
+    const jenisVal = document.getElementById('pJenisBahaya').value;
+    const detailBox = document.getElementById('detailJenisBox');
+    if(jenisVal === '🚧 Lainnya') {
+      detailBox.style.display = 'block';
+    } else {
+      detailBox.style.display = 'none';
+    }
   }
 
   function formatLocalDate(d) {
@@ -461,6 +475,15 @@
     }
 
     if(kategori !== '🌟 Observasi Positif (Aman)') {
+        // VALIDASI JIKA PILIH "LAINNYA"
+        if(jenis === '🚧 Lainnya') {
+            const spesifik = document.getElementById('pJenisLainnya').value.trim();
+            if(!spesifik) {
+                alert("⚠️ Sebutkan spesifikasi 'Jenis Bahaya Lainnya' pada kotak yang tersedia!"); return;
+            }
+            jenis = "🚧 " + spesifik; // Gabungkan emoji lainnya dengan teks spesifik
+        }
+
         if(!jenis || !risiko || !targetDate || !saran || !spvRaw) {
             alert("⚠️ Lengkapi Jenis Bahaya, Tingkat Risiko, Target, Saran, dan Pilihan SPV!"); return;
         }
@@ -518,7 +541,6 @@
             document.getElementById('btnKirimWA').style.display = 'none';
         } else {
             const linkSPV = BASE_URL + "hazard.html?id=" + resData.rowId + "&mode=spv";
-            // KEMBALIKAN EMOJI KE WHATSAPP TEMPLATE
             const msg = `⚠️ *PAUSBIRU SAFETY - HAZARD REPORT* ⚠️\n\nBapak *${spvData[0]}*,\nSaya menemukan kondisi/tindakan tidak aman di lapangan.\n\n📍 Lokasi: ${lokasiFull}\n🏷️ Klasifikasi: ${kategori}\n⚠️ Jenis Bahaya: ${jenis}\n❗ Risiko: *${risiko}*\n⏰ *Target Selesai: ${formatTargetWA}*\n📋 Detail: ${deskripsi}\n💡 Saran: ${saran}\n\nMohon segera ditindaklanjuti. Klik link di bawah ini untuk mengunggah foto bukti perbaikan:\n🔗 ${linkSPV}\n\n_Pausbiru Safety System_`;
             
             const waUrl = `https://wa.me/${spvData[1]}?text=${encodeURIComponent(msg)}`;
@@ -659,7 +681,6 @@
           const lokasi = loadedHazardData.lokasi || "-";
           let msgWA = "";
 
-          // KEMBALIKAN EMOJI KE PESAN WA VERIFIKASI HSE
           if(keputusan === 'CLOSED') {
             msgWA = `✅ *VERIFIKASI HSE - APPROVED*\n\nHalo Bapak *${spvNama}*,\nTerima kasih, perbaikan hazard di *${lokasi}* telah kami verifikasi dan dinyatakan *SELESAI (CLOSED)*.\n\n📝 Catatan HSE: ${catatan}\n\n_Pausbiru Safety System_`;
           } else {
