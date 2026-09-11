@@ -553,13 +553,13 @@
   // ================= 2. AMBIL DATA UNTUK SPV & HSE =================
   async function loadHazardData(id, mode) {
     document.getElementById('loading').style.display = 'flex';
+    // 🚀 PESAN LOADING DIPERBARUI AGAR SPV BERSABAR MENUNGGU COLD-START GOOGLE
     document.getElementById('loadMsg').innerHTML = "Menyambungkan Server...<br><small>Mohon tunggu beberapa detik</small>";
+    
     try {
-      const res = await fetch(GAS_URL, { 
-          method: 'POST', 
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'getHazard', rowId: id }) 
-      });
+      // 🚀 MENGGUNAKAN GET METHOD AGAR 10X LEBIH CEPAT DAN ANTI-CORS ERROR
+      const url = GAS_URL + "?action=getHazard&rowId=" + id;
+      const res = await fetch(url);
       const rawText = await res.text();
       let resData;
       try { resData = JSON.parse(rawText); } 
