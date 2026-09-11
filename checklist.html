@@ -1443,23 +1443,25 @@ function kirimNotifikasiKeWorker(data){
   const st = isApproved ? 'app' : 'rej';
   const shortUrl   = `${CONFIG.BASE_URL}checklist.html?id=${data.rowId || 'CHECKLIST'}&mode=view&st=${st}&sv=${encodeURIComponent(data.sv.nama)}&time=${encodeURIComponent(data.sv.time)}`;  const workerWA   = data.p.replace(/^0/, '62').replace(/[^0-9]/g, '');
 
-  const workerMsg = isApproved
+ const workerMsg = isApproved
     ? `✅ *SAFETY CHECKLIST DISETUJUI*\n\n` +
-      `Halo *${data.n}*,\n\n` +
-      `Checklist safety Anda telah *DISETUJUI* oleh supervisor.\n\n` +
-      `👨‍💼 Supervisor : ${data.sv.nama}\n` +
-      `🕐 Waktu      : ${data.sv.time}\n` +
-      `${data.sv.note ? `📝 Catatan    : ${data.sv.note}\n` : ''}` +
-      `\n✅ Anda diizinkan memulai pekerjaan.\n` +
-      `\n🔗 Detail Laporan:\n${shortUrl}\n\n_Pausbiru Safety_`
+      `Halo *${data.n}*,\n` +
+      `Checklist safety Anda telah 🔒 *DISETUJUI (APPROVED)* oleh supervisor.\n\n` +
+      `👨‍💼 *Supervisor:* ${data.sv.nama}\n` +
+      `🕐 *Waktu:* ${data.sv.time}\n` +
+      `${data.sv.note ? `📝 *Catatan:* ${data.sv.note}\n` : ''}` +
+      `\n✅ Anda diizinkan untuk memulai pekerjaan. Utamakan keselamatan!\n\n` +
+      `🔗 *Detail Laporan:*\n${shortUrl}\n\n` +
+      `_Salam Safety,_\n*Pausbiru Safety*`
     : `❌ *SAFETY CHECKLIST DITOLAK*\n\n` +
-      `Halo *${data.n}*,\n\n` +
-      `Checklist safety Anda *DITOLAK* oleh supervisor.\n\n` +
-      `👨‍💼 Supervisor : ${data.sv.nama}\n` +
-      `📝 Alasan     : ${data.sv.note}\n` +
-      `🕐 Waktu      : ${data.sv.time}\n` +
-      `\n⚠️ Selesaikan perbaikan dan kirim ulang checklist.\n` +
-      `\n🔗 Detail Laporan:\n${shortUrl}\n\n_Pausbiru Safety_`;
+      `Halo *${data.n}*,\n` +
+      `Mohon maaf, Checklist safety Anda ⛔ *DITOLAK (REJECTED)* oleh supervisor.\n\n` +
+      `👨‍💼 *Supervisor:* ${data.sv.nama}\n` +
+      `⚠️ *Alasan:* ${data.sv.note}\n` +
+      `🕐 *Waktu:* ${data.sv.time}\n` +
+      `\n🛑 Harap hentikan pekerjaan, lengkapi kekurangan safety sesuai catatan, dan kirim ulang checklist Anda.\n\n` +
+      `🔗 *Detail Laporan:*\n${shortUrl}\n\n` +
+      `_Terima kasih,_\n*Pausbiru Safety*`;
 
   const hzText = (data.hz || []).map(h => `• ${h.name}\n  🛡️ ${h.control}`).join('\n');
   const ctText = (data.ct || []).length > 0 ? data.ct.join(', ') : 'Tidak ada';
@@ -1490,7 +1492,8 @@ function kirimNotifikasiKeWorker(data){
     `Status   : ${isApproved ? '✅ DISETUJUI' : '❌ DITOLAK'}\n` +
     `${data.sv.note ? `Catatan  : ${data.sv.note}\n` : ''}` +
     `Waktu    : ${data.sv.time}\n\n` +
-    `🔗 Detail Laporan:\n${shortUrl}\n\n_Pausbiru Safety_`;
+    `🔗 *Detail Laporan:*\n${shortUrl}\n\n` +
+    `*Pausbiru Safety*`;
 
   window._waWorkerLink = `https://wa.me/${workerWA}?text=${encodeURIComponent(workerMsg)}`;
   window._waHSELink    = `https://wa.me/${CONFIG.HSE_WA}?text=${encodeURIComponent(hseMsg)}`;
@@ -1927,19 +1930,20 @@ async function submitChecklist(){
   const ctText = data.ct.length > 0 ? data.ct.join(', ') : 'Tidak ada';
 
   const msg =
-    `🔔 *SAFETY CHECKLIST - MOHON VERIFIKASI*\n\n` +
-    `👷 Nama     : ${data.n}\n` +
-    `🪪 ID       : ${data.nid}\n` +
-    `📞 WA       : ${data.p}\n` +
-    `💼 Jabatan  : ${data.pt}\n` +
-    `📍 Lokasi   : ${data.l}\n` +
-    `📅 Tanggal  : ${data.tgl} | ⏰ ${data.jam}\n\n` +
-    `📝 *Pekerjaan:*\n${data.job}\n\n` +
+    `📋 *SAFETY PRE-START CHECK* \n\n` +
+    `Halo Bapak *${data.spv_name}*,\n` +
+    `Seorang pekerja telah mensubmit *Daily Safety Checklist* dan saat ini menunggu verifikasi (Approval) dari Anda.\n\n` +
+    `👷 *Nama Pekerja:* ${data.n}\n` +
+    `🪪 *ID Pekerja:* ${data.nid}\n` +
+    `💼 *Jabatan:* ${data.pt}\n` +
+    `📍 *Area / Lokasi:* ${data.l}\n` +
+    `📅 *Tanggal:* ${data.tgl} | ⏰ ${data.jam}\n\n` +
+    `🛠️ *Jenis Pekerjaan:*\n${data.job}\n\n` +
     `⚠️ *Potensi Bahaya:*\n${hzText}\n\n` +
     `🛡️ *APD:* ${ctText}\n\n` +
-    `━━━━━━━━━━━━━━━━━━━━\n` +
-    `✅ *Klik link berikut untuk VERIFIKASI & CEK FOTO:*\n${vUrl}\n\n` +
-    `_Pausbiru Safety_`;
+    `Mohon luangkan waktu sebentar untuk mengecek kelengkapan dan memverifikasi dokumen tersebut melalui link di bawah ini:\n` +
+    `🔗 ${vUrl}\n\n` +
+    `_Terima kasih,_\n*Pausbiru Safety*`;
 
   localStorage.removeItem('safetyDraft');
 
