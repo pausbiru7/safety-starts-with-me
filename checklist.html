@@ -1329,7 +1329,6 @@ async function doApprove(){
   showProgress('📤 Menyimpan ke Google Sheets...', 'Mohon tunggu');
   
   try{
-    // 1. Simpan dulu murni ke Google Apps Script tanpa gangguan
     await postToGAS({
       action : 'respond',
       rowId  : String(data.rowId).trim(),
@@ -1341,6 +1340,17 @@ async function doApprove(){
     });
 
     hideProgress();
+    kirimNotifikasiKeWorker(data);
+
+    const enc = LZ.compress(JSON.stringify(data));
+    showDone(enc, true);
+
+  }catch(e){
+    hideProgress();
+    showAlert('❌ Gagal memproses: ' + e.message);
+  }
+}
+window.doApprove = doApprove;
 
     // 2. SETELAH BERHASIL, baru siapkan link WhatsApp untuk Pekerja & HSE
     kconst st = isApproved ? 'app' : 'rej';
