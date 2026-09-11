@@ -1441,8 +1441,7 @@ function kirimNotifikasiKeWorker(data){
   
   // 🚀 KUNCI PERBAIKAN: Menyisipkan status langsung ke dalam link
   const st = isApproved ? 'app' : 'rej';
-  const shortUrl   = `${CONFIG.BASE_URL}?id=${data.rowId || 'CHECKLIST'}&mode=view&st=${st}&sv=${encodeURIComponent(data.sv.nama)}&time=${encodeURIComponent(data.sv.time)}`;
-  const workerWA   = data.p.replace(/^0/, '62').replace(/[^0-9]/g, '');
+  const shortUrl   = `${CONFIG.BASE_URL}checklist.html?id=${data.rowId || 'CHECKLIST'}&mode=view&st=${st}&sv=${encodeURIComponent(data.sv.nama)}&time=${encodeURIComponent(data.sv.time)}`;  const workerWA   = data.p.replace(/^0/, '62').replace(/[^0-9]/g, '');
 
   const workerMsg = isApproved
     ? `✅ *SAFETY CHECKLIST DISETUJUI*\n\n` +
@@ -1909,7 +1908,7 @@ async function submitChecklist(){
     saveToQueue(data);
   }
 
-  const vUrl = `${CONFIG.BASE_URL}?id=${data.rowId}`;
+  const vUrl = `${CONFIG.BASE_URL}checklist.html?id=${data.rowId}`;
 
   try{
     await postToGAS({
