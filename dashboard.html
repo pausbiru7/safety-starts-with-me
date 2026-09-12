@@ -43,21 +43,46 @@
     .footer { text-align: center; padding: 30px 20px; font-size: 0.9rem; color: #6b7280; font-weight: 500; }
     #loading { text-align: center; padding: 40px; font-weight: bold; color: #2e86c1; font-size: 1.2rem; }
     
-    @media (max-width: 600px) {
+   @media (max-width: 600px) {
       .charts-grid { grid-template-columns: 1fr; }
       .controls, .filter-group { flex-direction: column; align-items: stretch; }
     }
 
+    /* CSS KHUSUS UNTUK PRINT / EXPORT PDF */
+    .print-only { display: none; }
+
     @media print {
-      body { background: white; padding: 0; }
+      @page { size: A4 portrait; margin: 15mm; }
+      body { background: #fff !important; padding: 0 !important; color: #000; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      
       .no-print { display: none !important; }
-      .header { background: transparent; color: #1a5276; box-shadow: none; border-bottom: 2px solid #1a5276; padding: 10px 0; margin-bottom: 15px;}
-      .header h1 { color: #1a5276; }
-      .header p { color: #333; }
-      .metric-card { box-shadow: none; border: 1px solid #cbd5e1; border-bottom: 4px solid #cbd5e1; padding: 15px;}
-      .metric-card.approved { border-bottom-color: #059669; }
-      .metric-card.rejected, .metric-card.open { border-bottom-color: #dc2626; }
-      .chart-container { box-shadow: none; border: 1px solid #cbd5e1; page-break-inside: avoid; margin-bottom: 15px; padding: 15px;}
+      .container { max-width: 100% !important; margin: 0 !important; }
+
+      /* Header */
+      .header { background: transparent !important; color: #1a5276 !important; box-shadow: none !important; border-radius: 0 !important; border-bottom: 2px solid #1a5276 !important; padding: 10px 0 !important; margin-bottom: 20px !important; }
+      .header h1 { color: #1a5276 !important; font-size: 1.6rem !important; }
+      .header p { color: #333 !important; font-size: 0.85rem !important; }
+
+      .section-title { font-size: 1.2rem !important; margin: 20px 0 10px !important; border-bottom: 2px solid #cbd5e1 !important; }
+
+      /* Metric Cards - Dipaksa berjejer rapi dan lebih ringkas */
+      .metrics-grid { display: flex !important; flex-wrap: nowrap !important; gap: 10px !important; margin-bottom: 15px !important; }
+      .metric-card { flex: 1 !important; box-shadow: none !important; border: 1px solid #cbd5e1 !important; border-bottom: 4px solid #cbd5e1 !important; padding: 12px !important; margin: 0 !important; border-radius: 8px !important; page-break-inside: avoid; }
+      .metric-card.approved { border-bottom-color: #059669 !important; }
+      .metric-card.rejected, .metric-card.open { border-bottom-color: #dc2626 !important; }
+      .metric-card.warning { border-bottom-color: #f59e0b !important; }
+      .metric-card h3 { font-size: 0.7rem !important; margin-bottom: 4px !important; }
+      .metric-card .value { font-size: 1.6rem !important; margin: 4px 0 !important; }
+
+      /* Charts - Dipaksa menyusun ke bawah (1 kolom) agar tidak terpotong */
+      .charts-grid { display: block !important; margin-bottom: 0 !important; }
+      .chart-container { width: 100% !important; box-shadow: none !important; border: 1px solid #cbd5e1 !important; page-break-inside: avoid !important; margin-bottom: 15px !important; padding: 15px !important; border-radius: 8px !important; }
+      .chart-container h2 { font-size: 1rem !important; margin-bottom: 10px !important; padding-bottom: 5px !important; }
+
+      /* Footer Cetak */
+      .print-only { display: flex !important; width: 100%; justify-content: space-between; align-items: flex-end; }
+      #printFooter { border-top: 1px solid #ccc; padding-top: 8px; margin-top: 30px; font-size: 0.8rem; color: #666; font-weight: bold; }
     }
   </style>
 </head>
@@ -155,11 +180,18 @@
       </div>
     </div>
     
-    <div class="footer">
+   <!-- Footer Web (Disembunyikan saat print) -->
+    <div class="footer no-print">
       Safety Starts With Me © 2026 | Powered by <b>Pausbiru7</b>
     </div>
-  </div>
-</div>
+
+    <!-- Footer Khusus Print (Sama dengan Checklist & Hazard) -->
+    <div id="printFooter" class="print-only">
+      <span>Safety Starts With Me © 2026 | Powered by Pausbiru7</span>
+      <span>Dokumen Resmi K3</span>
+    </div>
+  </div> <!-- Ini adalah penutup div id="dashboardContent" -->
+</div> <!-- Ini adalah penutup div class="container" -->
 
 <script>
   // URL GAS terintegrasi
