@@ -25,16 +25,19 @@
     .btn-print { background: #10b981; color: white; }
     .btn-print:hover { background: #059669; }
 
-    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
     .metric-card { background: #fff; padding: 20px; border-radius: 16px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-bottom: 4px solid #2e86c1; }
-    .metric-card h3 { font-size: 0.85rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 800; }
-    .metric-card .value { font-size: 2.5rem; font-weight: 900; color: #1a5276; margin: 10px 0; line-height: 1; }
+    .metric-card h3 { font-size: 0.85rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 800; margin-bottom: 8px; }
+    .metric-card .value { font-size: 2.2rem; font-weight: 900; color: #1a5276; margin: 5px 0; line-height: 1; }
+    .metric-card small { font-size: 0.75rem; color: #94a3b8; }
     .metric-card.approved { border-color: #059669; }
     .metric-card.approved .value { color: #059669; }
     .metric-card.rejected, .metric-card.open { border-color: #dc2626; }
     .metric-card.rejected .value, .metric-card.open .value { color: #dc2626; }
     .metric-card.warning { border-color: #f59e0b; }
     .metric-card.warning .value { color: #d97706; }
+    .metric-card.purple { border-color: #8b5cf6; }
+    .metric-card.purple .value { color: #8b5cf6; }
 
     .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; margin-bottom: 24px; }
     .chart-container { background: #fff; padding: 20px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
@@ -43,7 +46,7 @@
     .footer { text-align: center; padding: 30px 20px; font-size: 0.9rem; color: #6b7280; font-weight: 500; }
     #loading { text-align: center; padding: 40px; font-weight: bold; color: #2e86c1; font-size: 1.2rem; }
     
-   @media (max-width: 600px) {
+    @media (max-width: 600px) {
       .charts-grid { grid-template-columns: 1fr; }
       .controls, .filter-group { flex-direction: column; align-items: stretch; }
     }
@@ -59,28 +62,27 @@
       .no-print { display: none !important; }
       .container { max-width: 100% !important; margin: 0 !important; }
 
-      /* Header */
       .header { background: transparent !important; color: #1a5276 !important; box-shadow: none !important; border-radius: 0 !important; border-bottom: 2px solid #1a5276 !important; padding: 10px 0 !important; margin-bottom: 20px !important; }
       .header h1 { color: #1a5276 !important; font-size: 1.6rem !important; }
       .header p { color: #333 !important; font-size: 0.85rem !important; }
 
       .section-title { font-size: 1.2rem !important; margin: 20px 0 10px !important; border-bottom: 2px solid #cbd5e1 !important; }
 
-      /* Metric Cards - Dipaksa berjejer rapi dan lebih ringkas */
-      .metrics-grid { display: flex !important; flex-wrap: nowrap !important; gap: 10px !important; margin-bottom: 15px !important; }
-      .metric-card { flex: 1 !important; box-shadow: none !important; border: 1px solid #cbd5e1 !important; border-bottom: 4px solid #cbd5e1 !important; padding: 12px !important; margin: 0 !important; border-radius: 8px !important; page-break-inside: avoid; }
+      .metrics-grid { display: flex !important; flex-wrap: nowrap !important; gap: 8px !important; margin-bottom: 15px !important; }
+      .metric-card { flex: 1 !important; box-shadow: none !important; border: 1px solid #cbd5e1 !important; border-bottom: 4px solid #cbd5e1 !important; padding: 10px !important; margin: 0 !important; border-radius: 8px !important; page-break-inside: avoid; }
       .metric-card.approved { border-bottom-color: #059669 !important; }
       .metric-card.rejected, .metric-card.open { border-bottom-color: #dc2626 !important; }
       .metric-card.warning { border-bottom-color: #f59e0b !important; }
-      .metric-card h3 { font-size: 0.7rem !important; margin-bottom: 4px !important; }
-      .metric-card .value { font-size: 1.6rem !important; margin: 4px 0 !important; }
+      .metric-card.purple { border-bottom-color: #8b5cf6 !important; }
+      .metric-card h3 { font-size: 0.65rem !important; margin-bottom: 4px !important; }
+      .metric-card .value { font-size: 1.4rem !important; margin: 4px 0 !important; }
+      .metric-card small { font-size: 0.6rem !important; }
 
-      /* Charts - Dipaksa menyusun ke bawah (1 kolom) agar tidak terpotong */
-      .charts-grid { display: block !important; margin-bottom: 0 !important; }
-      .chart-container { width: 100% !important; box-shadow: none !important; border: 1px solid #cbd5e1 !important; page-break-inside: avoid !important; margin-bottom: 15px !important; padding: 15px !important; border-radius: 8px !important; }
+      .charts-grid { display: grid !important; grid-template-columns: 1fr !important; width: 100% !important; gap: 15px !important; margin-bottom: 0 !important; }
+      .chart-container { width: 100% !important; max-width: 100% !important; box-sizing: border-box !important; box-shadow: none !important; border: 1px solid #cbd5e1 !important; page-break-inside: avoid !important; margin-bottom: 15px !important; padding: 15px !important; border-radius: 8px !important; }
       .chart-container h2 { font-size: 1rem !important; margin-bottom: 10px !important; padding-bottom: 5px !important; }
+      canvas { max-width: 100% !important; height: auto !important; }
 
-      /* Footer Cetak */
       .print-only { display: flex !important; width: 100%; justify-content: space-between; align-items: flex-end; }
       #printFooter { border-top: 1px solid #ccc; padding-top: 8px; margin-top: 30px; font-size: 0.8rem; color: #666; font-weight: bold; }
     }
@@ -91,7 +93,7 @@
 <div class="container">
   <div class="header">
     <h1>📊 Pausbiru HSE Dashboard</h1>
-    <p>Rekapitulasi Daily Pre-Work & Hazard Report</p>
+    <p>Executive Summary & Performance Analytics</p>
   </div>
 
   <div id="loading">🔄 Mengambil data dari server... Mohon tunggu.</div>
@@ -113,7 +115,24 @@
       Periode: <span id="periodeTeks" style="color: #1a5276;">Semua Waktu</span>
     </div>
 
-    <!-- SEGMEN 1: SAFETY CHECKLIST -->
+    <!-- SEGMEN 1: TREN & KINERJA TIM (NEW!) -->
+    <div class="section-title">📈 Tren & Kinerja Tim</div>
+    <div class="charts-grid">
+      <div class="chart-container" style="grid-column: 1 / -1;">
+        <h2>Tren Laporan Harian (Checklist & Hazard)</h2>
+        <canvas id="trendChart" height="80"></canvas>
+      </div>
+      <div class="chart-container">
+        <h2>Beban Verifikasi Supervisor</h2>
+        <canvas id="spvChart"></canvas>
+      </div>
+      <div class="chart-container">
+        <h2>Top 5 Pelapor BBS (Keterlibatan Pekerja)</h2>
+        <canvas id="pelaporChart"></canvas>
+      </div>
+    </div>
+
+    <!-- SEGMEN 2: SAFETY CHECKLIST -->
     <div class="section-title">⛑️ Daily Safety Checklist</div>
     <div class="metrics-grid">
       <div class="metric-card">
@@ -122,12 +141,12 @@
         <small>Dokumen Diterima</small>
       </div>
       <div class="metric-card approved">
-        <h3>Disetujui (Approved)</h3>
+        <h3>Disetujui</h3>
         <div class="value" id="totApproved">0</div>
         <small>Telah diverifikasi</small>
       </div>
       <div class="metric-card rejected">
-        <h3>Ditolak (Rejected)</h3>
+        <h3>Ditolak</h3>
         <div class="value" id="totRejected">0</div>
         <small>Perlu perbaikan</small>
       </div>
@@ -144,7 +163,7 @@
       </div>
     </div>
 
-    <!-- SEGMEN 2: HAZARD REPORT -->
+    <!-- SEGMEN 3: HAZARD REPORT -->
     <div class="section-title">🚨 Hazard Report (BBS)</div>
     <div class="metrics-grid">
       <div class="metric-card">
@@ -155,17 +174,22 @@
       <div class="metric-card open">
         <h3>OPEN</h3>
         <div class="value" id="totOpen">0</div>
-        <small>Belum Ditindaklanjuti</small>
+        <small>Belum Diperbaiki</small>
       </div>
       <div class="metric-card warning">
         <h3>WAITING</h3>
         <div class="value" id="totWaiting">0</div>
-        <small>Menunggu Verifikasi HSE</small>
+        <small>Menunggu Verifikasi</small>
       </div>
       <div class="metric-card approved">
         <h3>CLOSED</h3>
         <div class="value" id="totClosed">0</div>
         <small>Selesai Diperbaiki</small>
+      </div>
+      <div class="metric-card purple">
+        <h3>Rata-rata Resolusi</h3>
+        <div class="value" id="slaTime">0 Jam</div>
+        <small>SLA Perbaikan Hazard</small>
       </div>
     </div>
 
@@ -180,21 +204,19 @@
       </div>
     </div>
     
-   <!-- Footer Web (Disembunyikan saat print) -->
     <div class="footer no-print">
-      Safety Starts With Me © 2026 | Powered by <b>Pausbiru7</b>
+      Safety Starts With Me © 2026 | Executive Analytics Dashboard
     </div>
 
-    <!-- Footer Khusus Print (Sama dengan Checklist & Hazard) -->
     <div id="printFooter" class="print-only">
       <span>Safety Starts With Me © 2026 | Powered by Pausbiru7</span>
-      <span>Dokumen Resmi K3</span>
+      <span>Dokumen Resmi K3 (Analytics)</span>
     </div>
-  </div> <!-- Ini adalah penutup div id="dashboardContent" -->
-</div> <!-- Ini adalah penutup div class="container" -->
+  </div>
+</div>
 
 <script>
-  // URL GAS terintegrasi
+  // WAJIB UBAH URL INI JIKA ADA PERUBAHAN
   const GAS_URL = "https://script.google.com/macros/s/AKfycbyhqzWgXnC46vs0VnEdvRG52afyV4IQtN2FDqxHB_XbQ7vcVKrDPrNHo3IzHyZU62mI7Q/exec";
 
   let rawData = { checklist: [], hazard: [] };
@@ -221,6 +243,24 @@
     }
   }
 
+  // --- HELPER PARSING WAKTU UNTUK SLA ---
+  function parseDateTime(dateStr, timeStr) {
+    if(!dateStr) return null;
+    let parts = dateStr.split('/');
+    if(parts.length !== 3) return null;
+    let t = timeStr ? timeStr.replace('.', ':') : '00:00';
+    let tParts = t.split(':');
+    let hh = parseInt(tParts[0]) || 0;
+    let mm = parseInt(tParts[1]) || 0;
+    return new Date(parts[2], parts[1]-1, parts[0], hh, mm);
+  }
+  function parseCombinedDateTime(datetimeStr) {
+    if(!datetimeStr) return null;
+    let dtParts = datetimeStr.split(' ');
+    if(dtParts.length < 2) return null;
+    return parseDateTime(dtParts[0], dtParts[1]);
+  }
+
   function applyFilter() {
     let startVal = document.getElementById('startDate').value;
     let endVal = document.getElementById('endDate').value;
@@ -232,7 +272,6 @@
     if (startVal || endVal) {
       const filterFn = (item) => {
         if(!item.tgl) return false;
-        // Penyesuaian format tanggal DD/MM/YYYY ke format Date JS
         let parts = item.tgl.split('/');
         let dItem = parts.length === 3 ? new Date(parts[2], parts[1]-1, parts[0]) : new Date(item.tgl);
         dItem.setHours(0,0,0,0);
@@ -274,6 +313,13 @@
   }
 
   function renderDashboard(dataChk, dataHz) {
+    // --- VARIABEL UNTUK ADVANCED ANALYTICS ---
+    let datesMap = {};
+    let spvMap = {};
+    let repMap = {};
+    let totalSlaHours = 0;
+    let validSlaCount = 0;
+
     // --- 1. PROSES DATA CHECKLIST ---
     let sumChk = { total: 0, approved: 0, rejected: 0, apd: {}, bahaya: {} };
 
@@ -297,11 +343,18 @@
           if (aClean) sumChk.apd[aClean] = (sumChk.apd[aClean] || 0) + 1;
         });
       }
-    });
 
-    document.getElementById('totChecklist').textContent = sumChk.total;
-    document.getElementById('totApproved').textContent = sumChk.approved;
-    document.getElementById('totRejected').textContent = sumChk.rejected;
+      // Aggregate Trend
+      if(row.tgl) {
+        if(!datesMap[row.tgl]) datesMap[row.tgl] = { chk: 0, hz: 0 };
+        datesMap[row.tgl].chk++;
+      }
+      
+      // Aggregate SPV
+      let s = row.spv && row.spv.trim() !== '' && row.spv !== 'undefined' ? row.spv : 'Lainnya';
+      if(!spvMap[s]) spvMap[s] = { chk: 0, hz: 0 };
+      spvMap[s].chk++;
+    });
 
     // --- 2. PROSES DATA HAZARD ---
     let sumHz = { total: 0, open: 0, waiting: 0, closed: 0, risiko: {}, kategori: {} };
@@ -318,18 +371,96 @@
       if (row.kategori && row.kategori !== 'undefined' && row.kategori.trim() !== '') {
         sumHz.kategori[row.kategori] = (sumHz.kategori[row.kategori] || 0) + 1;
       }
+
+      // Aggregate Trend
+      if(row.tgl) {
+        if(!datesMap[row.tgl]) datesMap[row.tgl] = { chk: 0, hz: 0 };
+        datesMap[row.tgl].hz++;
+      }
+
+      // Aggregate SPV
+      let s = row.spv && row.spv.trim() !== '' && row.spv !== 'undefined' ? row.spv : 'Lainnya';
+      if(!spvMap[s]) spvMap[s] = { chk: 0, hz: 0 };
+      spvMap[s].hz++;
+
+      // Aggregate Top Reporter
+      let p = row.pelapor && row.pelapor.trim() !== '' && row.pelapor !== 'undefined' ? row.pelapor : 'Anonim';
+      repMap[p] = (repMap[p] || 0) + 1;
+
+      // Hitung SLA Waktu Penyelesaian
+      if(row.waktuSelesai && row.waktuSelesai !== 'undefined' && row.waktuSelesai.trim() !== '') {
+        let startDt = parseDateTime(row.tgl, row.jam);
+        let endDt = parseCombinedDateTime(row.waktuSelesai);
+        if(startDt && endDt && endDt > startDt) {
+          let diffHrs = (endDt - startDt) / (1000 * 60 * 60);
+          totalSlaHours += diffHrs;
+          validSlaCount++;
+        }
+      }
     });
 
+    // SET METRIKS ANGKA
+    document.getElementById('totChecklist').textContent = sumChk.total;
+    document.getElementById('totApproved').textContent = sumChk.approved;
+    document.getElementById('totRejected').textContent = sumChk.rejected;
+    
     document.getElementById('totHazard').textContent = sumHz.total;
     document.getElementById('totOpen').textContent = sumHz.open;
     document.getElementById('totWaiting').textContent = sumHz.waiting;
     document.getElementById('totClosed').textContent = sumHz.closed;
 
-    // --- 3. RENDER GRAFIK CHECKLIST ---
+    let avgSLA = validSlaCount > 0 ? (totalSlaHours / validSlaCount).toFixed(1) : 0;
+    document.getElementById('slaTime').textContent = avgSLA + " Jam";
+
+    // --- RENDER GRAFIK ADVANCED (NEW) ---
+    // 1. TREN HARIAN (LINE CHART)
+    let sortedDates = Object.keys(datesMap).sort((a, b) => {
+      let pA = a.split('/'); let pB = b.split('/');
+      return new Date(pA[2], pA[1]-1, pA[0]) - new Date(pB[2], pB[1]-1, pB[0]);
+    });
+    createOrUpdateChart('trendChart', {
+      type: 'line',
+      data: {
+        labels: sortedDates,
+        datasets: [
+          { label: 'Checklist Masuk', data: sortedDates.map(d => datesMap[d].chk), borderColor: '#2e86c1', backgroundColor: 'rgba(46,134,193,0.1)', fill: true, tension: 0.3 },
+          { label: 'Hazard Dilaporkan', data: sortedDates.map(d => datesMap[d].hz), borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', fill: true, tension: 0.3 }
+        ]
+      },
+      options: { plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true } } }
+    });
+
+    // 2. KINERJA SPV (STACKED BAR)
+    let spvLabels = Object.keys(spvMap).filter(s => s !== '-');
+    createOrUpdateChart('spvChart', {
+      type: 'bar',
+      data: {
+        labels: spvLabels,
+        datasets: [
+          { label: 'Dokumen Checklist', data: spvLabels.map(s => spvMap[s].chk), backgroundColor: '#2e86c1' },
+          { label: 'Temuan Hazard', data: spvLabels.map(s => spvMap[s].hz), backgroundColor: '#f59e0b' }
+        ]
+      },
+      options: { scales: { x: { stacked: true }, y: { stacked: true } }, plugins: { legend: { position: 'bottom' } } }
+    });
+
+    // 3. TOP REPORTER BBS
+    var repArr = Object.keys(repMap).map(key => ({ name: key, count: repMap[key] }));
+    repArr.sort((a, b) => b.count - a.count);
+    var top5Rep = repArr.slice(0, 5);
+    createOrUpdateChart('pelaporChart', {
+      type: 'bar',
+      data: {
+        labels: top5Rep.map(item => item.name),
+        datasets: [{ label: 'Laporan', data: top5Rep.map(item => item.count), backgroundColor: '#10b981', borderRadius: 4 }]
+      },
+      options: { indexAxis: 'y', plugins: { legend: { display: false } } }
+    });
+
+    // --- RENDER GRAFIK CHECKLIST ---
     var bahayaArr = Object.keys(sumChk.bahaya).map(key => ({ name: key, count: sumChk.bahaya[key] }));
     bahayaArr.sort((a, b) => b.count - a.count);
     var top5Bahaya = bahayaArr.slice(0, 5);
-
     createOrUpdateChart('bahayaChart', {
       type: 'bar',
       data: {
@@ -341,7 +472,6 @@
 
     var apdArr = Object.keys(sumChk.apd).map(key => ({ name: key, count: sumChk.apd[key] }));
     apdArr.sort((a, b) => b.count - a.count);
-    
     createOrUpdateChart('apdChart', {
       type: 'bar',
       data: {
@@ -351,7 +481,7 @@
       options: { plugins: { legend: { display: false } } }
     });
 
-    // --- 4. RENDER GRAFIK HAZARD ---
+    // --- RENDER GRAFIK HAZARD ---
     createOrUpdateChart('risikoChart', {
       type: 'doughnut',
       data: {
