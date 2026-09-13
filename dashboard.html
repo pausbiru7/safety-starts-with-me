@@ -174,6 +174,12 @@
         <h2>Penggunaan APD Terbanyak</h2>
         <canvas id="apdChart"></canvas>
       </div>
+       <!-- TAMBAHAN BARU: LEADERBOARD PEKERJA -->
+      <div class="chart-container" style="grid-column: 1 / -1;">
+        <h2>Top 5 Pekerja Paling Disiplin (Leaderboard)</h2>
+        <canvas id="pekerjaChart" height="80"></canvas>
+      </div>
+    </div>
     </div>
 
     <!-- SEGMEN 3: HAZARD REPORT -->
@@ -355,7 +361,8 @@
     today.setHours(0,0,0,0);
 
     // --- 1. PROSES DATA CHECKLIST ---
-    let sumChk = { total: 0, approved: 0, rejected: 0, apd: {}, bahaya: {} };
+    // TAMBAHAN: Variabel pekerja ditambahkan di sini
+    let sumChk = { total: 0, approved: 0, rejected: 0, apd: {}, bahaya: {}, pekerja: {} };
 
     dataChk.forEach(row => {
       sumChk.total++;
@@ -377,6 +384,12 @@
           if (aClean) sumChk.apd[aClean] = (sumChk.apd[aClean] || 0) + 1;
         });
       }
+
+      // --- TAMBAHAN: Proses Data LEADERBOARD PEKERJA menggunakan NIK ---
+      let nik = row.nik && row.nik !== 'undefined' ? String(row.nik).trim() : '000';
+      let nama = row.pekerja && row.pekerja !== 'undefined' ? String(row.pekerja).trim() : 'Anonim';
+      if(!sumChk.pekerja[nik]) sumChk.pekerja[nik] = { nama: nama, nik: nik, count: 0 };
+      sumChk.pekerja[nik].count++;
 
       if(row.tgl) {
         if(!datesMap[row.tgl]) datesMap[row.tgl] = { chk: 0, hz: 0 };
@@ -406,7 +419,8 @@
       }
 
       // Aggregate SPV (Hanya untuk temuan Hazard)
-      let s = row.spv && row.spv.trim() !== '' && row.spv !== 'undefined' ? row.spv : 'Tanpa Nama';
+      let rawSpv = row.spv && row.spv !== 'undefined' ? String(row.spv).trim().toUpperCase() : '';
+      let s = rawSpv !== '' ? rawSpv : 'TANPA NAMA';
       if(!spvMap[s]) spvMap[s] = { open: 0, waiting: 0, closed: 0 };
       if (row.status === 'OPEN') spvMap[s].open++;
       else if (row.status === 'WAITING VERIFICATION') spvMap[s].waiting++;
@@ -431,7 +445,6 @@
       if (row.status === 'OPEN' || row.status === 'WAITING VERIFICATION') {
         let badgeClass = row.status === 'OPEN' ? 'badge-danger' : 'badge-warning';
         
-        // Cek Status Aging
         let agingBadge = "";
         if (row.target && row.target !== 'undefined') {
           let targetDt = new Date(row.target); targetDt.setHours(0,0,0,0);
@@ -552,6 +565,18 @@
         datasets: [{ label: 'Penggunaan', data: apdArr.map(item => item.count), backgroundColor: '#3b82f6', borderRadius: 4 }]
       },
       options: { plugins: { legend: { display: false } } }
+    });
+
+    // --- TAMBAHAN BARU: RENDER LEADERBOARD PEKERJA (Berdasarkan NIK) ---
+    var workerArr = Object.values(sumChk.pekerja);
+    workerArr.sort((a, b) => b.count - a.count);
+    createOrUpdateChart('pekerjaChart', {
+      type: 'bar',
+      data: {
+        labels: workerArr.slice(0, 5).map(item => `${item.nama} (${item.nik && item.nik !== '000' ? item.nik : '-'})`),
+        datasets: [{ label: 'Checklist Disubmit', data: workerArr.slice(0, 5).map(item => item.count), backgroundColor: '#14b8a6', borderRadius: 4 }]
+      },
+      options: { indexAxis: 'y', plugins: { legend: { display: false } } }
     });
 
     createOrUpdateChart('risikoChart', {
