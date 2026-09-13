@@ -413,15 +413,23 @@
     document.getElementById('slaTime').textContent = avgSLA + " Jam";
 
     // --- RENDER GRAFIK ADVANCED (NEW) ---
-    // 1. TREN HARIAN (LINE CHART)
+   // 1. TREN HARIAN (LINE CHART)
     let sortedDates = Object.keys(datesMap).sort((a, b) => {
       let pA = a.split('/'); let pB = b.split('/');
-      return new Date(pA[2], pA[1]-1, pA[0]) - new Date(pB[2], pB[1]-1, pB[0]);
+      let dA = pA.length === 3 ? new Date(pA[2], pA[1]-1, pA[0]) : new Date(a);
+      let dB = pB.length === 3 ? new Date(pB[2], pB[1]-1, pB[0]) : new Date(b);
+      return dA - dB;
     });
+
     createOrUpdateChart('trendChart', {
       type: 'line',
       data: {
-        labels: sortedDates,
+        labels: sortedDates.map(d => {
+          let p = d.split('/');
+          let dateObj = p.length === 3 ? new Date(p[2], p[1]-1, p[0]) : new Date(d);
+          // Mengubah format ISO menjadi tanggal rapi (Contoh: 01 Sep 2026)
+          return isNaN(dateObj) ? d : dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+        }),
         datasets: [
           { label: 'Checklist Masuk', data: sortedDates.map(d => datesMap[d].chk), borderColor: '#2e86c1', backgroundColor: 'rgba(46,134,193,0.1)', fill: true, tension: 0.3 },
           { label: 'Hazard Dilaporkan', data: sortedDates.map(d => datesMap[d].hz), borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', fill: true, tension: 0.3 }
