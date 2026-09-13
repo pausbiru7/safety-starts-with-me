@@ -432,12 +432,15 @@
         datesMap[row.tgl].hz++;
       }
 
-      let rawSpv = row.spv && row.spv !== 'undefined' ? String(row.spv).trim().toUpperCase() : '';
-      let s = rawSpv !== '' ? rawSpv : 'UNASSIGNED';
-      if(!spvMap[s]) spvMap[s] = { open: 0, waiting: 0, closed: 0 };
-      if (row.status === 'OPEN') spvMap[s].open++;
-      else if (row.status === 'WAITING VERIFICATION') spvMap[s].waiting++;
-      else if (row.status === 'CLOSED') spvMap[s].closed++;
+  // Filter: Hanya masukkan ke grafik SPV jika BUKAN Observasi Positif
+      if (row.kategori && row.kategori.indexOf('Observasi Positif') === -1) {
+        let rawSpv = row.spv && row.spv !== 'undefined' ? String(row.spv).trim().toUpperCase() : '';
+        let s = rawSpv !== '' ? rawSpv : 'UNASSIGNED';
+        if(!spvMap[s]) spvMap[s] = { open: 0, waiting: 0, closed: 0 };
+        if (row.status === 'OPEN') spvMap[s].open++;
+        else if (row.status === 'WAITING VERIFICATION') spvMap[s].waiting++;
+        else if (row.status === 'CLOSED') spvMap[s].closed++;
+      }
 
       let p = row.pelapor && row.pelapor.trim() !== '' && row.pelapor !== 'undefined' ? row.pelapor : 'Anonymous';
       repMap[p] = (repMap[p] || 0) + 1;
