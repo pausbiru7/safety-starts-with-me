@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -109,38 +109,38 @@
     <p>Executive Summary & Performance Analytics</p>
   </div>
 
-  <div id="loading">🔄 Mengambil data dari server... Mohon tunggu.</div>
+  <div id="loading">🔄 Fetching data from server... Please wait.</div>
 
   <div id="dashboardContent" style="display: none;">
     <div class="controls no-print">
       <div class="filter-group">
-        <label>📅 Filter Tanggal:</label>
-        <input type="date" id="startDate" title="Tanggal Mulai">
-        <span>s/d</span>
-        <input type="date" id="endDate" title="Tanggal Akhir">
-        <button class="btn btn-primary" onclick="applyFilter()">Terapkan</button>
+        <label>📅 Date Filter:</label>
+        <input type="date" id="startDate" title="Start Date">
+        <span>to</span>
+        <input type="date" id="endDate" title="End Date">
+        <button class="btn btn-primary" onclick="applyFilter()">Apply</button>
         <button class="btn" style="background:#e2e8f0; color:#334155" onclick="resetFilter()">Reset</button>
       </div>
-      <button class="btn btn-print" onclick="window.print()">🖨️ Cetak Laporan</button>
+      <button class="btn btn-print" onclick="window.print()">🖨️ Print Report</button>
     </div>
 
     <div style="text-align: right; font-weight: bold; color: #6b7280; margin-bottom: 10px;">
-      Periode: <span id="periodeTeks" style="color: #1a5276;">Semua Waktu</span>
+      Period: <span id="periodeTeks" style="color: #1a5276;">All Time</span>
     </div>
 
     <!-- SEGMEN 1: TREN & KINERJA TIM -->
-    <div class="section-title">📈 Tren & Kinerja Tim</div>
+    <div class="section-title">📈 Trends & Team Performance</div>
     <div class="charts-grid">
       <div class="chart-container" style="grid-column: 1 / -1;">
-        <h2>Tren Laporan Harian (Checklist & Hazard)</h2>
+        <h2>Daily Reporting Trends (Checklist & Hazard)</h2>
         <canvas id="trendChart" height="80"></canvas>
       </div>
       <div class="chart-container">
-        <h2>Tunggakan Hazard per Supervisor (Bottleneck)</h2>
+        <h2>Outstanding Corrective Action</h2>
         <canvas id="spvChart"></canvas>
       </div>
       <div class="chart-container">
-        <h2>Top 5 Pelapor BBS (Keterlibatan Pekerja)</h2>
+        <h2>Top 5 Hazard & BBS Reporters</h2>
         <canvas id="pelaporChart"></canvas>
       </div>
     </div>
@@ -149,90 +149,89 @@
     <div class="section-title">⛑️ Daily Safety Checklist</div>
     <div class="metrics-grid">
       <div class="metric-card">
-        <h3>Total Checklist</h3>
+        <h3>Total Checklists</h3>
         <div class="value" id="totChecklist">0</div>
-        <small>Dokumen Diterima</small>
+        <small>Documents Received</small>
       </div>
       <div class="metric-card approved">
-        <h3>Disetujui</h3>
+        <h3>Approved</h3>
         <div class="value" id="totApproved">0</div>
-        <small>Telah diverifikasi</small>
+        <small>Verified by SPV</small>
       </div>
       <div class="metric-card rejected">
-        <h3>Ditolak</h3>
+        <h3>Rejected</h3>
         <div class="value" id="totRejected">0</div>
-        <small>Perlu perbaikan</small>
+        <small>Needs Revision</small>
       </div>
     </div>
 
     <div class="charts-grid">
       <div class="chart-container">
-        <h2>Top 5 Potensi Bahaya (Pre-Work)</h2>
+        <h2>Top 5 Potential Hazards (Pre-Work)</h2>
         <canvas id="bahayaChart"></canvas>
       </div>
       <div class="chart-container">
-        <h2>Penggunaan APD Terbanyak</h2>
+        <h2>Most Used PPE</h2>
         <canvas id="apdChart"></canvas>
       </div>
        <!-- TAMBAHAN BARU: LEADERBOARD PEKERJA -->
       <div class="chart-container" style="grid-column: 1 / -1;">
-        <h2>Top 5 Pekerja Paling Disiplin (Leaderboard)</h2>
+        <h2>Top 5 Most Disciplined Workers (Leaderboard)</h2>
         <canvas id="pekerjaChart" height="80"></canvas>
       </div>
-    </div>
     </div>
 
     <!-- SEGMEN 3: HAZARD REPORT -->
     <div class="section-title">🚨 Hazard Report (BBS)</div>
     <div class="metrics-grid">
       <div class="metric-card">
-        <h3>Total Temuan</h3>
+        <h3>Total Findings</h3>
         <div class="value" id="totHazard">0</div>
-        <small>Laporan Masuk</small>
+        <small>Reports Submitted</small>
       </div>
       <div class="metric-card open">
         <h3>OPEN</h3>
         <div class="value" id="totOpen">0</div>
-        <small>Belum Diperbaiki</small>
+        <small>Pending Action</small>
       </div>
       <div class="metric-card warning">
         <h3>WAITING</h3>
         <div class="value" id="totWaiting">0</div>
-        <small>Menunggu Verifikasi</small>
+        <small>Awaiting Verification</small>
       </div>
       <div class="metric-card approved">
         <h3>CLOSED</h3>
         <div class="value" id="totClosed">0</div>
-        <small>Selesai Diperbaiki</small>
+        <small>Resolved</small>
       </div>
       <div class="metric-card purple">
-        <h3>Rata-rata Resolusi</h3>
-        <div class="value" id="slaTime">0 Jam</div>
-        <small>SLA Perbaikan Hazard</small>
+        <h3>Average Resolution</h3>
+        <div class="value" id="slaTime">0 Hrs</div>
+        <small>Hazard Repair SLA</small>
       </div>
     </div>
 
     <div class="charts-grid">
       <div class="chart-container">
-        <h2>Tingkat Risiko Temuan</h2>
+        <h2>Finding Risk Levels</h2>
         <canvas id="risikoChart"></canvas>
       </div>
       <div class="chart-container">
-        <h2>Kategori Temuan Hazard</h2>
+        <h2>Hazard Finding Categories</h2>
         <canvas id="kategoriChart"></canvas>
       </div>
     </div>
 
     <!-- SEGMEN 4: ACTION TRACKER (TUNGGAKAN AKTIF) -->
-    <div class="section-title" style="color: #dc2626; border-bottom-color: #fca5a5;">🔥 Action Tracker (Tunggakan Aktif)</div>
+    <div class="section-title" style="color: #dc2626; border-bottom-color: #fca5a5;">🔥 Action Tracker (Active Backlog)</div>
     <div class="table-responsive">
       <table class="hse-table">
         <thead>
           <tr>
-            <th>Tanggal Lapor</th>
-            <th>Lokasi</th>
-            <th>Deskripsi Bahaya</th>
-            <th>Risiko</th>
+            <th>Report Date</th>
+            <th>Location</th>
+            <th>Hazard Description</th>
+            <th>Risk Level</th>
             <th>Supervisor (PIC)</th>
             <th>Status & Aging</th>
           </tr>
@@ -249,12 +248,12 @@
 
     <div id="printFooter" class="print-only">
       <span>Safety Starts With Me © 2026 | Powered by Pausbiru7</span>
-      <span>Dokumen Resmi K3 (Analytics)</span>
+      <span>Official HSE Document (Analytics)</span>
     </div>
   </div>
 </div>
 
-<script>
+<script>d
   // WAJIB UBAH URL INI JIKA ADA PERUBAHAN
   const GAS_URL = "https://script.google.com/macros/s/AKfycbyhqzWgXnC46vs0VnEdvRG52afyV4IQtN2FDqxHB_XbQ7vcVKrDPrNHo3IzHyZU62mI7Q/exec";
 
@@ -275,10 +274,10 @@
         document.getElementById('dashboardContent').style.display = 'block';
         renderDashboard(rawData.checklist, rawData.hazard);
       } else {
-        document.getElementById('loading').innerHTML = "⚠️ Gagal memuat data: " + responseData.error;
+        document.getElementById('loading').innerHTML = "⚠️ Failed to load data: " + responseData.error;
       }
     } catch (e) {
-      document.getElementById('loading').innerHTML = "⚠️ Terjadi kesalahan koneksi.";
+      document.getElementById('loading').innerHTML = "⚠️ Connection error occurred.";
     }
   }
 
@@ -306,7 +305,7 @@
     
     let filteredChk = rawData.checklist;
     let filteredHz = rawData.hazard;
-    let textPeriode = "Semua Waktu";
+    let textPeriode = "All Time";
 
     if (startVal || endVal) {
       const filterFn = (item) => {
@@ -330,9 +329,9 @@
       filteredChk = rawData.checklist.filter(filterFn);
       filteredHz = rawData.hazard.filter(filterFn);
       
-      if(startVal && endVal) textPeriode = startVal + " s/d " + endVal;
-      else if(startVal) textPeriode = "Mulai " + startVal;
-      else if(endVal) textPeriode = "Hingga " + endVal;
+      if(startVal && endVal) textPeriode = startVal + " to " + endVal;
+      else if(startVal) textPeriode = "From " + startVal;
+      else if(endVal) textPeriode = "Until " + endVal;
     }
     
     document.getElementById('periodeTeks').innerText = textPeriode;
@@ -342,7 +341,7 @@
   function resetFilter() {
     document.getElementById('startDate').value = '';
     document.getElementById('endDate').value = '';
-    document.getElementById('periodeTeks').innerText = "Semua Waktu";
+    document.getElementById('periodeTeks').innerText = "All Time";
     renderDashboard(rawData.checklist, rawData.hazard);
   }
 
@@ -355,13 +354,11 @@
     let datesMap = {}; let spvMap = {}; let repMap = {};
     let totalSlaHours = 0; let validSlaCount = 0;
     
-    // VARIABEL UNTUK ACTION TRACKER
     let actionTrackerHTML = "";
     let today = new Date();
     today.setHours(0,0,0,0);
 
     // --- 1. PROSES DATA CHECKLIST ---
-    // TAMBAHAN: Variabel pekerja ditambahkan di sini
     let sumChk = { total: 0, approved: 0, rejected: 0, apd: {}, bahaya: {}, pekerja: {} };
 
     dataChk.forEach(row => {
@@ -385,9 +382,8 @@
         });
       }
 
-      // --- TAMBAHAN: Proses Data LEADERBOARD PEKERJA menggunakan NIK ---
       let nik = row.nik && row.nik !== 'undefined' ? String(row.nik).trim() : '000';
-      let nama = row.pekerja && row.pekerja !== 'undefined' ? String(row.pekerja).trim() : 'Anonim';
+      let nama = row.pekerja && row.pekerja !== 'undefined' ? String(row.pekerja).trim() : 'Anonymous';
       if(!sumChk.pekerja[nik]) sumChk.pekerja[nik] = { nama: nama, nik: nik, count: 0 };
       sumChk.pekerja[nik].count++;
 
@@ -418,19 +414,16 @@
         datesMap[row.tgl].hz++;
       }
 
-      // Aggregate SPV (Hanya untuk temuan Hazard)
       let rawSpv = row.spv && row.spv !== 'undefined' ? String(row.spv).trim().toUpperCase() : '';
-      let s = rawSpv !== '' ? rawSpv : 'TANPA NAMA';
+      let s = rawSpv !== '' ? rawSpv : 'UNASSIGNED';
       if(!spvMap[s]) spvMap[s] = { open: 0, waiting: 0, closed: 0 };
       if (row.status === 'OPEN') spvMap[s].open++;
       else if (row.status === 'WAITING VERIFICATION') spvMap[s].waiting++;
       else if (row.status === 'CLOSED') spvMap[s].closed++;
 
-      // Aggregate Top Reporter
-      let p = row.pelapor && row.pelapor.trim() !== '' && row.pelapor !== 'undefined' ? row.pelapor : 'Anonim';
+      let p = row.pelapor && row.pelapor.trim() !== '' && row.pelapor !== 'undefined' ? row.pelapor : 'Anonymous';
       repMap[p] = (repMap[p] || 0) + 1;
 
-      // Hitung SLA
       if(row.waktuSelesai && row.waktuSelesai !== 'undefined' && row.waktuSelesai.trim() !== '') {
         let startDt = parseDateTime(row.tgl, row.jam);
         let endDt = parseCombinedDateTime(row.waktuSelesai);
@@ -441,7 +434,6 @@
         }
       }
 
-      // POPULATE ACTION TRACKER TABLE (Khusus OPEN / WAITING)
       if (row.status === 'OPEN' || row.status === 'WAITING VERIFICATION') {
         let badgeClass = row.status === 'OPEN' ? 'badge-danger' : 'badge-warning';
         
@@ -450,12 +442,12 @@
           let targetDt = new Date(row.target); targetDt.setHours(0,0,0,0);
           if (today > targetDt) {
             let daysLate = Math.floor((today - targetDt) / (1000 * 60 * 60 * 24));
-            agingBadge = `<div class="badge badge-aging">⏳ Lewat Target (${daysLate} Hari)</div>`;
+            agingBadge = `<div class="badge badge-aging">⏳ Overdue (${daysLate} Days)</div>`;
           } else {
-            agingBadge = `<div class="badge badge-ontrack">✅ Sesuai Timeline</div>`;
+            agingBadge = `<div class="badge badge-ontrack">✅ On Track</div>`;
           }
         } else {
-           agingBadge = `<div class="badge badge-aging">⏳ Target Belum Diatur</div>`;
+           agingBadge = `<div class="badge badge-aging">⏳ Target Not Set</div>`;
         }
 
         actionTrackerHTML += `
@@ -474,7 +466,7 @@
       }
     });
 
-    if (actionTrackerHTML === "") actionTrackerHTML = "<tr><td colspan='6' style='text-align:center;'>🎉 Luar Biasa! Tidak ada tunggakan temuan saat ini.</td></tr>";
+    if (actionTrackerHTML === "") actionTrackerHTML = "<tr><td colspan='6' style='text-align:center;'>🎉 Excellent! There is no active hazard backlog at the moment.</td></tr>";
     document.getElementById('actionTableBody').innerHTML = actionTrackerHTML;
 
     // SET METRIKS ANGKA
@@ -488,10 +480,9 @@
     document.getElementById('totClosed').textContent = sumHz.closed;
 
     let avgSLA = validSlaCount > 0 ? (totalSlaHours / validSlaCount).toFixed(1) : 0;
-    document.getElementById('slaTime').textContent = avgSLA + " Jam";
+    document.getElementById('slaTime').textContent = avgSLA + " Hrs";
 
     // --- RENDER GRAFIK ADVANCED ---
-    // 1. TREN HARIAN
     let sortedDates = Object.keys(datesMap).sort((a, b) => {
       let pA = a.split('/'); let pB = b.split('/');
       let dA = pA.length === 3 ? new Date(pA[2], pA[1]-1, pA[0]) : new Date(a);
@@ -505,17 +496,16 @@
         labels: sortedDates.map(d => {
           let p = d.split('/');
           let dateObj = p.length === 3 ? new Date(p[2], p[1]-1, p[0]) : new Date(d);
-          return isNaN(dateObj) ? d : dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+          return isNaN(dateObj) ? d : dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
         }),
         datasets: [
-          { label: 'Checklist Masuk', data: sortedDates.map(d => datesMap[d].chk), borderColor: '#2e86c1', backgroundColor: 'rgba(46,134,193,0.1)', fill: true, tension: 0.3 },
-          { label: 'Hazard Dilaporkan', data: sortedDates.map(d => datesMap[d].hz), borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', fill: true, tension: 0.3 }
+          { label: 'Checklists Submitted', data: sortedDates.map(d => datesMap[d].chk), borderColor: '#2e86c1', backgroundColor: 'rgba(46,134,193,0.1)', fill: true, tension: 0.3 },
+          { label: 'Hazards Reported', data: sortedDates.map(d => datesMap[d].hz), borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', fill: true, tension: 0.3 }
         ]
       },
       options: { plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true } } }
     });
 
-    // 2. BOTTLENECK SPV (Tunggakan Hazard per SPV)
     let spvLabels = Object.keys(spvMap).filter(s => s !== '-');
     createOrUpdateChart('spvChart', {
       type: 'bar',
@@ -530,7 +520,6 @@
       options: { scales: { x: { stacked: true }, y: { stacked: true } }, plugins: { legend: { position: 'bottom' } } }
     });
 
-    // 3. TOP REPORTER BBS
     var repArr = Object.keys(repMap).map(key => ({ name: key, count: repMap[key] }));
     repArr.sort((a, b) => b.count - a.count);
     var top5Rep = repArr.slice(0, 5);
@@ -538,7 +527,7 @@
       type: 'bar',
       data: {
         labels: top5Rep.map(item => item.name),
-        datasets: [{ label: 'Laporan', data: top5Rep.map(item => item.count), backgroundColor: '#10b981', borderRadius: 4 }]
+        datasets: [{ label: 'Reports', data: top5Rep.map(item => item.count), backgroundColor: '#10b981', borderRadius: 4 }]
       },
       options: { indexAxis: 'y', plugins: { legend: { display: false } } }
     });
@@ -551,7 +540,7 @@
       type: 'bar',
       data: {
         labels: top5Bahaya.map(item => item.name.length > 25 ? item.name.substring(0,25)+'...' : item.name),
-        datasets: [{ label: 'Temuan', data: top5Bahaya.map(item => item.count), backgroundColor: '#f59e0b', borderRadius: 4 }]
+        datasets: [{ label: 'Findings', data: top5Bahaya.map(item => item.count), backgroundColor: '#f59e0b', borderRadius: 4 }]
       },
       options: { indexAxis: 'y', plugins: { legend: { display: false } } }
     });
@@ -562,19 +551,18 @@
       type: 'bar',
       data: {
         labels: apdArr.map(item => item.name),
-        datasets: [{ label: 'Penggunaan', data: apdArr.map(item => item.count), backgroundColor: '#3b82f6', borderRadius: 4 }]
+        datasets: [{ label: 'Usage', data: apdArr.map(item => item.count), backgroundColor: '#3b82f6', borderRadius: 4 }]
       },
       options: { plugins: { legend: { display: false } } }
     });
 
-    // --- TAMBAHAN BARU: RENDER LEADERBOARD PEKERJA (Berdasarkan NIK) ---
     var workerArr = Object.values(sumChk.pekerja);
     workerArr.sort((a, b) => b.count - a.count);
     createOrUpdateChart('pekerjaChart', {
       type: 'bar',
       data: {
         labels: workerArr.slice(0, 5).map(item => `${item.nama} (${item.nik && item.nik !== '000' ? item.nik : '-'})`),
-        datasets: [{ label: 'Checklist Disubmit', data: workerArr.slice(0, 5).map(item => item.count), backgroundColor: '#14b8a6', borderRadius: 4 }]
+        datasets: [{ label: 'Checklists Submitted', data: workerArr.slice(0, 5).map(item => item.count), backgroundColor: '#14b8a6', borderRadius: 4 }]
       },
       options: { indexAxis: 'y', plugins: { legend: { display: false } } }
     });
@@ -591,7 +579,7 @@
       type: 'bar',
       data: {
         labels: Object.keys(sumHz.kategori).map(k => k.length > 20 ? k.substring(0,20)+'...' : k),
-        datasets: [{ label: 'Jumlah Laporan', data: Object.values(sumHz.kategori), backgroundColor: '#8b5cf6', borderRadius: 4 }]
+        datasets: [{ label: 'Report Count', data: Object.values(sumHz.kategori), backgroundColor: '#8b5cf6', borderRadius: 4 }]
       },
       options: { indexAxis: 'y', plugins: { legend: { display: false } } }
     });
