@@ -416,14 +416,28 @@
       }
     });
 
-    // --- 2. PROSES DATA HAZARD ---
-    let sumHz = { total: 0, open: 0, waiting: 0, closed: 0, risiko: {}, kategori: {} };
+  // --- 2. PROSES DATA HAZARD ---
+    let sumHz = { 
+      total: 0, open: 0, waiting: 0, closed: 0, 
+      unsafeAction: 0, unsafeCondition: 0, goodFinding: 0, 
+      risiko: {}, kategori: {} 
+    };
 
     dataHz.forEach(row => {
       sumHz.total++;
       if (row.status === 'OPEN') sumHz.open++;
       else if (row.status === 'WAITING VERIFICATION') sumHz.waiting++;
       else if (row.status === 'CLOSED') sumHz.closed++;
+
+      // Klasifikasi Berdasarkan Kategori Temuan
+      let kat = row.kategori ? row.kategori.toLowerCase() : '';
+      if (kat.indexOf('unsafe action') !== -1 || kat.indexOf('tindakan tidak aman') !== -1) {
+        sumHz.unsafeAction++;
+      } else if (kat.indexOf('unsafe condition') !== -1 || kat.indexOf('kondisi tidak aman') !== -1) {
+        sumHz.unsafeCondition++;
+      } else if (kat.indexOf('observasi positif') !== -1 || kat.indexOf('good finding') !== -1 || kat.indexOf('positif') !== -1) {
+        sumHz.goodFinding++;
+      }
 
       if (row.risiko && row.risiko !== 'undefined' && row.risiko.trim() !== '') {
         sumHz.risiko[row.risiko] = (sumHz.risiko[row.risiko] || 0) + 1;
@@ -495,15 +509,17 @@
     if (actionTrackerHTML === "") actionTrackerHTML = "<tr><td colspan='6' style='text-align:center;'>🎉 Excellent! There is no active hazard backlog at the moment.</td></tr>";
     document.getElementById('actionTableBody').innerHTML = actionTrackerHTML;
 
-    // SET METRIKS ANGKA
+  // SET METRIKS ANGKA (CHECKLIST)
     document.getElementById('totChecklist').textContent = sumChk.total;
     document.getElementById('totApproved').textContent = sumChk.approved;
     document.getElementById('totRejected').textContent = sumChk.rejected;
     
+    // SET METRIKS ANGKA (HAZARD & KATEGORI TEMUAN)
     document.getElementById('totHazard').textContent = sumHz.total;
-    document.getElementById('totOpen').textContent = sumHz.open;
-    document.getElementById('totWaiting').textContent = sumHz.waiting;
-    document.getElementById('totClosed').textContent = sumHz.closed;
+    document.getElementById('totUnsafeAction').textContent = sumHz.unsafeAction;
+    document.getElementById('totUnsafeCondition').textContent = sumHz.unsafeCondition;
+    document.getElementById('totGoodFinding').textContent = sumHz.goodFinding;
+    document.getElementById('totOpenWaiting').textContent = sumHz.open + sumHz.waiting;
 
     let avgSLA = validSlaCount > 0 ? (totalSlaHours / validSlaCount).toFixed(1) : 0;
     document.getElementById('slaTime').textContent = avgSLA + " Hrs";
