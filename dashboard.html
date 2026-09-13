@@ -345,8 +345,26 @@
     renderDashboard(rawData.checklist, rawData.hazard);
   }
 
-  function createOrUpdateChart(chartId, config) {
+ function createOrUpdateChart(chartId, config) {
     if(chartInstances[chartId]) chartInstances[chartId].destroy();
+    
+    // Pastikan objek options tersedia
+    if (!config.options) config.options = {};
+    
+    // PENGATURAN ANTI-DESIMAL UNTUK SEMUA GRAFIK
+    if (config.type === 'bar' || config.type === 'line') {
+      if (!config.options.scales) config.options.scales = {};
+      
+      // Deteksi sumbu mana yang menampilkan angka (X atau Y)
+      let valueAxis = config.options.indexAxis === 'y' ? 'x' : 'y';
+      
+      if (!config.options.scales[valueAxis]) config.options.scales[valueAxis] = {};
+      if (!config.options.scales[valueAxis].ticks) config.options.scales[valueAxis].ticks = {};
+      
+      // Memaksa sistem HANYA menampilkan bilangan bulat (0, 1, 2, dst)
+      config.options.scales[valueAxis].ticks.precision = 0;
+    }
+
     chartInstances[chartId] = new Chart(document.getElementById(chartId), config);
   }
 
