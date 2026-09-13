@@ -181,7 +181,7 @@
       </div>
     </div>
 
-    <!-- SEGMEN 3: HAZARD REPORT -->
+   <!-- SEGMEN 3: HAZARD REPORT -->
     <div class="section-title">🚨 Hazard Report (BBS)</div>
     <div class="metrics-grid">
       <div class="metric-card">
@@ -189,20 +189,25 @@
         <div class="value" id="totHazard">0</div>
         <small>Reports Submitted</small>
       </div>
-      <div class="metric-card open">
-        <h3>OPEN</h3>
-        <div class="value" id="totOpen">0</div>
-        <small>Pending Action</small>
-      </div>
       <div class="metric-card warning">
-        <h3>WAITING</h3>
-        <div class="value" id="totWaiting">0</div>
-        <small>Awaiting Verification</small>
+        <h3>Unsafe Action</h3>
+        <div class="value" id="totUnsafeAction">0</div>
+        <small>Behavioral finding</small>
+      </div>
+      <div class="metric-card rejected">
+        <h3>Unsafe Condition</h3>
+        <div class="value" id="totUnsafeCondition">0</div>
+        <small>Environmental finding</small>
       </div>
       <div class="metric-card approved">
-        <h3>CLOSED</h3>
-        <div class="value" id="totClosed">0</div>
-        <small>Resolved</small>
+        <h3>Good Finding</h3>
+        <div class="value" id="totGoodFinding">0</div>
+        <small>Positive observation</small>
+      </div>
+      <div class="metric-card open">
+        <h3>OPEN / WAITING</h3>
+        <div class="value" id="totOpenWaiting">0</div>
+        <small>Pending action / review</small>
       </div>
       <div class="metric-card purple">
         <h3>Average Resolution</h3>
