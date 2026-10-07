@@ -1912,9 +1912,9 @@ async function submitChecklist(){
     data.rowId = rowId;
 
   }catch(e){
-    console.warn('GAS submit failed, offline mode:', e.message);
-    data.rowId = rowId;
-    saveToQueue(data);
+    hideProgress();
+    showAlert('❌ GAGAL MENGIRIM KE SERVER:<br>' + e.message + '<br><br>Terdapat kesalahan pada GAS_URL Anda.');
+    return;
   }
 
   hideProgress();
