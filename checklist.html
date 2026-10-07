@@ -1391,11 +1391,11 @@ async function doReject(){
 
     hideProgress();
 
-    if(res && res.ok === false){
+   if(res && res.ok === false){
       throw new Error(res.error || 'Gagal merespon di server');
     }
 
-    eWorker(data);
+    kirimNotifikasiKeWorker(data); // <--- NAMA FUNGSI YANG BENAR
     
     const enc = LZ.compress(JSON.stringify(data));
     showDone(enc, true);
